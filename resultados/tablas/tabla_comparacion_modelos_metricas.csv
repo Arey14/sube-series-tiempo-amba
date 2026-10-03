@@ -1,0 +1,5 @@
+Modelo,RMSE (M),MAE (M),MAPE (%)
+Gradient_Boosting,0.3095,0.2207,8.82
+Prophet,0.2893,0.2247,10.12
+SARIMAX,0.386,0.2709,12.16
+Seasonal_Naive,0.669,0.3881,16.05
