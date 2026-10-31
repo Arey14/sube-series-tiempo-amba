@@ -1,0 +1,387 @@
+fecha,dia_semana,modo,valor,mediana_vecinos,razon,feriado,explicacion
+2020-07-09,Thursday,colectivo_amba,439619,989725,0.444,True,feriado
+2020-07-09,Thursday,subte_amba,11404,38521,0.296,True,feriado
+2020-07-09,Thursday,total_amba,451293,1023134,0.441,True,feriado
+2020-07-09,Thursday,tren_amba,42859,114004,0.376,True,feriado
+2020-07-10,Friday,colectivo_amba,495582,1018149,0.487,True,feriado
+2020-07-10,Friday,subte_amba,13049,38541,0.339,True,feriado
+2020-07-10,Friday,total_amba,508659,1053339,0.483,True,feriado
+2020-07-10,Friday,tren_amba,46865,123740,0.379,True,feriado
+2020-08-17,Monday,colectivo_amba,506114,1108297,0.457,True,feriado
+2020-08-17,Monday,subte_amba,14105,44888,0.314,True,feriado
+2020-08-17,Monday,total_amba,520194,1147997,0.453,True,feriado
+2020-08-17,Monday,tren_amba,47636,145294,0.328,True,feriado
+2020-10-12,Monday,subte_amba,21603,62898,0.343,True,feriado
+2020-10-12,Monday,tren_amba,66403,194970,0.341,True,feriado
+2020-11-23,Monday,subte_amba,28690,83014,0.346,True,feriado
+2020-11-23,Monday,tren_amba,100759,299364,0.337,True,feriado
+2020-12-07,Monday,subte_amba,42361,95877,0.442,True,feriado
+2020-12-07,Monday,tren_amba,144885,330032,0.439,True,feriado
+2020-12-08,Tuesday,subte_amba,35943,101826,0.353,True,feriado
+2020-12-08,Tuesday,tren_amba,126997,324116,0.392,True,feriado
+2020-12-22,Tuesday,tren_amba,155614,338250,0.46,False,sin explicación en calendario
+2020-12-25,Friday,colectivo_amba,438204,1913413,0.229,True,feriado
+2020-12-25,Friday,subte_amba,16906,109853,0.154,True,feriado
+2020-12-25,Friday,total_amba,455865,2003433,0.228,True,feriado
+2020-12-25,Friday,tren_amba,45608,346726,0.132,True,feriado
+2021-01-01,Friday,colectivo_amba,430570,1909280,0.226,True,feriado
+2021-01-01,Friday,subte_amba,16309,110722,0.147,True,feriado
+2021-01-01,Friday,total_amba,446948,1999776,0.223,True,feriado
+2021-01-01,Friday,tren_amba,39184,346726,0.113,True,feriado
+2021-02-15,Monday,subte_amba,43615,116248,0.375,True,feriado
+2021-02-15,Monday,tren_amba,141143,353657,0.399,True,feriado
+2021-02-16,Tuesday,colectivo_amba,1005684,2070242,0.486,True,feriado
+2021-02-16,Tuesday,subte_amba,41838,128957,0.324,True,feriado
+2021-02-16,Tuesday,total_amba,1047440,2176827,0.481,True,feriado
+2021-02-16,Tuesday,tren_amba,136550,375909,0.363,True,feriado
+2021-03-24,Wednesday,subte_amba,68137,148002,0.46,True,feriado
+2021-03-24,Wednesday,tren_amba,179101,407773,0.439,True,feriado
+2021-04-02,Friday,colectivo_amba,1047968,2276355,0.46,True,feriado
+2021-04-02,Friday,subte_amba,50609,140756,0.36,True,feriado
+2021-04-02,Friday,total_amba,1096397,2386974,0.459,True,feriado
+2021-04-02,Friday,tren_amba,137428,389334,0.353,True,feriado
+2021-05-22,Saturday,subte_amba,27558,57575,0.479,False,sin explicación en calendario
+2021-05-24,Monday,colectivo_amba,699881,1899619,0.368,True,feriado
+2021-05-24,Monday,subte_amba,24101,115892,0.208,True,feriado
+2021-05-24,Monday,total_amba,726004,1994282,0.364,True,feriado
+2021-05-24,Monday,tren_amba,94653,334058,0.283,True,feriado
+2021-05-25,Tuesday,colectivo_amba,572147,1967342,0.291,True,feriado
+2021-05-25,Tuesday,subte_amba,19955,119686,0.167,True,feriado
+2021-05-25,Tuesday,total_amba,593986,2061376,0.288,True,feriado
+2021-05-25,Tuesday,tren_amba,74424,340727,0.218,True,feriado
+2021-06-21,Monday,colectivo_amba,880537,2083927,0.423,True,feriado
+2021-06-21,Monday,subte_amba,37664,131634,0.286,True,feriado
+2021-06-21,Monday,total_amba,914810,2185240,0.419,True,feriado
+2021-06-21,Monday,tren_amba,108283,356242,0.304,True,feriado
+2021-07-09,Friday,subte_amba,66246,165518,0.4,True,feriado
+2021-07-09,Friday,tren_amba,184441,409647,0.45,True,feriado
+2021-08-16,Monday,colectivo_amba,1177868,2584060,0.456,True,feriado
+2021-08-16,Monday,subte_amba,70525,191549,0.368,True,feriado
+2021-08-16,Monday,total_amba,1237852,2724936,0.454,True,feriado
+2021-08-16,Monday,tren_amba,158877,444877,0.357,True,feriado
+2021-09-12,Sunday,colectivo_amba,311166,1171047,0.266,False,sin explicación en calendario
+2021-09-12,Sunday,subte_amba,279,76244,0.004,False,sin explicación en calendario
+2021-09-12,Sunday,total_amba,325340,1227966,0.265,False,sin explicación en calendario
+2021-09-12,Sunday,tren_amba,17590,138753,0.127,False,sin explicación en calendario
+2021-10-08,Friday,subte_amba,143453,299960,0.478,True,feriado
+2021-10-11,Monday,colectivo_amba,1182277,3070310,0.385,True,feriado
+2021-10-11,Monday,subte_amba,88025,280536,0.314,True,feriado
+2021-10-11,Monday,total_amba,1253183,3272809,0.383,True,feriado
+2021-10-11,Monday,tren_amba,178561,561648,0.318,True,feriado
+2021-11-14,Sunday,colectivo_amba,261730,1260540,0.208,False,sin explicación en calendario
+2021-11-14,Sunday,subte_amba,141,101984,0.001,False,sin explicación en calendario
+2021-11-14,Sunday,total_amba,275305,1330538,0.207,False,sin explicación en calendario
+2021-11-14,Sunday,tren_amba,16687,159872,0.104,False,sin explicación en calendario
+2021-11-22,Monday,colectivo_amba,1252170,3143179,0.398,True,feriado
+2021-11-22,Monday,subte_amba,99342,318627,0.312,True,feriado
+2021-11-22,Monday,total_amba,1328675,3369896,0.394,True,feriado
+2021-11-22,Monday,tren_amba,190830,612572,0.312,True,feriado
+2021-12-08,Wednesday,subte_amba,140925,344816,0.409,True,feriado
+2021-12-08,Wednesday,tren_amba,264630,632076,0.419,True,feriado
+2021-12-24,Friday,subte_amba,144439,292459,0.494,False,sin explicación en calendario
+2021-12-25,Saturday,colectivo_amba,643175,1901148,0.338,True,feriado
+2021-12-25,Saturday,subte_amba,48631,158317,0.307,True,feriado
+2021-12-25,Saturday,total_amba,681257,2015074,0.338,True,feriado
+2021-12-25,Saturday,tren_amba,72901,298007,0.245,True,feriado
+2021-12-31,Friday,subte_amba,113829,236495,0.481,False,sin explicación en calendario
+2022-01-01,Saturday,colectivo_amba,522889,1719376,0.304,True,feriado
+2022-01-01,Saturday,subte_amba,38801,144914,0.268,True,feriado
+2022-01-01,Saturday,total_amba,553019,1822290,0.303,True,feriado
+2022-01-01,Saturday,tren_amba,58537,275567,0.212,True,feriado
+2022-02-28,Monday,colectivo_amba,1444271,3014720,0.479,True,feriado
+2022-02-28,Monday,subte_amba,133870,337318,0.397,True,feriado
+2022-02-28,Monday,total_amba,1544302,3238649,0.477,True,feriado
+2022-02-28,Monday,tren_amba,232312,590325,0.394,True,feriado
+2022-03-01,Tuesday,colectivo_amba,1457791,3068436,0.475,True,feriado
+2022-03-01,Tuesday,subte_amba,130380,370987,0.351,True,feriado
+2022-03-01,Tuesday,total_amba,1557569,3302497,0.472,True,feriado
+2022-03-01,Tuesday,tren_amba,237570,584230,0.407,True,feriado
+2022-03-24,Thursday,colectivo_amba,1387930,3497750,0.397,True,feriado
+2022-03-24,Thursday,total_amba,1531626,3771129,0.406,True,feriado
+2022-03-24,Thursday,tren_amba,258882,675221,0.383,True,feriado
+2022-03-29,Tuesday,tren_amba,337520,695056,0.486,False,sin explicación en calendario
+2022-04-15,Friday,colectivo_amba,1417028,3730531,0.38,True,feriado
+2022-04-15,Friday,subte_amba,155025,483253,0.321,True,feriado
+2022-04-15,Friday,total_amba,1531216,4019765,0.381,True,feriado
+2022-04-15,Friday,tren_amba,239725,745899,0.321,True,feriado
+2022-05-18,Wednesday,colectivo_amba,666999,3733301,0.179,True,feriado
+2022-05-18,Wednesday,subte_amba,59514,481399,0.124,True,feriado
+2022-05-18,Wednesday,total_amba,713501,4032544,0.177,True,feriado
+2022-05-18,Wednesday,tren_amba,89947,733938,0.123,True,feriado
+2022-05-25,Wednesday,colectivo_amba,1074485,3680896,0.292,True,feriado
+2022-05-25,Wednesday,subte_amba,131580,484765,0.271,True,feriado
+2022-05-25,Wednesday,total_amba,1161948,3979945,0.292,True,feriado
+2022-05-25,Wednesday,tren_amba,162112,729034,0.222,True,feriado
+2022-06-17,Friday,colectivo_amba,1831483,3725656,0.492,True,feriado
+2022-06-17,Friday,subte_amba,210973,492504,0.428,True,feriado
+2022-06-17,Friday,total_amba,1977513,4001282,0.494,True,feriado
+2022-06-17,Friday,tren_amba,319617,750425,0.426,True,feriado
+2022-06-20,Monday,colectivo_amba,1295638,3553889,0.365,True,feriado
+2022-06-20,Monday,subte_amba,139934,463992,0.302,True,feriado
+2022-06-20,Monday,total_amba,1392887,3843124,0.362,True,feriado
+2022-06-20,Monday,tren_amba,206728,710622,0.291,True,feriado
+2022-10-07,Friday,subte_amba,222537,525181,0.424,True,feriado
+2022-10-07,Friday,tren_amba,366918,785961,0.467,True,feriado
+2022-10-10,Monday,colectivo_amba,1450717,3678832,0.394,True,feriado
+2022-10-10,Monday,subte_amba,148234,503549,0.294,True,feriado
+2022-10-10,Monday,total_amba,1560577,3993157,0.391,True,feriado
+2022-10-10,Monday,tren_amba,238807,750735,0.318,True,feriado
+2022-11-08,Tuesday,tren_amba,193829,757480,0.256,False,sin explicación en calendario
+2022-11-21,Monday,colectivo_amba,1332455,3560799,0.374,True,feriado
+2022-11-21,Monday,subte_amba,133992,482069,0.278,True,feriado
+2022-11-21,Monday,total_amba,1414559,3843406,0.368,True,feriado
+2022-11-21,Monday,tren_amba,175829,707568,0.248,True,feriado
+2022-12-08,Thursday,subte_amba,187269,515259,0.363,True,feriado
+2022-12-08,Thursday,tren_amba,226880,732891,0.31,True,feriado
+2022-12-09,Friday,colectivo_amba,1475064,3722432,0.396,True,feriado
+2022-12-09,Friday,subte_amba,157127,518506,0.303,True,feriado
+2022-12-09,Friday,total_amba,1569945,4026087,0.39,True,feriado
+2022-12-09,Friday,tren_amba,185228,760026,0.244,True,feriado
+2022-12-18,Sunday,colectivo_amba,581026,1270583,0.457,False,sin explicación en calendario
+2022-12-20,Tuesday,subte_amba,145911,431070,0.338,True,feriado
+2022-12-20,Tuesday,tren_amba,270149,635081,0.425,True,feriado
+2023-01-01,Sunday,colectivo_amba,577052,1254198,0.46,True,feriado
+2023-01-01,Sunday,total_amba,618308,1323814,0.467,True,feriado
+2023-01-01,Sunday,tren_amba,66891,137272,0.487,True,feriado
+2023-02-20,Monday,colectivo_amba,1437328,2949277,0.487,True,feriado
+2023-02-20,Monday,subte_amba,137442,424070,0.324,True,feriado
+2023-02-20,Monday,total_amba,1527348,3218108,0.475,True,feriado
+2023-02-20,Monday,tren_amba,195557,628447,0.311,True,feriado
+2023-02-21,Tuesday,colectivo_amba,1437574,3266099,0.44,True,feriado
+2023-02-21,Tuesday,subte_amba,140818,437419,0.322,True,feriado
+2023-02-21,Tuesday,total_amba,1530770,3493891,0.438,True,feriado
+2023-02-21,Tuesday,tren_amba,192895,642622,0.3,True,feriado
+2023-03-24,Friday,tren_amba,286456,686354,0.417,True,feriado
+2023-04-06,Thursday,subte_amba,213883,531128,0.403,True,feriado
+2023-04-07,Friday,colectivo_amba,1573301,3968322,0.396,True,feriado
+2023-04-07,Friday,subte_amba,133605,505808,0.264,True,feriado
+2023-04-07,Friday,total_amba,1667380,4250723,0.392,True,feriado
+2023-04-07,Friday,tren_amba,208963,706666,0.296,True,feriado
+2023-05-01,Monday,colectivo_amba,1165569,3892111,0.299,True,feriado
+2023-05-01,Monday,subte_amba,128099,490334,0.261,True,feriado
+2023-05-01,Monday,total_amba,1252052,4177720,0.3,True,feriado
+2023-05-01,Monday,tren_amba,148770,715426,0.208,True,feriado
+2023-05-25,Thursday,colectivo_amba,1369600,3971796,0.345,True,feriado
+2023-05-25,Thursday,subte_amba,179760,522457,0.344,True,feriado
+2023-05-25,Thursday,total_amba,1482654,4243784,0.349,True,feriado
+2023-05-25,Thursday,tren_amba,207686,721580,0.288,True,feriado
+2023-05-26,Friday,colectivo_amba,1528505,3945784,0.387,True,feriado
+2023-05-26,Friday,subte_amba,162177,512743,0.316,True,feriado
+2023-05-26,Friday,total_amba,1630410,4228686,0.386,True,feriado
+2023-05-26,Friday,tren_amba,183696,731271,0.251,True,feriado
+2023-06-19,Monday,colectivo_amba,1466749,3852995,0.381,True,feriado
+2023-06-19,Monday,subte_amba,162093,490318,0.331,True,feriado
+2023-06-19,Monday,total_amba,1568849,4143732,0.379,True,feriado
+2023-06-19,Monday,tren_amba,194353,725873,0.268,True,feriado
+2023-06-20,Tuesday,colectivo_amba,1393821,3746578,0.372,True,feriado
+2023-06-20,Tuesday,subte_amba,147534,495131,0.298,True,feriado
+2023-06-20,Tuesday,total_amba,1491669,4048687,0.368,True,feriado
+2023-06-20,Tuesday,tren_amba,201503,714867,0.282,True,feriado
+2023-07-07,Friday,colectivo_amba,581350,3884684,0.15,False,sin explicación en calendario
+2023-07-07,Friday,total_amba,1226126,4167542,0.294,False,sin explicación en calendario
+2023-08-13,Sunday,colectivo_amba,336692,1497530,0.225,False,sin explicación en calendario
+2023-08-13,Sunday,subte_amba,2427,154509,0.016,False,sin explicación en calendario
+2023-08-13,Sunday,total_amba,352017,1592686,0.221,False,sin explicación en calendario
+2023-08-13,Sunday,tren_amba,17153,168424,0.102,False,sin explicación en calendario
+2023-08-21,Monday,colectivo_amba,1470722,3763024,0.391,True,feriado
+2023-08-21,Monday,subte_amba,141745,495330,0.286,True,feriado
+2023-08-21,Monday,total_amba,1564052,4064894,0.385,True,feriado
+2023-08-21,Monday,tren_amba,152904,741278,0.206,True,feriado
+2023-10-13,Friday,subte_amba,235939,537965,0.439,True,feriado
+2023-10-13,Friday,tren_amba,391258,794333,0.493,True,feriado
+2023-10-16,Monday,colectivo_amba,1474362,3917322,0.376,True,feriado
+2023-10-16,Monday,subte_amba,149294,514734,0.29,True,feriado
+2023-10-16,Monday,total_amba,1582580,4223788,0.375,True,feriado
+2023-10-16,Monday,tren_amba,232267,761587,0.305,True,feriado
+2023-10-22,Sunday,colectivo_amba,236439,1510720,0.157,False,sin explicación en calendario
+2023-10-22,Sunday,subte_amba,274,152410,0.002,False,sin explicación en calendario
+2023-10-22,Sunday,total_amba,239491,1609468,0.149,False,sin explicación en calendario
+2023-10-22,Sunday,tren_amba,3516,185622,0.019,False,sin explicación en calendario
+2023-11-19,Sunday,colectivo_amba,245598,1469735,0.167,False,sin explicación en calendario
+2023-11-19,Sunday,subte_amba,1052,151239,0.007,False,sin explicación en calendario
+2023-11-19,Sunday,total_amba,251805,1564978,0.161,False,sin explicación en calendario
+2023-11-19,Sunday,tren_amba,6634,169914,0.039,False,sin explicación en calendario
+2023-11-20,Monday,colectivo_amba,1540509,3761869,0.41,True,feriado
+2023-11-20,Monday,subte_amba,153196,508041,0.302,True,feriado
+2023-11-20,Monday,total_amba,1647944,4059989,0.406,True,feriado
+2023-11-20,Monday,tren_amba,236574,739601,0.32,True,feriado
+2023-12-08,Friday,subte_amba,239060,511103,0.468,True,feriado
+2023-12-08,Friday,tren_amba,349755,775228,0.451,True,feriado
+2023-12-17,Sunday,tren_amba,41225,148637,0.277,False,sin explicación en calendario
+2023-12-25,Monday,colectivo_amba,769610,3761869,0.205,True,feriado
+2023-12-25,Monday,subte_amba,76895,508041,0.151,True,feriado
+2023-12-25,Monday,total_amba,828959,4059989,0.204,True,feriado
+2023-12-25,Monday,tren_amba,101499,739601,0.137,True,feriado
+2024-02-12,Monday,colectivo_amba,1022887,3023046,0.338,True,feriado
+2024-02-12,Monday,subte_amba,81374,327549,0.248,True,feriado
+2024-02-12,Monday,total_amba,1087486,3265377,0.333,True,feriado
+2024-02-12,Monday,tren_amba,148577,663253,0.224,True,feriado
+2024-02-13,Tuesday,colectivo_amba,1425235,3044894,0.468,True,feriado
+2024-02-13,Tuesday,subte_amba,111227,363572,0.306,True,feriado
+2024-02-13,Tuesday,total_amba,1522267,3295879,0.462,True,feriado
+2024-02-13,Tuesday,tren_amba,228623,668545,0.342,True,feriado
+2024-02-21,Wednesday,tren_amba,1024,667723,0.002,False,sin explicación en calendario
+2024-03-28,Thursday,subte_amba,267964,538799,0.497,True,feriado
+2024-03-29,Friday,colectivo_amba,1503447,3840525,0.391,True,feriado
+2024-03-29,Friday,subte_amba,167002,517603,0.323,True,feriado
+2024-03-29,Friday,total_amba,1630434,4166891,0.391,True,feriado
+2024-03-29,Friday,tren_amba,266087,782190,0.34,True,feriado
+2024-04-01,Monday,colectivo_amba,1302399,3524346,0.37,True,feriado
+2024-04-01,Monday,subte_amba,148787,505370,0.294,True,feriado
+2024-04-01,Monday,total_amba,1421158,3845708,0.37,True,feriado
+2024-04-01,Monday,tren_amba,221904,733797,0.302,True,feriado
+2024-04-02,Tuesday,colectivo_amba,1394903,3769731,0.37,True,feriado
+2024-04-02,Tuesday,subte_amba,149434,546894,0.273,True,feriado
+2024-04-02,Tuesday,total_amba,1513110,4109982,0.368,True,feriado
+2024-04-02,Tuesday,tren_amba,238571,761062,0.313,True,feriado
+2024-04-11,Thursday,colectivo_amba,973674,3549348,0.274,False,sin explicación en calendario
+2024-04-11,Thursday,total_amba,1633051,3892527,0.42,False,sin explicación en calendario
+2024-05-01,Wednesday,colectivo_amba,1106290,3844967,0.288,True,feriado
+2024-05-01,Wednesday,subte_amba,135888,541070,0.251,True,feriado
+2024-05-01,Wednesday,total_amba,1204442,4186923,0.288,True,feriado
+2024-05-01,Wednesday,tren_amba,165100,731746,0.226,True,feriado
+2024-05-09,Thursday,colectivo_amba,304396,3779587,0.081,False,sin explicación en calendario
+2024-05-09,Thursday,subte_amba,1,539094,0.0,False,sin explicación en calendario
+2024-05-09,Thursday,total_amba,304475,4045190,0.075,False,sin explicación en calendario
+2024-05-09,Thursday,tren_amba,90,710742,0.0,False,sin explicación en calendario
+2024-06-17,Monday,colectivo_amba,1450994,3716196,0.39,True,feriado
+2024-06-17,Monday,subte_amba,122480,429763,0.285,True,feriado
+2024-06-17,Monday,total_amba,1548054,3989559,0.388,True,feriado
+2024-06-17,Monday,tren_amba,228628,683234,0.335,True,feriado
+2024-06-20,Thursday,colectivo_amba,1733672,3738775,0.464,True,feriado
+2024-06-20,Thursday,subte_amba,162625,446269,0.364,True,feriado
+2024-06-20,Thursday,total_amba,1857802,3994709,0.465,True,feriado
+2024-06-20,Thursday,tren_amba,292279,682306,0.428,True,feriado
+2024-06-21,Friday,colectivo_amba,1404439,3743515,0.375,True,feriado
+2024-06-21,Friday,subte_amba,134316,446757,0.301,True,feriado
+2024-06-21,Friday,total_amba,1497580,4020127,0.373,True,feriado
+2024-06-21,Friday,tren_amba,204119,704794,0.29,True,feriado
+2024-07-09,Tuesday,colectivo_amba,1394248,3678926,0.379,True,feriado
+2024-07-09,Tuesday,subte_amba,152635,432590,0.353,True,feriado
+2024-07-09,Tuesday,total_amba,1502130,3945212,0.381,True,feriado
+2024-07-09,Tuesday,tren_amba,204712,653844,0.313,True,feriado
+2024-10-11,Friday,subte_amba,177769,438341,0.406,True,feriado
+2024-10-11,Friday,tren_amba,320998,726734,0.442,True,feriado
+2024-10-30,Wednesday,subte_amba,27,438700,0.0,False,sin explicación en calendario
+2024-10-30,Wednesday,tren_amba,343,711424,0.0,False,sin explicación en calendario
+2024-11-18,Monday,colectivo_amba,1497163,3535035,0.424,True,feriado
+2024-11-18,Monday,subte_amba,125714,390328,0.322,True,feriado
+2024-11-18,Monday,total_amba,1595693,3795359,0.42,True,feriado
+2024-11-18,Monday,tren_amba,227969,668760,0.341,True,feriado
+2024-12-24,Tuesday,subte_amba,122789,316010,0.389,False,sin explicación en calendario
+2024-12-25,Wednesday,colectivo_amba,644780,3062079,0.211,True,feriado
+2024-12-25,Wednesday,subte_amba,46004,310793,0.148,True,feriado
+2024-12-25,Wednesday,total_amba,686757,3279206,0.209,True,feriado
+2024-12-25,Wednesday,tren_amba,79601,593630,0.134,True,feriado
+2024-12-31,Tuesday,subte_amba,101214,263773,0.384,False,sin explicación en calendario
+2025-01-01,Wednesday,colectivo_amba,567642,2684183,0.211,True,feriado
+2025-01-01,Wednesday,subte_amba,37314,264884,0.141,True,feriado
+2025-01-01,Wednesday,total_amba,602670,2876833,0.209,True,feriado
+2025-01-01,Wednesday,tren_amba,67417,580536,0.116,True,feriado
+2025-03-03,Monday,colectivo_amba,987418,2831669,0.349,True,feriado
+2025-03-03,Monday,subte_amba,74713,269478,0.277,True,feriado
+2025-03-03,Monday,total_amba,1042941,3024982,0.345,True,feriado
+2025-03-03,Monday,tren_amba,137851,603096,0.229,True,feriado
+2025-03-04,Tuesday,colectivo_amba,1349293,3342684,0.404,True,feriado
+2025-03-04,Tuesday,subte_amba,92690,311741,0.297,True,feriado
+2025-03-04,Tuesday,total_amba,1423817,3563862,0.4,True,feriado
+2025-03-04,Tuesday,tren_amba,190960,648173,0.295,True,feriado
+2025-03-24,Monday,colectivo_amba,1313869,3618458,0.363,True,feriado
+2025-03-24,Monday,subte_amba,162473,335762,0.484,True,feriado
+2025-03-24,Monday,total_amba,1437157,3853355,0.373,True,feriado
+2025-03-24,Monday,tren_amba,222719,678429,0.328,True,feriado
+2025-04-02,Wednesday,colectivo_amba,1549022,3766962,0.411,True,feriado
+2025-04-02,Wednesday,subte_amba,112381,359330,0.313,True,feriado
+2025-04-02,Wednesday,total_amba,1647584,4011660,0.411,True,feriado
+2025-04-02,Wednesday,tren_amba,238167,694236,0.343,True,feriado
+2025-04-10,Thursday,subte_amba,42,362941,0.0,False,sin explicación en calendario
+2025-04-10,Thursday,tren_amba,475,700615,0.001,False,sin explicación en calendario
+2025-04-17,Thursday,subte_amba,177495,362941,0.489,True,feriado
+2025-04-18,Friday,colectivo_amba,1420654,3816620,0.372,True,feriado
+2025-04-18,Friday,subte_amba,114502,350459,0.327,True,feriado
+2025-04-18,Friday,total_amba,1510324,4057529,0.372,True,feriado
+2025-04-18,Friday,tren_amba,210254,723189,0.291,True,feriado
+2025-05-01,Thursday,colectivo_amba,1092443,3736911,0.292,True,feriado
+2025-05-01,Thursday,subte_amba,86594,358744,0.241,True,feriado
+2025-05-01,Thursday,total_amba,1163831,3980739,0.292,True,feriado
+2025-05-01,Thursday,tren_amba,154773,694059,0.223,True,feriado
+2025-05-06,Tuesday,colectivo_amba,891014,3753079,0.237,False,sin explicación en calendario
+2025-05-06,Tuesday,total_amba,1357810,4000138,0.339,False,sin explicación en calendario
+2025-06-16,Monday,colectivo_amba,1249349,3590464,0.348,True,feriado
+2025-06-16,Monday,subte_amba,92961,320216,0.29,True,feriado
+2025-06-16,Monday,total_amba,1323530,3813906,0.347,True,feriado
+2025-06-16,Monday,tren_amba,184615,650727,0.284,True,feriado
+2025-06-20,Friday,colectivo_amba,1712765,3696653,0.463,True,feriado
+2025-06-20,Friday,subte_amba,128130,332652,0.385,True,feriado
+2025-06-20,Friday,total_amba,1810767,3924238,0.461,True,feriado
+2025-06-20,Friday,tren_amba,246828,687681,0.359,True,feriado
+2025-07-09,Wednesday,colectivo_amba,1462747,3488705,0.419,True,feriado
+2025-07-09,Wednesday,subte_amba,100432,321055,0.313,True,feriado
+2025-07-09,Wednesday,total_amba,1539941,3711951,0.415,True,feriado
+2025-07-09,Wednesday,tren_amba,138044,635791,0.217,True,feriado
+2025-10-10,Friday,subte_amba,134607,314228,0.428,False,sin explicación en calendario
+2025-10-10,Friday,tren_amba,281730,655123,0.43,False,sin explicación en calendario
+2025-11-24,Monday,colectivo_amba,1363689,3526289,0.387,True,feriado
+2025-11-24,Monday,subte_amba,98262,289655,0.339,True,feriado
+2025-11-24,Monday,total_amba,1447489,3755512,0.385,True,feriado
+2025-11-24,Monday,tren_amba,192788,634397,0.304,True,feriado
+2025-12-08,Monday,colectivo_amba,1398343,3338865,0.419,True,feriado
+2025-12-08,Monday,subte_amba,96533,280102,0.345,True,feriado
+2025-12-08,Monday,total_amba,1491145,3576656,0.417,True,feriado
+2025-12-08,Monday,tren_amba,194242,616396,0.315,True,feriado
+2025-12-24,Wednesday,subte_amba,102249,254671,0.401,False,sin explicación en calendario
+2025-12-25,Thursday,colectivo_amba,588451,2935475,0.2,True,feriado
+2025-12-25,Thursday,subte_amba,37085,262362,0.141,True,feriado
+2025-12-25,Thursday,total_amba,627141,3154080,0.199,True,feriado
+2025-12-25,Thursday,tren_amba,64973,570471,0.114,True,feriado
+2025-12-31,Wednesday,subte_amba,82086,218501,0.376,False,sin explicación en calendario
+2025-12-31,Wednesday,tren_amba,227844,501147,0.455,False,sin explicación en calendario
+2026-01-01,Thursday,colectivo_amba,531707,2563126,0.207,True,feriado
+2026-01-01,Thursday,subte_amba,33667,220870,0.152,True,feriado
+2026-01-01,Thursday,total_amba,564787,2745359,0.206,True,feriado
+2026-01-01,Thursday,tren_amba,54292,511057,0.106,True,feriado
+2026-02-16,Monday,colectivo_amba,1235150,2775809,0.445,True,feriado
+2026-02-16,Monday,subte_amba,81020,234777,0.345,True,feriado
+2026-02-16,Monday,total_amba,1303003,2968804,0.439,True,feriado
+2026-02-16,Monday,tren_amba,139960,528397,0.265,True,feriado
+2026-02-17,Tuesday,colectivo_amba,1226126,2790524,0.439,True,feriado
+2026-02-17,Tuesday,subte_amba,78847,245969,0.321,True,feriado
+2026-02-17,Tuesday,total_amba,1292224,2985657,0.433,True,feriado
+2026-02-17,Tuesday,tren_amba,132629,520931,0.255,True,feriado
+2026-02-19,Thursday,colectivo_amba,357519,2894834,0.124,False,sin explicación en calendario
+2026-02-19,Thursday,subte_amba,5,252635,0.0,False,sin explicación en calendario
+2026-02-19,Thursday,total_amba,357775,3099398,0.115,False,sin explicación en calendario
+2026-02-19,Thursday,tren_amba,347,542758,0.001,False,sin explicación en calendario
+2026-03-23,Monday,subte_amba,146055,292387,0.5,True,feriado
+2026-03-24,Tuesday,colectivo_amba,1318783,3313560,0.398,True,feriado
+2026-03-24,Tuesday,total_amba,1470184,3554777,0.414,True,feriado
+2026-03-24,Tuesday,tren_amba,220385,590861,0.373,True,feriado
+2026-04-02,Thursday,colectivo_amba,1492043,3589600,0.416,True,feriado
+2026-04-02,Thursday,subte_amba,104458,317211,0.329,True,feriado
+2026-04-02,Thursday,total_amba,1591271,3840341,0.414,True,feriado
+2026-04-02,Thursday,tren_amba,205806,622850,0.33,True,feriado
+2026-04-03,Friday,colectivo_amba,1192621,3603953,0.331,True,feriado
+2026-04-03,Friday,subte_amba,88183,301958,0.292,True,feriado
+2026-04-03,Friday,total_amba,1274842,3850466,0.331,True,feriado
+2026-04-03,Friday,tren_amba,148839,633803,0.235,True,feriado
+2026-05-01,Friday,colectivo_amba,1058213,3538608,0.299,True,feriado
+2026-05-01,Friday,subte_amba,83509,316246,0.264,True,feriado
+2026-05-01,Friday,total_amba,1140949,3789157,0.301,True,feriado
+2026-05-01,Friday,tren_amba,147891,636442,0.232,True,feriado
+2026-05-25,Monday,colectivo_amba,1085699,3475638,0.312,True,feriado
+2026-05-25,Monday,subte_amba,83447,295434,0.282,True,feriado
+2026-05-25,Monday,total_amba,1163571,3712498,0.313,True,feriado
+2026-05-25,Monday,tren_amba,141940,605512,0.234,True,feriado
+2026-06-15,Monday,colectivo_amba,1165035,3359774,0.347,True,feriado
+2026-06-15,Monday,subte_amba,85668,290461,0.295,True,feriado
+2026-06-15,Monday,total_amba,1248288,3597484,0.347,True,feriado
+2026-06-15,Monday,tren_amba,167120,584558,0.286,True,feriado
+2026-07-09,Thursday,colectivo_amba,1341558,3261515,0.411,True,feriado
+2026-07-09,Thursday,subte_amba,102982,304816,0.338,True,feriado
+2026-07-09,Thursday,total_amba,1429765,3499455,0.409,True,feriado
+2026-07-09,Thursday,tren_amba,149099,564356,0.264,True,feriado
+2026-07-10,Friday,tren_amba,273684,579029,0.473,True,feriado
+2026-08-17,Monday,colectivo_amba,1144417,3340900,0.343,True,feriado
+2026-08-17,Monday,subte_amba,90019,286129,0.315,True,feriado
+2026-08-17,Monday,total_amba,1226003,3586695,0.342,True,feriado
+2026-08-17,Monday,tren_amba,155231,576779,0.269,True,feriado

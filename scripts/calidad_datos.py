@@ -151,6 +151,57 @@ def graficar(df_crudo, resumen_sim, sim):
     plt.close()
 
 
+def total_vs_modos(df):
+    """P2: relación entre `total_amba` y la suma de los modos, por año.
+
+    El portal define la unidad como "tarjetas diferentes por día". Que el total sea
+    siempre <= suma sugiere que deduplica tarjetas que usan más de un modo (inferencia,
+    el portal no lo documenta).
+    """
+    d = df[df['total_amba'].notna()].copy()
+    d['suma_modos'] = d[['colectivo_amba', 'subte_amba', 'tren_amba']].sum(axis=1)
+    d['solapamiento'] = d['suma_modos'] - d['total_amba']
+    d['total_sobre_suma'] = d['total_amba'] / d['suma_modos']
+    por_anio = d.groupby(d.index.year).agg(
+        total_sobre_suma_medio=('total_sobre_suma', 'mean'),
+        solapamiento_medio_M=('solapamiento', lambda x: x.mean() / 1e6),
+        dias_total_mayor_que_suma=('solapamiento', lambda x: int((x < 0).sum())),
+    ).round(3)
+    return por_anio
+
+
+def detectar_atipicos(df, umbral=0.5, desde='2020-07-01'):
+    """P3: días con valor < `umbral` x mediana del mismo día de la semana (±4 semanas).
+
+    Se clasifican con el calendario de feriados; los no explicados quedan como candidatos
+    a paro, evento o falla de registro (a verificar con fuentes en la Fase 3).
+    """
+    import holidays
+    feriados = holidays.Argentina(years=range(2020, 2027))
+    filas = []
+    for col in COLUMNAS:
+        s = df[col]
+        vecinos = pd.concat([s.shift(7 * k) for k in (-4, -3, -2, -1, 1, 2, 3, 4)], axis=1).median(axis=1)
+        razon = s / vecinos
+        for fecha in razon.index[(razon < umbral) & (razon.index >= desde)]:
+            filas.append({
+                'fecha': fecha.date(), 'dia_semana': fecha.day_name(), 'modo': col,
+                'valor': int(s[fecha]), 'mediana_vecinos': int(vecinos[fecha]),
+                'razon': round(razon[fecha], 3),
+                'feriado': fecha in feriados,
+            })
+    t = pd.DataFrame(filas)
+    t['explicacion'] = np.where(t['feriado'], 'feriado', 'sin explicación en calendario')
+    return t.sort_values(['fecha', 'modo']).reset_index(drop=True)
+
+
+def resumen_atipicos_sin_feriado(t):
+    """Una fila por fecha no feriada, con los valores de cada modo."""
+    nf = t[~t['feriado']]
+    return (nf.pivot_table(index='fecha', columns='modo', values='razon', aggfunc='first')
+              .round(2).reset_index())
+
+
 def main():
     print(">>> Calidad de datos: huecos e imputación")
     crudo = cargar_serie_cruda()
@@ -170,6 +221,19 @@ def main():
                   .round(2).sort_values('MAPE_mediano'))
     resumen.to_csv(os.path.join(TABLA_DIR, 'tabla_simulacion_interpolacion.csv'))
     print(resumen.to_string())
+
+    print(">>> P2: total vs. suma de modos")
+    p2 = total_vs_modos(crudo)
+    p2.to_csv(os.path.join(TABLA_DIR, 'tabla_total_vs_suma_modos.csv'))
+    print(p2.to_string())
+
+    print(">>> P3: días atípicos por modo")
+    at = detectar_atipicos(crudo)
+    at.to_csv(os.path.join(TABLA_DIR, 'tabla_dias_atipicos.csv'), index=False)
+    sin_fer = resumen_atipicos_sin_feriado(at)
+    print(f"{len(at)} registros atípicos; {at['feriado'].sum()} en feriado.")
+    print("Fechas atípicas NO feriado (razón vs. mediana del mismo día de semana):")
+    print(sin_fer.to_string(index=False))
 
     graficar(crudo, resumen, sim)
     imputado = imputar(crudo)
