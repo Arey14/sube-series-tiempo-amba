@@ -143,7 +143,42 @@ Script nuevo: `scripts/herramientas_clase.py`. Figuras 8 a 11 y tablas `tabla_ad
 - En la CCF de las series diferenciadas, los valores negativos en lags ±1 y ±7 son un **artefacto de las propias diferencias** (inducen correlación negativa en esos lags); solo el lag 0 es interpretable.
 - Los resultados por modo y para los días de paro dependen de pocas observaciones.
 
-## 6. Pendientes que ya identificamos (no se tocaron todavía)
+## 6. Tabla de hitos con fuentes (Fase 3, en curso)
+
+Archivos nuevos: `scripts/hitos_eventos.py`, `data/hitos/hitos_paros_elecciones.csv` y `data/hitos/hitos_tarifas.csv`. Cada hito tiene su fecha, descripción, modos afectados, **estado de verificación y URLs de las fuentes** (prensa y normativa). El script calcula además, desde los datos, cuánto cayó cada modo ese día respecto de su mediana del mismo día de la semana.
+
+Estados: *confirmado (≥2 fuentes)*, *confirmado con discrepancias*, *una fuente / a verificar*, *sin fuente (inferido del dato)*. Las fechas inferidas de memoria no se usaron sin verificar.
+
+### 6.1 Qué se encontró
+
+| Hito | Resultado |
+|---|---|
+| **Paros generales de la CGT** | Cuatro en total contra el gobierno actual: 24-ene-2024, 9-may-2024, 10-abr-2025 y 19-feb-2026. Tres son observables en los datos; **el primero (24-ene-2024) cae dentro del hueco de enero de 2024 y no se puede ver**. |
+| **Paros específicos** | Trenes 21-feb-2024 (La Fraternidad); colectivos 11-abr-2024 y 6-may-2025 y 7-jul-2023 (UTA); trenes y subte 30-oct-2024. Todos coinciden con los días atípicos que había detectado la Fase 1. |
+| **Elecciones** | Con transporte gratuito (Resolución 435/2023 y antecedentes de 2021) en las PASO y generales de 2021 y 2023: el subte cae a ~0 y el tren a 0,02–0,13 de lo habitual. **En 2025 las tres elecciones no muestran ese colapso** (cocientes de 0,6 a 1,1). El balotaje del 19-nov-2023 es consistente con gratuidad pero no se encontró fuente. |
+| **Saltos tarifarios** | Ver 6.2. |
+
+### 6.2 Limitación importante para medir el efecto de las tarifas
+
+El salto más grande de la serie, el boleto mínimo de colectivo y tren de $76,92 a $270 (**+251%**, 6-feb-2024, fecha probable), **cae justo donde empieza el tramo continuo de datos**: el pre-período disponible son 5 días y enero de 2024 está imputado. Lo mismo ocurre con el salto de enero de 2024 del colectivo (+45%): su período posterior es el hueco. **Ninguno de los dos se puede evaluar causalmente con estos datos.**
+
+Los saltos con pre-período largo y fuentes confirmadas son los de trenes del **2-may-2024 (+53,85%, 91 días previos)** y del **16-sep-2024 (+40%, 228 días previos)**. El primero ocurre 7 días antes del paro general del 9-may-2024, así que sus efectos se superponen. En 2026 los aumentos de tren (18-may, 1-jul y 1-sep) están separados por 6 a 10 semanas y quedan pocos días de datos posteriores al último.
+
+Los ajustes de colectivos y subte en CABA y Provincia son mensuales y chicos (≈ 4% a 5%, por IPC más 2%): no son saltos aislables, sirven como contexto.
+
+### 6.3 Hallazgo adicional: no hay sustitución entre modos
+
+En los 3 paros de colectivos (UTA), el colectivo cae a 0,15–0,27 de lo habitual, el subte queda en 0,96–0,98 y **el tren baja a 0,65–0,80**. En los paros de tren y subte, el colectivo no sube (0,74 y 0,63; 0,96 el 21-feb-2024). Es decir, **no hay evidencia de que los usuarios pasen de un modo a otro**; el tren incluso cae cuando para el colectivo, lo que sugiere complementariedad (muchos usuarios llegan a la estación en colectivo). Son pocas fechas, cada una confundida con otros factores del día, por lo que es una pista y no una conclusión.
+
+### 6.4 Pendientes de verificación
+
+- Las cifras de tarifas son de prensa; hace falta contrastarlas con las resoluciones del Boletín Oficial (Nación, CABA y Provincia) antes de usarlas como magnitud del tratamiento.
+- Discrepancias que quedan abiertas: fecha exacta del aumento de colectivos de enero de 2024 (1 o 15), aumento del subte de fines de febrero de 2024 y alcance ferroviario del paro del 10-abr-2025.
+- No se buscaron aún las caídas de menor tamaño que quedaron sin explicar (por ejemplo 18-dic-2022, 17-dic-2023 y 10-oct-2025).
+
+---
+
+## 7. Pendientes que ya identificamos (no se tocaron todavía)
 
 - Evaluar con **rolling origin** (varios cortes) y comparar modelos con un test de significancia, en lugar de un único corte de 90 días.
 - Revisar el SARIMAX: orden fijo sin justificación, regresoras redundantes (`es_dia_habil`, `es_fin_de_semana`, `es_feriado` son colineales) y sin estacionalidad anual. Los residuos no son ruido blanco (Ljung-Box con p < 0,05 en los tres rezagos).
