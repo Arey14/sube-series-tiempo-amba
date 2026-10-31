@@ -9,12 +9,13 @@ Herramientas vistas en clase aplicadas a la serie SUBE (Pregunta 1: comportamien
   6. ACF de la serie
 
 Decisiones de diseño:
-  - Tramo principal: 2024-02-01 en adelante (960 días continuos, sin ningún día imputado).
+  - Serie principal: desde 2022-01-01. Incluye 62 días reconstruidos desde las transacciones
+    (ago-2022 y ene-2024, error mediano ≈ 2%; ver usos_transacciones.py).
     Se recorta a un múltiplo de 7 días para que el ciclo semanal caiga exacto en un bin de la FFT.
-  - Sensibilidad: serie imputada completa desde 2022-01-01 (1.722 días = 246 semanas).
+  - Sensibilidad: tramo desde 2024-02-01, sin ningún día reconstruido.
   - COVID queda fuera: todo el análisis es desde 2022.
 
-Entrada: data/procesado/serie_sube_diaria_imputada.csv (generada por calidad_datos.py)
+Entrada: data/procesado/serie_sube_diaria_reconstruida.csv (generada por usos_transacciones.py)
 """
 
 import os
@@ -30,7 +31,7 @@ warnings.filterwarnings('ignore')
 plt.style.use('seaborn-v0_8-whitegrid')
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-PROC_PATH = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_imputada.csv")
+PROC_PATH = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_reconstruida.csv")
 FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
 TABLA_DIR = os.path.join(BASE_DIR, "resultados", "tablas")
 os.makedirs(FIG_DIR, exist_ok=True)
@@ -38,8 +39,8 @@ os.makedirs(TABLA_DIR, exist_ok=True)
 
 MODOS = ['total_amba', 'colectivo_amba', 'subte_amba', 'tren_amba']
 COLORES = {'total_amba': '#2c3e50', 'colectivo_amba': '#2980b9', 'subte_amba': '#e67e22', 'tren_amba': '#27ae60'}
-INICIO_TRAMO = '2024-02-01'
-INICIO_SENSIBILIDAD = '2022-01-01'
+INICIO_TRAMO = '2022-01-01'
+INICIO_SENSIBILIDAD = '2024-02-01'
 SEMANA = 7
 
 
@@ -241,7 +242,7 @@ def fig_fft(df):
         ax.axvline(h / SEMANA, color='#c0392b', ls='--', alpha=0.6)
         ax.text(h / SEMANA + 0.003, a.max() * 0.92, f'{h}/7\n({SEMANA / h:.1f} d)', color='#c0392b', fontsize=9)
     ax.set_xlim(0, 0.5)
-    ax.set_title(f'Espectro de amplitud del total AMBA, DC removida (feb-2024 a sep-2026, N={len(s)} días)',
+    ax.set_title(f'Espectro de amplitud del total AMBA, DC removida ({s.index[0].strftime("%b-%Y")} a {s.index[-1].strftime("%b-%Y")}, N={len(s)} días)',
                  fontweight='bold')
     ax.set_xlabel('Frecuencia (ciclos/día)'); ax.set_ylabel('Amplitud (millones de usuarios)')
     ax = axes[1]
@@ -337,16 +338,16 @@ def fig_ccf_acf(df):
 def main():
     df = cargar()
     tramo = tramo_continuo(df, 'total_amba')
-    assert not df.loc[tramo.index, 'imputado'].any(), "El tramo principal no debe tener días imputados"
-    print(f">>> Tramo principal: {tramo.index[0].date()} a {tramo.index[-1].date()} "
-          f"({len(tramo)} días = {len(tramo) // 7} semanas, sin días imputados)")
+    n_rec = int(df.loc[tramo.index, 'imputado'].sum())
+    print(f">>> Serie principal: {tramo.index[0].date()} a {tramo.index[-1].date()} "
+          f"({len(tramo)} días = {len(tramo) // 7} semanas; {n_rec} días reconstruidos desde transacciones)")
 
     print("\n>>> 1. ADF + KPSS con la tabla de decisión de clase")
     t1 = tests_estacionariedad(df)
-    t1_sens = tests_estacionariedad(df, INICIO_SENSIBILIDAD)  # sensibilidad: serie imputada desde 2022
+    t1_sens = tests_estacionariedad(df, INICIO_SENSIBILIDAD)  # sensibilidad: tramo sin días reconstruidos
     pd.concat([t1, t1_sens]).to_csv(os.path.join(TABLA_DIR, 'tabla_adf_kpss_decision_clase.csv'), index=False)
     print(t1.to_string(index=False))
-    print("Sensibilidad (serie imputada desde 2022): decisión de clase en nivel por serie:")
+    print("Sensibilidad (tramo desde feb-2024, sin días reconstruidos): decisión de clase en nivel por serie:")
     print(t1_sens[t1_sens['transformacion'] == 'nivel'][['serie', 'ADF_p', 'KPSS_p (acotado 0,01-0,10)', 'decision_clase']].to_string(index=False))
 
     print("\n>>> 2. FFT sin DC")
@@ -362,7 +363,7 @@ def main():
           f"{a2[np.argmin(np.abs(f2 - 1 / 7))]:.4f} M (tendencia lineal removida)")
     sens = tramo_continuo(df, 'total_amba', inicio=INICIO_SENSIBILIDAD)
     fs, as_, _ = espectro(sens)
-    print(f"Sensibilidad (serie imputada 2022+, {len(sens)} días): amplitud 1/7 = "
+    print(f"Sensibilidad (tramo sin días reconstruidos, {len(sens)} días): amplitud 1/7 = "
           f"{as_[np.argmin(np.abs(fs - 1 / 7))]:.4f} M; picos:")
     print(picos(fs, as_, k=6).to_string(index=False))
 

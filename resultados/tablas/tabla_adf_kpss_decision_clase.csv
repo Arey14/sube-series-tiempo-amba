@@ -1,20 +1,4 @@
 tramo_desde,serie,transformacion,ADF_p,"KPSS_p (acotado 0,01-0,10)",decision_clase
-2024-02-01,total_amba,nivel,0.0038,0.0517,estacionaria
-2024-02-01,total_amba,dif. simple (d=1),0.0,0.1,estacionaria
-2024-02-01,total_amba,dif. estacional (s=7),0.0,0.1,estacionaria
-2024-02-01,total_amba,dif. simple + estacional,0.0,0.1,estacionaria
-2024-02-01,colectivo_amba,nivel,0.0032,0.0722,estacionaria
-2024-02-01,colectivo_amba,dif. simple (d=1),0.0,0.1,estacionaria
-2024-02-01,colectivo_amba,dif. estacional (s=7),0.0,0.1,estacionaria
-2024-02-01,colectivo_amba,dif. simple + estacional,0.0,0.1,estacionaria
-2024-02-01,subte_amba,nivel,0.3035,0.01,NO estacionaria
-2024-02-01,subte_amba,dif. simple (d=1),0.0,0.1,estacionaria
-2024-02-01,subte_amba,dif. estacional (s=7),0.0,0.1,estacionaria
-2024-02-01,subte_amba,dif. simple + estacional,0.0,0.1,estacionaria
-2024-02-01,tren_amba,nivel,0.0097,0.01,indefinida
-2024-02-01,tren_amba,dif. simple (d=1),0.0,0.1,estacionaria
-2024-02-01,tren_amba,dif. estacional (s=7),0.0,0.1,estacionaria
-2024-02-01,tren_amba,dif. simple + estacional,0.0,0.1,estacionaria
 2022-01-01,total_amba,nivel,0.0001,0.1,estacionaria
 2022-01-01,total_amba,dif. simple (d=1),0.0,0.1,estacionaria
 2022-01-01,total_amba,dif. estacional (s=7),0.0,0.1,estacionaria
@@ -23,11 +7,27 @@ tramo_desde,serie,transformacion,ADF_p,"KPSS_p (acotado 0,01-0,10)",decision_cla
 2022-01-01,colectivo_amba,dif. simple (d=1),0.0,0.1,estacionaria
 2022-01-01,colectivo_amba,dif. estacional (s=7),0.0,0.1,estacionaria
 2022-01-01,colectivo_amba,dif. simple + estacional,0.0,0.1,estacionaria
-2022-01-01,subte_amba,nivel,0.1171,0.01,NO estacionaria
+2022-01-01,subte_amba,nivel,0.1344,0.01,NO estacionaria
 2022-01-01,subte_amba,dif. simple (d=1),0.0,0.1,estacionaria
 2022-01-01,subte_amba,dif. estacional (s=7),0.0,0.1,estacionaria
 2022-01-01,subte_amba,dif. simple + estacional,0.0,0.1,estacionaria
-2022-01-01,tren_amba,nivel,0.0002,0.0761,estacionaria
+2022-01-01,tren_amba,nivel,0.0003,0.0525,estacionaria
 2022-01-01,tren_amba,dif. simple (d=1),0.0,0.1,estacionaria
 2022-01-01,tren_amba,dif. estacional (s=7),0.0,0.1,estacionaria
 2022-01-01,tren_amba,dif. simple + estacional,0.0,0.1,estacionaria
+2024-02-01,total_amba,nivel,0.0028,0.067,estacionaria
+2024-02-01,total_amba,dif. simple (d=1),0.0,0.1,estacionaria
+2024-02-01,total_amba,dif. estacional (s=7),0.0,0.1,estacionaria
+2024-02-01,total_amba,dif. simple + estacional,0.0,0.1,estacionaria
+2024-02-01,colectivo_amba,nivel,0.0023,0.0845,estacionaria
+2024-02-01,colectivo_amba,dif. simple (d=1),0.0,0.1,estacionaria
+2024-02-01,colectivo_amba,dif. estacional (s=7),0.0,0.1,estacionaria
+2024-02-01,colectivo_amba,dif. simple + estacional,0.0,0.1,estacionaria
+2024-02-01,subte_amba,nivel,0.2984,0.01,NO estacionaria
+2024-02-01,subte_amba,dif. simple (d=1),0.0,0.1,estacionaria
+2024-02-01,subte_amba,dif. estacional (s=7),0.0,0.1,estacionaria
+2024-02-01,subte_amba,dif. simple + estacional,0.0,0.1,estacionaria
+2024-02-01,tren_amba,nivel,0.0094,0.01,indefinida
+2024-02-01,tren_amba,dif. simple (d=1),0.0,0.1,estacionaria
+2024-02-01,tren_amba,dif. estacional (s=7),0.0,0.1,estacionaria
+2024-02-01,tren_amba,dif. simple + estacional,0.0,0.1,estacionaria

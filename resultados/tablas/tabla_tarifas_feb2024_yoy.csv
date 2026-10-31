@@ -1,0 +1,7 @@
+serie,razon_interanual_pre,razon_interanual_post,cambio_relativo_pct,cambio_vs_colectivo_municipal_pp
+colectivo_nacional,1.035,0.957,-7.6,2.7
+colectivo_provincial,0.975,0.886,-9.2,1.1
+colectivo_municipal,0.985,0.883,-10.3,0.0
+colectivo_caba,,,,
+tren,1.074,1.12,4.3,14.6
+subte,0.777,0.781,0.4,10.7

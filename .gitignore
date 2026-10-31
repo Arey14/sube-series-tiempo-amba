@@ -60,3 +60,6 @@ Thumbs.db
 # Datos intermedios pesados (los CSV de data/procesado sí se versionan)
 *.parquet
 *.pkl
+
+# CSV crudos de transacciones SUBE (~60 MB por año); se descargan con scripts/usos_transacciones.py
+data/raw_usos/

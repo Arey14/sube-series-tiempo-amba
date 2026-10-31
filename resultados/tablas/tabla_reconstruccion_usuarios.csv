@@ -1,0 +1,9 @@
+serie,metodo,ventanas,MAPE_mediano,MAPE_p90,sesgo_mediano,sesgo_abs_p90
+colectivo_amba,lineal_por_dia_semana,89,17.22,33.81,0.15,12.32
+colectivo_amba,reconstruccion_desde_transacciones,89,1.76,2.9,-0.36,1.18
+subte_amba,lineal_por_dia_semana,89,20.94,1408.02,1.03,13.14
+subte_amba,reconstruccion_desde_transacciones,89,1.32,2.8,-0.09,1.45
+total_amba,lineal_por_dia_semana,89,17.4,32.3,0.17,12.37
+total_amba,reconstruccion_desde_transacciones,89,1.86,3.18,-0.4,1.34
+tren_amba,lineal_por_dia_semana,89,23.71,148.56,1.04,13.09
+tren_amba,reconstruccion_desde_transacciones,89,1.96,3.09,-0.09,1.57

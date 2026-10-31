@@ -381,7 +381,11 @@ fecha,dia_semana,modo,valor,mediana_vecinos,razon,feriado,explicacion
 2026-07-09,Thursday,total_amba,1429765,3499455,0.409,True,feriado
 2026-07-09,Thursday,tren_amba,149099,564356,0.264,True,feriado
 2026-07-10,Friday,tren_amba,273684,579029,0.473,True,feriado
-2026-08-17,Monday,colectivo_amba,1144417,3340900,0.343,True,feriado
-2026-08-17,Monday,subte_amba,90019,286129,0.315,True,feriado
-2026-08-17,Monday,total_amba,1226003,3586695,0.342,True,feriado
-2026-08-17,Monday,tren_amba,155231,576779,0.269,True,feriado
+2026-08-17,Monday,colectivo_amba,1144417,3384959,0.338,True,feriado
+2026-08-17,Monday,subte_amba,90019,292027,0.308,True,feriado
+2026-08-17,Monday,total_amba,1226003,3625745,0.338,True,feriado
+2026-08-17,Monday,tren_amba,155231,578693,0.268,True,feriado
+2026-10-12,Monday,colectivo_amba,1114921,3366349,0.331,True,feriado
+2026-10-12,Monday,subte_amba,57343,285939,0.201,True,feriado
+2026-10-12,Monday,total_amba,1182121,3618785,0.327,True,feriado
+2026-10-12,Monday,tren_amba,130039,578418,0.225,True,feriado
