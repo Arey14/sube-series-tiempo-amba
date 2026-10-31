@@ -49,7 +49,7 @@ El spline llega a valores negativos con huecos largos.
 
 **Limitación:** un error mediano del 17% sigue siendo alto. La imputación sirve para no romper el muestreo uniforme que exigen algunas técnicas, pero esos días **no son datos reales** y se excluyen de métricas y tests cuando corresponde.
 
-**Efecto sobre resultados:** pendiente de medir (análisis de sensibilidad con y sin los días imputados).
+**Cautela sobre los meses de vacaciones:** al repetir la simulación sobre eneros y julios completos, el error de la imputación por día de la semana es de 12% a 25% y el sesgo va de −6% a +14% según el mes (enero de 2025: −3,8%; enero de 2026: −5,7%; julio de 2025: +6,8%; julio de 2026: +13,5%). Los dos meses faltantes son estacionalmente atípicos (enero tiene un valle anual de vacaciones), así que el enero de 2024 imputado debe leerse con cautela.
 
 ### 2.2 Qué mide `total_amba`
 
@@ -116,7 +116,34 @@ Lo que cambia:
 
 ---
 
-## 5. Pendientes que ya identificamos (no se tocaron todavía)
+## 5. Herramientas vistas en clase aplicadas a la serie (Fase 2, en curso)
+
+Script nuevo: `scripts/herramientas_clase.py`. Figuras 8 a 11 y tablas `tabla_adf_kpss_decision_clase.csv`, `tabla_fft_picos_total.csv`, `tabla_ccf_tren_colectivo.csv`, `tabla_dias_candidatos_paro.csv`.
+
+**Decisiones de diseño**
+- **Tramo principal:** del 3-feb-2024 al 18-sep-2026 (959 días = 137 semanas exactas), sin ningún día imputado. Se recorta a semanas completas para que el ciclo semanal caiga exacto en un bin de la FFT.
+- **Sensibilidad:** la serie imputada desde 2022 (1.722 días = 246 semanas).
+- El COVID queda fuera de todo este análisis.
+
+**Resultados**
+
+| Herramienta | Qué se observa |
+|---|---|
+| **ADF + KPSS con la tabla de decisión de la clase** | En este tramo, total, colectivo y tren son estacionarios en nivel (tren cae en "indefinida" con el tramo corto); **subte no lo es**. La decisión no cambia con la serie imputada desde 2022. Esto **contradice la conclusión del repo original** (todas las series I(1)), que se había obtenido sobre 2020-2026 incluyendo el colapso del COVID. Hay que tener presente que el KPSS del total en nivel queda justo en el borde (p = 0,052). |
+| **FFT sin DC** | Picos nítidos en 1/7, 2/7 y 3/7 ciclos/día (7; 3,5 y 2,3 días), con amplitudes de 0,92; 0,62 y 0,31 millones. Parseval verificado (energía en el tiempo = en frecuencia). La amplitud semanal es robusta: 0,920 M en el tramo y 0,940 M con la serie imputada. El ciclo anual no se puede resolver en el tramo de 2,6 años; con la serie desde 2022 aparece un pico de ~344 días. |
+| **Descomposición con MA** | Serie−MA7 deja los feriados como valles: media de −1,18 M en feriados contra +0,07 M en el resto. Se usa **MA28 y no MA30/MA21**: una media móvil de largo múltiplo de 7 anula exactamente el ciclo semanal. Contra la tendencia de STL: correlación 0,94, RMSE 0,18 M. La tendencia STL queda por encima de la MA28 porque STL robusto descuenta los valles de feriados y la media móvil no. La tendencia muestra valles anuales claros en cada enero y en julio de 2026. |
+| **Filtros en el dominio de la frecuencia** | El elimina-banda anula el ciclo semanal por construcción (amplitud 0). Una MA7 también lo anula (0,0012 M): la media móvil es en sí un notch en 1/7 y sus múltiplos. El pasa-bajos ideal **oscila alrededor de la MA28** (rizado, tipo Gibbs) y el elimina-banda deja la serie desestacionalizada con todos los feriados como valles profundos; algunos días llegan a valores ≤ 0, lo que no tiene sentido físico, resultado de restar el perfil semanal promedio a días que se comportan como domingo. No se detectó empeoramiento en los bordes de este tramo. |
+| **Retraso de las medias móviles** | La MA28 causal (solo pasado) llega 14 días tarde respecto del pasa-bajos en frecuencia (≈ (28−1)/2, lo esperado). **La MA centrada no tiene retraso**; la afirmación de que la media móvil "retrasa la señal" solo vale para la versión causal. |
+| **CCF tren–colectivo** | Con residuos sin calendario, correlación de 0,84 en lag 0 y de 0,33 y 0,31 en lags −1 y +1; con diferencias simple + estacional, 0,92 en lag 0. No hay evidencia de un efecto con retraso: ambos modos se mueven juntos el mismo día. |
+| **Colectivo en días candidatos a paro** | En los días en que subte y tren caen a ~0 (30-oct-2024 y 10-abr-2025), el colectivo no sube: queda en 0,74 y 0,63 de su nivel habitual. Ese día y el 21-feb-2024 (solo tren) no muestran absorción por el colectivo. Son 5 fechas candidatas, cuyas causas están por verificar con fuentes. |
+| **ACF** | Picos en los lags 7, 14, 21, 28, 35 y 42 (≈ 0,70 al inicio, decayendo lento). |
+
+**Limitaciones que hay que tener presentes**
+- **La CCF entre modos está dominada por causas compartidas** (calendario, clima, paros generales que afectan a todos), por lo que **no permite concluir una relación causal** entre el tren y el colectivo. En los residuos aparece además un piso de correlación ≈ 0,2 en todos los lags, que refleja variación lenta compartida.
+- En la CCF de las series diferenciadas, los valores negativos en lags ±1 y ±7 son un **artefacto de las propias diferencias** (inducen correlación negativa en esos lags); solo el lag 0 es interpretable.
+- Los resultados por modo y para los días de paro dependen de pocas observaciones.
+
+## 6. Pendientes que ya identificamos (no se tocaron todavía)
 
 - Evaluar con **rolling origin** (varios cortes) y comparar modelos con un test de significancia, en lugar de un único corte de 90 días.
 - Revisar el SARIMAX: orden fijo sin justificación, regresoras redundantes (`es_dia_habil`, `es_fin_de_semana`, `es_feriado` son colineales) y sin estacionalidad anual. Los residuos no son ruido blanco (Ljung-Box con p < 0,05 en los tres rezagos).
