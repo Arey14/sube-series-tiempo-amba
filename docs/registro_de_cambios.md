@@ -77,16 +77,42 @@ El spline llega a valores negativos con huecos largos.
 
 ---
 
-## 4. Hallazgos todavía sin corregir en el código (a resolver a continuación)
+## 4. Corrección de la fuga de información en la comparación de modelos (Fase 1b)
 
-Estos dos puntos afectan la comparación de modelos de la Pregunta 2. Se verificaron con un experimento aparte, y se corregirán en el pipeline.
+**Qué se encontró:** dos de los cuatro modelos usaban valores reales del tramo de test, de modo que no pronosticaban realmente 90 días hacia adelante.
 
-| Qué | Por qué es un problema | Evidencia |
+| Modelo | Problema | Cómo se corrigió |
 |---|---|---|
-| **Gradient Boosting** usa `lag_1`, `lag_2` y `rolling_mean_7` calculados sobre toda la serie y los toma del tramo de test con valores reales | Equivale a predecir cada día conociendo el anterior, no a pronosticar 90 días. Los otros modelos sí pronostican 90 días. | MAPE 8,65–8,82% con el esquema original; **11,03%** con pronóstico recursivo a 90 días. |
-| **Seasonal Naïve** usa `full_y.loc[fecha - 7 días]` | Pasada la primera semana del test, toma valores reales del propio test en lugar de un pronóstico a 90 días. | MAPE 16,05% con el esquema original; **19,68%** repitiendo la última semana observada del entrenamiento. |
+| **Seasonal Naïve** | Usaba `full_y.loc[fecha - 7 días]` de la serie completa. Pasada la primera semana del test tomaba valores reales del propio test. | Repite la **última semana observada del entrenamiento**. |
+| **Gradient Boosting** | Calculaba `lag_1`, `lag_2`, `rolling_mean_7` y `rolling_std_7` sobre toda la serie y los tomaba del test con valores reales. Equivalía a predecir cada día conociendo el anterior. | **Pronóstico recursivo**: entrena con rezagos reales y, al pronosticar, alimenta cada paso con las predicciones anteriores. |
 
-Efecto probable: con ambas líneas base corregidas, Prophet (10,11%) pasa a ser el mejor, por encima de Gradient Boosting (11,03%). Es una sola ventana de test y falta evaluar con varios orígenes y con un test de significancia.
+SARIMAX y Prophet ya pronosticaban a 90 días y **no se modificaron**: se mantienen sus parámetros originales, para que cualquier diferencia en los resultados se deba solo a las dos correcciones.
+
+**Qué se cambió en el código:**
+- `scripts/modelos_pronostico.py` (nuevo): los cuatro modelos como funciones que reciben la serie completa y una fecha de corte, y solo pueden usar datos hasta ese corte (más el calendario, que se conoce de antemano). Sirve además para evaluar en varios cortes más adelante.
+- `scripts/analisis_series_tiempo_sube.py`: la función de entrenamiento ahora llama a ese módulo. Las métricas y figuras se generan igual que antes.
+- `scripts/verificar_sin_fuga.py` (nuevo): reemplaza los valores reales posteriores al corte por basura (x10); si un modelo no usa el futuro, sus pronósticos no pueden cambiar. Incluye como control la fórmula original del Naïve, que sí falla la prueba. Resultado: los cuatro modelos corregidos pasan; el control falla (diferencia máxima 34,75).
+
+**Efecto sobre los resultados** (misma ventana de 90 días, 21-jun a 18-sep de 2026):
+
+| Modelo | MAPE original | MAPE corregido | RMSE (M) | MAE (M) |
+|---|---|---|---|---|
+| Prophet | 10,12% | **10,11%** | 0,289 | 0,225 |
+| Gradient Boosting | 8,82% | **11,03%** | 0,341 | 0,278 |
+| SARIMAX | 12,16% | 12,16% | 0,386 | 0,271 |
+| Seasonal Naïve | 16,05% | **19,68%** | 0,924 | 0,557 |
+
+(La diferencia en Prophet, 10,12% a 10,11%, es ruido numérico por la versión de las librerías.)
+
+Lo que cambia:
+- Prophet pasa a ser el mejor, por encima de Gradient Boosting.
+- El Naïve empeora (era más fácil de lo que parecía por la fuga), así que las reducciones de error respecto de él cambian: Prophet −49%, Gradient Boosting −44%, SARIMAX −38% (antes −37%, −45% y −24%).
+- El orden de los modelos depende de la métrica: por MAE, SARIMAX (0,271) supera a Gradient Boosting (0,278); por RMSE y MAPE no.
+- **Gradient Boosting recursivo pierde nivel** al alejarse del corte, porque cada paso hereda el error del anterior (se ve en la figura 5 desde fines de agosto). Es un punto a explicar en la discusión de la Pregunta 2.
+
+**Qué sigue sin cambiar:** es una sola ventana de test y no hay test de significancia, así que estos números no alcanzan para afirmar que un modelo es mejor que otro (ver sección 5).
+
+**Nota técnica:** Prophet no carga su backend desde Git Bash en Windows; funciona desde PowerShell o CMD.
 
 ---
 

@@ -6,6 +6,8 @@
 [![Prophet](https://img.shields.io/badge/Facebook-Prophet-blueviolet.svg)](https://facebook.github.io/prophet/)
 [![Open Data](https://img.shields.io/badge/Datos%20Abiertos-SUBE%20Argentina-yellow.svg)](https://datos.transporte.gob.ar/)
 
+> **⚠️ Trabajo en revisión (rama `trabajo/herramientas-materia`).** Las hipótesis, los veredictos y la tabla de modelos de este README corresponden a la versión inicial y están siendo reemplazados por las Preguntas 1 y 2 del trabajo. En particular, **las métricas de Gradient Boosting y Seasonal Naïve de abajo estaban infladas por fuga de información** y fueron corregidas (ver [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md)).
+
 Este repositorio contiene la investigación, códigos computacionales y modelos predictivos del **Estudio Longitudinal de Series de Tiempo del Transporte Público en el Área Metropolitana de Buenos Aires (AMBA)** en base a microdatos y registros diarios del **Sistema Único de Boleto Electrónico (SUBE)** en el período **2020–2026**.
 
 El proyecto contrasta formalmente hipótesis científicas sobre los **quiebres estructurales post-pandemia**, la **asimetría modal de recuperación** y la **capacidad predictiva de modelos con estacionalidad múltiple y variables exógenas**.
