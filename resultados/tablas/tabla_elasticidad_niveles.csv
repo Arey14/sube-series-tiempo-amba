@@ -1,0 +1,9 @@
+modo,con_tendencia,semanas,elasticidad,error_std_HAC,ic95_inf,ic95_sup,R2
+colectivo_nacional,False,238,-0.08,0.012,-0.105,-0.056,0.646
+colectivo_nacional,True,238,0.097,0.027,0.043,0.15,0.779
+colectivo_provincial,False,138,-0.182,0.016,-0.213,-0.151,0.782
+colectivo_provincial,True,138,-0.26,0.07,-0.397,-0.124,0.784
+tren,False,238,-0.058,0.008,-0.073,-0.042,0.691
+tren,True,238,0.031,0.018,-0.005,0.067,0.76
+subte,False,238,-0.154,0.011,-0.176,-0.133,0.841
+subte,True,238,-0.087,0.05,-0.184,0.011,0.849

@@ -1,0 +1,5 @@
+modo,semanas,elasticidad,error_std_HAC,ic95_inf,ic95_sup,R2
+colectivo_nacional,186,0.063,0.025,0.014,0.112,0.364
+colectivo_provincial,86,-0.286,0.073,-0.429,-0.144,0.616
+tren,186,0.014,0.023,-0.031,0.059,0.461
+subte,186,-0.092,0.037,-0.164,-0.02,0.355

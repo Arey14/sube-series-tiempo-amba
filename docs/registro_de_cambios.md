@@ -305,3 +305,14 @@ Los importes del subte (tramo A) se transcribieron de las resoluciones de Direct
 - **Ciudad y Provincia, enero de 2026:** $620,07 y $685,11. Coinciden con la fórmula IPC + 2% sobre diciembre.
 - **Rechazado:** $721,08 para Provincia en febrero (el anexo oficial dice $721,83: error de transcripción), $637,58 para la Ciudad en febrero (contradice la fórmula y el +4,9% de marzo; se mantiene el inferido $650,11) y la Res. 1017/2022 como norma del aumento.
 - **Sin información útil:** el tren de febrero de 2023 ("entre $18,02 y $24") y los valores de otras líneas (Roca, Belgrano, Urquiza), que no entran en la serie.
+
+## 9. Modelo de precio y demanda (P-1), primer resultado
+
+Script: `scripts/modelo_precio_demanda.py`. Demanda: transacciones diarias por modo (marzo de 2022 a septiembre de 2026). Precio: tarifa mínima con SUBE registrada. Tres estimaciones:
+
+- **A. Niveles semanales** con efectos de mes, feriados, paros y elecciones. El signo depende de si se incluye una tendencia: sin ella, el precio absorbe todo lo que cambia con el tiempo (colectivo nacional −0,08, tren −0,06, subte −0,15); con tendencia lineal el colectivo nacional y el tren pasan a +0,10 y +0,03. Un precio que solo sube no se puede separar de la tendencia con una regresión de niveles.
+- **B. Diferencias interanuales (52 semanas):** colectivo nacional +0,06, tren +0,01, subte −0,09, colectivo provincial −0,29 (solo desde febrero de 2024).
+- **C. Estudio de eventos** (cambio de la demanda de días hábiles normales antes y después de cada salto, menos lo ocurrido un año antes). El colectivo nacional cayó 13% neto con una tarifa 3,9 veces mayor (elasticidad de arco −0,10); el subte cayó entre 10% y 22% con alzas de 13% a 34% (elasticidad entre −0,4 y −0,8) y 18% con el salto de +359%; el tren no cayó con el salto de enero-febrero de 2024 (+1%) pero sí con el de mayo de 2024 (−15%).
+- **Placebo:** en fechas sin cambio de precio el efecto neto queda casi siempre entre −0,05 y +0,08 en log. Los saltos del colectivo nacional de 2024, los del subte y el del tren de mayo de 2024 quedan fuera de esa banda; los demás no se distinguen del ruido.
+
+Lectura: la demanda respondió poco al precio (elasticidades de colectivo y tren cercanas a cero, subte más sensible), pero las estimaciones son inestables entre métodos y eventos. No es un efecto causal: faltan el ingreso, la inflación y las tarifas de los demás modos. Pendientes: tarifa real (deflactada por IPC), efecto cruzado entre modos, Granger y el control con serie sintética.
