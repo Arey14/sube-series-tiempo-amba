@@ -285,3 +285,12 @@ Los importes del subte (tramo A) se transcribieron de las resoluciones de Direct
 - **Colectivos de la Ciudad:** se agregan febrero (inferido), marzo ($681,97), mayo ($753,74) y octubre de 2026 (inferido: $920,72). El anexo de noviembre ($956,69) es posterior al último dato de la serie diaria.
 - **Tren de mayo de 2026:** el informe de CEPA repite $330, pero el Anexo II de la Res. 27/2026 dice $310 (sección 1). Se mantiene $310.
 - **Siguen sin cerrar:** subte de diciembre de 2025; subte de octubre de 2026 (Res. 238/2026); tren de 2023 (febrero, abril y julio; sin cuadro tarifario); Provincia de enero a febrero de 2026 y de julio a octubre; Ciudad de julio de 2025 y enero de 2026.
+
+### 7.8 Más huecos cerrados y validación contra CEPA
+
+- **Subte, diciembre de 2025:** la Res. 134/2025 se publicó el 17-dic-2025 con $1.260. Con la fórmula IPC (n-2) + 2%, $1.157 x 1,043 x 1,045 da $1.261, así que $1.260 corresponde a enero y diciembre queda inferido en $1.207. Si el anexo de la Res. 134 trae una columna de diciembre, hay que corregirlo.
+- **Subte, julio de 2025:** el anexo confirma $996,71 (la fila ya estaba cargada).
+- **Colectivos de la Ciudad:** se cargan julio de 2025 ($488,70), agosto de 2025 ($506,29) y julio de 2026 ($820,99; una nota da $820,60). Los cuadros oficiales de la Ciudad están en `static.buenosaires.gob.ar/sites/default/files/AAAA-MM/RESOLUCIÓN_TARIFAS_CABA_<MES>_<AÑO>.pdf`.
+- **Colectivos de Provincia:** se cargan agosto de 2025 (inferido), julio de 2026 ($1.063,98 o $1.059,28), agosto de 2026 ($1.111,19) y octubre de 2026 (inferido).
+- **Octubre de 2026:** el análisis termina el 30-sep-2026 (los últimos días de la serie son preliminares), así que no hace falta la Res. 238/2026 del subte. Los valores de octubre cargados son inferidos y no entran en el modelo.
+- **Validación de la demanda contra CEPA** (pasajeros mensuales de INDEC, CNRT y Metrovías, nov-2023 a feb-2026): el tren coincide con las transacciones de SUBE entre 1% y 3% en todos los meses revisados, y el subte coincide hasta 2024 (1,5% a 3%). **Desde 2025 el subte de SUBE queda entre 18% y 30% por debajo de CEPA** (julio de 2025: 13,0 M contra 18,4 M; febrero de 2026: 8,0 M contra 11,7 M). Hay que revisar si el archivo de transacciones pierde registros del subte desde 2025 antes de usar esa serie. El colectivo no es comparable: CEPA toma un alcance menor (cerca de la mitad de nuestras transacciones) y estable.
