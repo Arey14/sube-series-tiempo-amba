@@ -311,6 +311,10 @@ SERIE_EXTRA2 = [
     ('2026-07-01', 'colectivo_provincial', 1057.25, False, CON, 'https://www.perfil.com/noticias/sociedad/rigen-los-aumentos-del-transporte-en-el-amba-cuanto-cuesta-el-boleto-minimo-de-colectivos-trenes-y-subte-a-partir-de-julio.phtml', 'Tres valores: $1.063,98, $1.059,28 y $1.057,25 (Econoblog). Se toma $1.057,25: es exactamente +4,1% sobre junio ($1.015,61), igual que la Ciudad'),
     ('2026-08-01', 'colectivo_provincial', 1111.19, False, UNA, 'https://eleconomista.com.ar/economia/aumenta-transporte-septiembre-cuanto-costara-viajar-colectivo-subte-tren-amba-n97612', 'Valor "desde" de la nota de septiembre ($1.111,19 → $1.158,97)'),
     ('2026-10-01', 'colectivo_provincial', 1215.12, False, INF, 'https://www.econoblog.com.ar/?p=159995', 'Inferido: noviembre $1.262,48 / 1,039'),
+    ('2023-04-01', 'tren', 24.88, False, UNA, 'Diario Popular / TN (referencias dadas por otra IA, sin URL verificada)', 'Mitre, Sarmiento, San Martín y Tren de la Costa. Coherente: $23,32 x 1,067 = $24,88 y $24,88 x 1,078 = $26,82, las mismas variaciones que el colectivo nacional (+6,7% y +7,8%)'),
+    ('2023-07-01', 'tren', 31.44, False, UNA, 'Que Pasa Web (referencia dada por otra IA, sin URL verificada)', 'Mitre, Sarmiento, San Martín y Tren de la Costa. Coherente: $29,12 x 1,08 = $31,45 y $31,44 x 1,058 = $33,26 (cerca de $33,28), como el colectivo nacional (+8,0% y +5,8%)'),
+    ('2026-01-01', 'colectivo_caba', 620.07, False, UNA, 'El Cronista / El Destape (referencia dada por otra IA, sin URL verificada)', '+4,5% sobre $593,52; coincide con la fórmula IPC + 2%'),
+    ('2026-01-01', 'colectivo_provincial', 685.11, False, UNA, 'El Cronista / El Destape (referencia dada por otra IA, sin URL verificada)', 'Otras notas dan $688,06. Coherente con $721,83 de febrero (+5,4%) y con $593,52 x 1,045 = $620 en la Ciudad'),
     ('2026-10-01', 'colectivo_caba', 920.72, False, INF, 'Anexo IF-2026-48624678-GCABA-SECT (29-oct-2026)', 'Inferido: noviembre $956,69 / 1,039 = $920,8 y septiembre $887,87 x 1,037 = $920,7 (ambos porcentajes de prensa)'),
 ]
 SERIE = SERIE + SERIE_EXTRA2

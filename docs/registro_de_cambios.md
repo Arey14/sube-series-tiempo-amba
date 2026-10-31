@@ -297,3 +297,11 @@ Los importes del subte (tramo A) se transcribieron de las resoluciones de Direct
 
 - **Provincia, julio de 2026:** Econoblog da $1.057,25, que es +4,1% sobre junio, el mismo porcentaje de la Ciudad. Se toma ese valor en lugar de $1.063,98 o $1.059,28.
 - **Subte:** se usan los importes de las resoluciones del Boletín Oficial. La comparación con CEPA queda como verificación pendiente de la demanda, no como fuente de tarifas.
+
+### 7.9 Huecos revisados con la respuesta de otra IA (sin enlaces; se aceptó solo lo coherente)
+
+- **Tren, abril y julio de 2023:** $24,88 y $31,44 (Mitre, Sarmiento, San Martín y Tren de la Costa). Cada valor reproduce las variaciones del colectivo nacional en los meses vecinos, así que se aceptan como una fuente.
+- **Tren, febrero de 2023:** no era un hueco. La indexación mensual empieza en marzo (+6% sobre enero en colectivo y tren), así que febrero sigue en $22,00.
+- **Ciudad y Provincia, enero de 2026:** $620,07 y $685,11. Coinciden con la fórmula IPC + 2% sobre diciembre.
+- **Rechazado:** $721,08 para Provincia en febrero (el anexo oficial dice $721,83: error de transcripción), $637,58 para la Ciudad en febrero (contradice la fórmula y el +4,9% de marzo; se mantiene el inferido $650,11) y la Res. 1017/2022 como norma del aumento.
+- **Sin información útil:** el tren de febrero de 2023 ("entre $18,02 y $24") y los valores de otras líneas (Roca, Belgrano, Urquiza), que no entran en la serie.
