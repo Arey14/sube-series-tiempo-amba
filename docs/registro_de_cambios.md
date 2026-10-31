@@ -275,3 +275,13 @@ El anexo (imagen) se transcribió a mano desde capturas del texto oficial. Bolet
 | 1-sep-2026 | $450 | $480 (conflicto) |
 
 Las etapas de colectivos nacionales (SGI) del mismo anexo confirman $714,00, $728,28 y $742,81. Desde mayo de 2026 todas las líneas tienen el mismo precio: Roca, Belgrano y Urquiza subieron más que Mitre, Sarmiento y San Martín (la serie sigue a estas últimas). El efectivo y la SUBE sin nominalizar pagan el doble o más.
+
+### 7.7 Huecos cerrados con anexos de resoluciones y el informe de CEPA
+
+Los importes del subte (tramo A) se transcribieron de las resoluciones de Directorio de SBASE; los de colectivos, de los anexos de Provincia y de la Ciudad. Resultado: 100 cambios, 29 saltos, 60 ajustes, 4 acumulados con huecos.
+
+- **Subte:** se cargan $1.031 (Res. 89/2025), $1.112 (Res. 99/2025), $1.320 (Res. 143/2026), $1.363 (Res. 153/2026) y $1.414 (abril, informe de CEPA). Las resoluciones de 1260, 1490, 1558, 1621 y 1684 pasan a "norma + prensa" y resuelven los dos conflictos de centavos. La vigencia de cada una se infiere de que se publican a fin del mes anterior (por ejemplo la Res. 70/2025, publicada el 26-may, rige en junio). Marzo de 2025 no es un hueco: el $832 del 28-feb siguió vigente hasta abril.
+- **Colectivos de Provincia:** el anexo de marzo de 2026 da $832,57 (+15,3% sobre $721,83), no los $757,20 de la prensa. El $871,30 de abril es +4,65% sobre $832,57 y +15% sobre $757,20, así que se toma el anexo. En mayo hubo un aumento extraordinario (+11%, $968,57).
+- **Colectivos de la Ciudad:** se agregan febrero (inferido), marzo ($681,97), mayo ($753,74) y octubre de 2026 (inferido: $920,72). El anexo de noviembre ($956,69) es posterior al último dato de la serie diaria.
+- **Tren de mayo de 2026:** el informe de CEPA repite $330, pero el Anexo II de la Res. 27/2026 dice $310 (sección 1). Se mantiene $310.
+- **Siguen sin cerrar:** subte de diciembre de 2025; subte de octubre de 2026 (Res. 238/2026); tren de 2023 (febrero, abril y julio; sin cuadro tarifario); Provincia de enero a febrero de 2026 y de julio a octubre; Ciudad de julio de 2025 y enero de 2026.

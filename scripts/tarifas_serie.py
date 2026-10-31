@@ -187,16 +187,16 @@ SERIE = [
     ('2025-09-01', 'subte', 1071.0, False, UNA,
      'https://www.canal26.com/economia/2025/08/28/aumentan-las-tarifas-en-el-amba-cual-sera-el-nuevo-valor-del-boleto-del-colectivo-y-subte-en-septiembre-de-2025/', '+3,87%; faltan agosto y octubre de 2025'),
     ('2025-11-01', 'subte', 1157.0, True, UNA, 'https://www.econoblog.com.ar/?p=151146', 'Con SUBE registrada; $1.839,63 sin registrar'),
-    ('2026-01-01', 'subte', 1260.0, False, UNA,
-     'https://www.canal26.com/economia/2026/01/05/el-boleto-de-subte-aumentara-todos-los-meses-del-2026-la-explicacion-oficial-y-como-se-calculara/', 'Anticipado en una nota de enero de 2026; falta diciembre de 2025 y febrero a abril de 2026'),
-    ('2026-05-01', 'subte', 1490.0, False, UNA,
-     'https://www.iprofesional.com/economia/463002-el-subte-aumentara-4-desde-septiembre-cuanto-costara-viajar', 'Valor previo a junio ($1.490 → $1.558)'),
-    ('2026-06-01', 'subte', 1558.0, True, PR,
-     'https://www.iprofesional.com/impuestos/456075-cuanto-costara-el-boleto-de-subte-y-colectivo-en-caba-y-pba-desde-el-lunes-1-de-junio | https://www.baenegocios.com/economia/aumenta-el-boleto-de-subte-y-colectivo-cuanto-cuestan-a-partir-de-julio/', '+4,6%'),
-    ('2026-07-01', 'subte', 1621.0, True, CON,
-     'https://www.baenegocios.com/economia/aumenta-el-boleto-de-subte-y-colectivo-cuanto-cuestan-a-partir-de-julio/ | https://www.infobae.com/economia/2026/07/01/aumentos-en-colectivos-subte-y-trenes-cuanto-costara-viajar-a-partir-de-julio/', '+4,1%; una nota da $1.621 y otra $1.622'),
-    ('2026-08-01', 'subte', 1684.0, True, CON,
-     'https://canal26.com/economia/2026/07/23/aumenta-el-transporte-publico-cuanto-costara-el-boleto-de-colectivos-y-subtes-desde-el-1-de-agosto/', '+3,9%; una nota da $1.684 y otra $1.685,26'),
+    ('2026-01-01', 'subte', 1260.0, False, NP,
+     BO_CABA + '830045 | https://www.canal26.com/economia/2026/01/05/el-boleto-de-subte-aumentara-todos-los-meses-del-2026-la-explicacion-oficial-y-como-se-calculara/', 'Res. de Directorio 134/2025, tramo A. Falta diciembre de 2025'),
+    ('2026-05-01', 'subte', 1490.0, False, NP,
+     BO_CABA + '850569 | https://www.iprofesional.com/economia/463002-el-subte-aumentara-4-desde-septiembre-cuanto-costara-viajar', 'Res. de Directorio 173/2026, tramo A (vigencia inferida del patrón de publicación)'),
+    ('2026-06-01', 'subte', 1558.0, True, NP,
+     BO_CABA + '856051 | https://www.iprofesional.com/impuestos/456075-cuanto-costara-el-boleto-de-subte-y-colectivo-en-caba-y-pba-desde-el-lunes-1-de-junio | https://www.baenegocios.com/economia/aumenta-el-boleto-de-subte-y-colectivo-cuanto-cuestan-a-partir-de-julio/', 'Res. de Directorio 185/2026, tramo A; +4,6%'),
+    ('2026-07-01', 'subte', 1621.0, True, NP,
+     BO_CABA + '861553 | https://www.baenegocios.com/economia/aumenta-el-boleto-de-subte-y-colectivo-cuanto-cuestan-a-partir-de-julio/ | https://www.infobae.com/economia/2026/07/01/aumentos-en-colectivos-subte-y-trenes-cuanto-costara-viajar-a-partir-de-julio/', 'Res. de Directorio 196/2026 (IPC de mayo 2,1% + 2%): $1.621; una nota daba $1.622'),
+    ('2026-08-01', 'subte', 1684.0, True, NP,
+     BO_CABA + '867180 | https://canal26.com/economia/2026/07/23/aumenta-el-transporte-publico-cuanto-costara-el-boleto-de-colectivos-y-subtes-desde-el-1-de-agosto/', 'Res. de Directorio 206/2026: $1.684; una nota daba $1.685,26'),
     ('2026-09-01', 'subte', 1753.0, True, PR,
      'https://www.iprofesional.com/economia/463002-el-subte-aumentara-4-desde-septiembre-cuanto-costara-viajar | https://www.ambito.com/economia/aumenta-el-transporte-septiembre-cuanto-costara-viajar-colectivo-tren-y-subte-manana-n6316386',
      '+4%. La Res. de Directorio 238/2026 corresponde a octubre y no se pudo leer el importe'),
@@ -287,6 +287,25 @@ SERIE_EXTRA = [
 ]
 SERIE = [r for r in SERIE
          if not (r[1] == 'subte' and r[0] in ('2023-12-01', '2024-12-01'))] + SERIE_EXTRA
+
+# --- Filas agregadas a partir de anexos transcriptos de las resoluciones y del informe de CEPA (nov-2026) ---
+# La vigencia de las resoluciones de SBASE se infiere del patrón (publicación a fin del mes anterior): a confirmar con el texto.
+CEPA = 'https://centrocepa.com.ar/images/2026/06/Transporte%20publico%20en%20el%20AMBA%20y%20las%20principales%20ciudades%20del%20pais%20tarifas%20inflacion%20y%20poder%20adquisitivo%20-%20Mayo%202026%20-%20CEPA.pdf'
+SERIE_EXTRA2 = [
+    ('2025-08-01', 'subte', 1031.0, False, UNA, BO_CABA + '804007', 'Res. de Directorio 89/2025, tramo A (vigencia inferida)'),
+    ('2025-10-01', 'subte', 1112.0, False, UNA, BO_CABA + '815394', 'Res. de Directorio 99/2025, tramo A (vigencia inferida)'),
+    ('2026-02-01', 'subte', 1320.0, False, UNA, BO_CABA + '836074', 'Res. de Directorio 143/2026 (publicada 23-ene-2026), tramo A; +4,8% = IPC de diciembre 2,8% + 2% (vigencia inferida)'),
+    ('2026-03-01', 'subte', 1363.0, False, UNA, BO_CABA + '841131', 'Res. de Directorio 153/2026 (publicada 26-feb-2026), tramo A (vigencia inferida)'),
+    ('2026-04-01', 'subte', 1414.0, False, UNA, CEPA, 'Valor de abril de 2026 del informe de CEPA (1.363 → 1.414 → 1.490); resolución no identificada'),
+    ('2026-02-01', 'colectivo_provincial', 721.83, False, UNA, 'https://normas.gba.gob.ar', 'Columna "tarifa actual" del anexo de la resolución provincial de marzo de 2026 (publicada 27-feb); fecha de inicio no confirmada'),
+    ('2026-03-01', 'colectivo_provincial', 832.57, True, CON, 'https://normas.gba.gob.ar', 'Anexo I de la resolución provincial de marzo de 2026 (+15,3% sobre $721,83). La prensa daba $757,20 (+4,9%), pero el $871,30 de abril es +4,65% sobre $832,57 y no sobre $757,20: se toma el anexo'),
+    ('2026-05-04', 'colectivo_provincial', 968.57, True, UNA, 'https://www.iprofesional.com/impuestos/456075-cuanto-costara-el-boleto-de-subte-y-colectivo-en-caba-y-pba-desde-el-lunes-1-de-junio', 'Valor "desde" de la nota de junio; coincide con el aumento extraordinario de Provincia (+11% desde el 4-may). Sin resolución'),
+    ('2026-02-01', 'colectivo_caba', 650.11, False, INF, 'https://www.lanacion.com.ar/economia/vuelve-a-aumentar-el-pasaje-de-colectivo-en-el-amba-el-minimo-llegara-a-700-nid16032026/', 'Inferido: $681,97 de marzo / 1,049'),
+    ('2026-03-01', 'colectivo_caba', 681.97, False, UNA, 'https://www.lanacion.com.ar/economia/vuelve-a-aumentar-el-pasaje-de-colectivo-en-el-amba-el-minimo-llegara-a-700-nid16032026/', '+4,9% (nota del 16-mar-2026)'),
+    ('2026-05-01', 'colectivo_caba', 753.74, False, UNA, 'https://www.iprofesional.com/impuestos/456075-cuanto-costara-el-boleto-de-subte-y-colectivo-en-caba-y-pba-desde-el-lunes-1-de-junio', 'Valor "desde" de la nota de junio (+5,4% sobre abril)'),
+    ('2026-10-01', 'colectivo_caba', 920.72, False, INF, 'Anexo IF-2026-48624678-GCABA-SECT (29-oct-2026)', 'Inferido: noviembre $956,69 / 1,039 = $920,8 y septiembre $887,87 x 1,037 = $920,7 (ambos porcentajes de prensa)'),
+]
+SERIE = SERIE + SERIE_EXTRA2
 
 COLS = ['fecha_vigencia', 'serie', 'valor_minimo', 'fecha_exacta', 'estado_verificacion', 'fuentes', 'nota']
 
