@@ -261,3 +261,17 @@ Para estimar el efecto del precio sobre la demanda con **todos** los cambios con
 - La ventana de test (junio–septiembre de 2026) incluye una caída fuerte a fines de julio que ningún modelo anticipa (probablemente vacaciones de invierno).
 - Diseño causal de la Pregunta 1: diferencias en diferencias o impacto causal con control de calendario, pruebas placebo y Granger; elección de controles (la Provincia adhirió a las tarifas nacionales de febrero de 2024, y las líneas porteñas recién aparecen como jurisdicción en 2025).
 - Reescribir README y notebook en torno a las Preguntas 1 y 2.
+
+### 7.6 Trenes 2026 resueltos con el Anexo II de la Res. 27/2026
+
+El anexo (imagen) se transcribió a mano desde capturas del texto oficial. Boleto mínimo con SUBE nominalizada (sección 1, 0–12 km), igual en las ocho líneas:
+
+| Etapa | Valor | Antes en la serie |
+|---|---|---|
+| 18-may-2026 | $310 | $330 (conflicto) |
+| 1-jun-2026 | $350 | $350 (inferido, con fecha 15-jun) |
+| 1-jul-2026 | $380 | $380,10 |
+| 1-ago-2026 | $420 | $420 (conflicto) |
+| 1-sep-2026 | $450 | $480 (conflicto) |
+
+Las etapas de colectivos nacionales (SGI) del mismo anexo confirman $714,00, $728,28 y $742,81. Desde mayo de 2026 todas las líneas tienen el mismo precio: Roca, Belgrano y Urquiza subieron más que Mitre, Sarmiento y San Martín (la serie sigue a estas últimas). El efectivo y la SUBE sin nominalizar pagan el doble o más.
