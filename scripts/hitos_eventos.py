@@ -1,5 +1,7 @@
 """
-Tabla de hitos (paros, elecciones, saltos tarifarios) con fuentes y comportamiento observado.
+Tabla de hitos (paros y elecciones) con fuentes y comportamiento observado.
+
+Los cambios de tarifa están en tarifas_serie.py (serie de precios por modo con fuente y estado).
 
 Las fechas y descripciones se cargaron a mano desde fuentes de prensa y normativa (URLs en la tabla).
 Cada hito tiene un `estado` de verificación:
@@ -13,7 +15,6 @@ del mismo día de la semana (±4 semanas, sin días imputados).
 
 Salidas:
   data/hitos/hitos_paros_elecciones.csv
-  data/hitos/hitos_tarifas.csv
 """
 
 import os
@@ -93,67 +94,6 @@ PAROS_ELECCIONES = [
      'Algunas páginas muestran fechas de publicación inconsistentes; el contenido coincide'),
 ]
 
-# fecha, jurisdiccion/modo, descripcion, magnitud, estado, fuentes, nota
-OFI = 'norma oficial verificada (importes de prensa)'
-OBS = 'https://observatoriociudad.org/informe-sobre-la-evoluci%C3%B3n-de-pasajeros-y-la-tarifa-del-subte-de-la-ciudad-de-buenos-aires-en-la-%C3%BAltima-d%C3%A9cada-2015-2025/'
-
-TARIFAS = [
-    ('2022-08-01', 'colectivo y tren AMBA (jurisdicción nacional)', 'Aumento del 40% (Res. 469/2022 del Ministerio de Transporte, publicada el 21-jul-2022)', '+40%', CONF,
-     'https://www.bloomberglinea.com/2022/07/21/aumenta-40-el-boleto-de-colectivo-y-tren-en-el-amba-cuanto-costara-el-pasaje/'
-     ' | https://eleconomista.com.ar/economia/aumenta-40-boleto-colectivos-trenes-amba-pasara-beneficios-sociales-tarjeta-sube-n54925'
-     ' | https://lanacion.com.ar/economia/nuevas-tarifas-en-amba-cuanto-cuesta-el-colectivo-y-el-tren-nid01082022',
-     'Número de resolución según prensa; texto oficial no leído. Una recopilación externa cita la Res. 1017/2022: es incorrecto (esa norma fija el mecanismo de actualización de fines de 2022). Cae en el hueco de ago-2022 (reconstruido)'),
-    ('2024-01-05', 'subte CABA', 'Tramo A de la Res. 27/SBASE/23: boleto de $80 a $110', '+37,5%', OFI,
-     'https://boletinoficial.buenosaires.gob.ar/normativaba/norma/704801'
-     ' | https://www.baenegocios.com/sociedad/aumentos-del-37-5-en-subte-cuando-sube-y-cuanto-costara-20231227-0052.html',
-     'Res. sancionada el 26-dic-2023 y publicada el 27-dic-2023. Fecha derivada de la norma (tramo A rige luego del quinto día hábil desde la publicación); importes del Anexo II no legibles'),
-    ('2024-01-15', 'colectivo y tren AMBA (jurisdicción nacional)', 'Res. 8/2023 del Ministerio de Infraestructura: restablece la actualización mensual por IPC; prensa: mínimo de $52,96 a $76,92', '+45% (prensa)', OFI,
-     'https://www.argentina.gob.ar/normativa/nacional/norma-395786/texto'
-     ' | https://www.baenegocios.com/sociedad/Suba-de-colectivos-el-boleto-minimo-aumentara-a-76-92-en-el-AMBA-20231228-0077.html',
-     'La norma rige desde las 0 h del 15-ene-2024 (resuelve la duda entre el 1 y el 15). Se dictó el 29-dic-2023 y se publicó el 3-ene-2024. No fija valores: el +45% y el $76,92 son de prensa. Hueco de ene-2024 (reconstruido)'),
-    ('2024-02-04', 'subte CABA', 'Tramo B de la Res. 27/SBASE/23: boleto de $110 a $125', '+13,6%', OFI,
-     'https://boletinoficial.buenosaires.gob.ar/normativaba/norma/704801'
-     ' | https://www.lanacion.com.ar/economia/cuanto-sale-el-boleto-de-subte-en-febrero-2024-nid04022024/',
-     'Tramo B: 30 días corridos después del tramo A, lo que coincide con la fecha de la prensa'),
-    ('2024-02-06', 'colectivo y tren AMBA (jurisdicción nacional y Provincia)', 'Res. 5/2024 de la Secretaría de Transporte (5-feb-2024): colectivo mínimo de $76,92 a $270 y tren a $130; la Provincia adhirió con la Res. 41/2024 (6-feb-2024)', 'colectivo +251%, tren +247%', CONF,
-     'https://eleconomista.com.ar/economia/confirmado-martes-aumenta-250-boleto-minimo-colectivo-tren-amba-n70624'
-     ' | https://normas.gba.gob.ar/ar-b/resolucion/2024/41/414919'
-     ' | https://artear-eltrece-prod.cdn.arcpublishing.com/poco-correctos/2024/02/05/aumentan-trenes-y-colectivos-a-partir-de-este-martes-cuanto-costaran-los-boletos',
-     'La vigencia del 6-feb proviene de prensa (el texto de la Res. 5/2024 no se pudo leer). La adhesión de la Provincia el mismo día implica que los colectivos provinciales NO sirven de control. Una nota de prensa menciona una suspensión judicial previa; el aumento terminó aplicándose'),
-    ('2024-05-02', 'tren AMBA', 'Boleto mínimo de $130 a $200', '+53,85%', CONF,
-     'https://eleconomista.com.ar/actualidad/ciudad-buenos-aires-boleto-subte-subira-mas-350-proximos-dias-n73222'
-     ' | https://www.a24.com/economia/aumenta-la-tarifa-los-trenes-cuanto-saldra-el-boleto-partir-mayo-n1313012'
-     ' | https://www.izquierdadiario.es/Milei-da-otro-mazazo-al-bolsillo-nuevo-aumento-del-boleto-de-trenes',
-     'El paro general del 9-may-2024 ocurre 7 días después y el aumento del subte del 17-may, 15 días después: efectos superpuestos'),
-    ('2024-05-17', 'subte CABA', 'Tramo A de la Res. 5/SBASE/24 (publicada el 9-may-2024): boleto de $125 a $574', '+359%', OFI,
-     'https://documentosboletinoficial.buenosaires.gob.ar/publico/ck_PE-RESDIC-MJGGC-SBASE-5-24-6869.pdf | ' + OBS,
-     'La norma fija vigencia luego del quinto día hábil desde la publicación (17-may según el Observatorio y el Decreto 404/2024). El importe de $574 es del Observatorio y la prensa: el Anexo II no es legible'),
-    ('2024-06-01', 'subte CABA', 'Tramo B de la Res. 5/SBASE/24: boleto a $650', '+13%', OFI,
-     'https://documentosboletinoficial.buenosaires.gob.ar/publico/ck_PE-RESDIC-MJGGC-SBASE-5-24-6869.pdf | ' + OBS,
-     'Vigencia: 15 días corridos desde el tramo A. La resolución bajó el importe de $667 (propuesta) a $650: una recopilación externa que cita $667 se equivoca'),
-    ('2024-09-16', 'tren AMBA', 'Aumento del boleto de tren', '+40%', CONF,
-     'https://www.c5n.com/economia/ya-rige-un-nuevo-aumento-del-boleto-tren-cuanto-cuesta-el-minimo-n173823/amp'
-     ' | https://www.lanacion.com.ar/sociedad/nuevo-aumento-en-los-boletos-de-trenes-en-el-amba-cuanto-suben-y-cual-sera-el-valor-minimo-nid13092024/', ''),
-    ('2024-10-01', 'subte CABA', 'Tramo C de la Res. 5/SBASE/24: boleto a $757 (postergado por la Res. 12/SBASE/24 del 1-ago al 1-oct-2024)', '+16%', OFI,
-     'https://boletinoficial.buenosaires.gob.ar/normativaba/norma/742647 | ' + OBS,
-     'Res. 12/SBASE/24 sancionada el 24-jul y publicada el 26-jul-2024: pospone el tramo C por el retraso en el recambio de validadores. El Observatorio y una recopilación externa ubican el $757 en agosto: incorrecto. El importe sale de los considerandos de la Res. 5; el Anexo II.C no es legible. Hay un fallo judicial sobre estos aumentos aún sin verificar'),
-    ('2024-12', 'subte CABA', 'Boleto con SUBE registrada a $832', '+10%', UNA, OBS, 'Solo el Observatorio'),
-    ('2025-04 a 2025-07', 'subte CABA', 'Ajustes mensuales: $869 (abr), $919 (may), $963 (jun), $996,71 proyectado (jul)', '+3,5% a +5,7% por mes', UNA, OBS,
-     'Solo el Observatorio; julio de 2025 figura como proyección'),
-    ('2026-05-18', 'tren y colectivo nacional AMBA', 'Tren a $330 (+18%); colectivo nacional +2% (con ajustes mensuales por tres meses)', 'tren +18%, colectivo +2%', UNA,
-     'https://www.infobae.com/economia/2026/05/17/manana-aumentan-el-colectivo-y-el-tren-a-cuanto-pasa-el-boleto-en-el-amba-y-cual-es-la-brecha-de-precios-con-el-interior-del-pais/', ''),
-    ('2026-07-01', 'tren AMBA', 'Primera sección a $380,10', '+8,6%', UNA,
-     'https://www.infobae.com/economia/2026/07/01/aumentos-en-colectivos-subte-y-trenes-cuanto-costara-viajar-a-partir-de-julio/', ''),
-    ('2026-09-01', 'tren AMBA', 'Mínimo de $420 a $480', '+14,29%', UNA,
-     'https://www.ambito.com/economia/aumenta-el-transporte-septiembre-cuanto-costara-viajar-colectivo-tren-y-subte-manana-n6316386',
-     'Una recopilación externa indica $450 (+7%): contradice a Ámbito; falta la fuente oficial'),
-    ('2025-2026', 'colectivo y subte CABA/PBA', 'Ajuste mensual por IPC más 2% (subte mensual durante 2026; colectivos con actualización mensual desde 2025)', '≈ +4% a +5% por mes', UNA,
-     'https://www.canal26.com/economia/2026/01/05/el-boleto-de-subte-aumentara-todos-los-meses-del-2026-la-explicacion-oficial-y-como-se-calculara/'
-     ' | https://www.baenegocios.com/sociedad/Aumento-el-boleto-de-colectivo-en-el-AMBA-cuales-son-las-nuevas-tarifas-20250601-0029.html',
-     'Pasos chicos y frecuentes: no son saltos discretos aislables; sirven como contexto, no como evento'),
-]
-
-
 def cargar():
     df = pd.read_csv(PROC_PATH, parse_dates=['fecha']).set_index('fecha').asfreq('D')
     return df
@@ -174,20 +114,6 @@ def cociente(df, col, fecha):
     return round(float(s.loc[f] / np.median(vec)), 2) if vec else np.nan
 
 
-def dias_previos_sin_imputar(df, fecha):
-    """Días consecutivos con dato observado (no reconstruido) inmediatamente anteriores a la fecha."""
-    f = pd.Timestamp(fecha)
-    previos = df.loc[:f - pd.Timedelta(days=1), 'imputado']
-    if previos.empty:
-        return 0
-    n = 0
-    for v in previos.iloc[::-1]:
-        if v:
-            break
-        n += 1
-    return n
-
-
 def main():
     df = cargar()
     filas = []
@@ -202,19 +128,9 @@ def main():
     t1 = pd.DataFrame(filas).sort_values('fecha')
     t1.to_csv(os.path.join(HITOS_DIR, 'hitos_paros_elecciones.csv'), index=False, encoding='utf-8-sig')
 
-    filas = []
-    for fecha, juris, desc, magnitud, estado, fuentes, nota in TARIFAS:
-        pre = dias_previos_sin_imputar(df, fecha) if len(fecha) == 10 else np.nan
-        filas.append({'fecha': fecha, 'jurisdiccion_modo': juris, 'descripcion': desc, 'magnitud': magnitud,
-                      'estado_verificacion': estado, 'fuentes': fuentes, 'nota': nota,
-                      'dias_previos_con_dato_observado': pre})
-    t2 = pd.DataFrame(filas)
-    t2.to_csv(os.path.join(HITOS_DIR, 'hitos_tarifas.csv'), index=False, encoding='utf-8-sig')
-
     pd.set_option('display.width', 200)
     print(t1[['fecha', 'tipo', 'estado_verificacion', 'dato_reconstruido', 'cociente_colectivo', 'cociente_subte', 'cociente_tren']].to_string(index=False))
-    print()
-    print(t2[['fecha', 'jurisdiccion_modo', 'magnitud', 'estado_verificacion', 'dias_previos_con_dato_observado']].to_string(index=False))
+
 
 
 if __name__ == '__main__':

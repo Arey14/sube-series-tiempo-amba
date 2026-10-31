@@ -178,7 +178,7 @@ Script nuevo: `scripts/herramientas_clase.py`. Figuras 8 a 11 y tablas `tabla_ad
 
 ## 7. Tabla de hitos con fuentes (Fase 3, en curso)
 
-Archivos nuevos: `scripts/hitos_eventos.py`, `data/hitos/hitos_paros_elecciones.csv` y `data/hitos/hitos_tarifas.csv`. Cada hito tiene su fecha, descripción, modos afectados, **estado de verificación y URLs de las fuentes** (prensa y normativa). El script calcula además, desde los datos, cuánto cayó cada modo ese día respecto de su mediana del mismo día de la semana.
+Archivos nuevos: `scripts/hitos_eventos.py` y `data/hitos/hitos_paros_elecciones.csv` (paros y elecciones); los cambios de tarifa están en la serie de la sección 7.5. Cada hito tiene su fecha, descripción, modos afectados, **estado de verificación y URLs de las fuentes** (prensa y normativa). El script calcula además, desde los datos, cuánto cayó cada modo ese día respecto de su mediana del mismo día de la semana.
 
 Estados: *confirmado (≥2 fuentes)*, *confirmado con discrepancias*, *norma oficial verificada (importes de prensa)*, *una fuente / a verificar*, *sin fuente (inferido del dato)*. Las fechas inferidas de memoria no se usaron sin verificar.
 
@@ -204,7 +204,7 @@ Se contrastaron las tarifas contra el Boletín Oficial de la Ciudad y de la Naci
 | **Colectivo y tren AMBA, Res. 8/2023 del Ministerio de Infraestructura** | Verificada. Dictada el 29-dic-2023, **publicada el 3-ene-2024 y vigente desde las 0 h del 15-ene-2024**. Restablece la actualización mensual por IPC y no fija valores (el +45% es de prensa). Resuelve la duda entre el 1 y el 15 de enero. |
 | **Colectivo y tren AMBA, Res. 5/2024 de la Secretaría de Transporte** (5-feb-2024) | Norma identificada por dos fuentes, junto con la **adhesión de la Provincia (Res. 41/2024, 6-feb-2024)**. Colectivo mínimo a $270 (+251%) y tren a $130 (+247%). La vigencia del 6-feb es de prensa (el texto no se pudo leer). Como la Provincia adhirió el mismo día, los colectivos provinciales **no** son grupo de control. |
 | **Colectivo y tren, agosto de 2022** | **+40% desde el 1-ago-2022, Res. 469/2022 del Ministerio de Transporte** (publicada el 21-jul-2022), según prensa. La recopilación externa cita la Res. 1017/2022: es incorrecto (esa norma fija el mecanismo de actualización de fines de 2022). Ahora **es evaluable**, porque cae en el hueco reconstruido. |
-| **Tren, 2-may-2024 (+53,85%) y 16-sep-2024 (+40%)** | Confirmados por tres y dos fuentes de prensa. El primero ocurre 7 días antes del paro general del 9-may-2024 y 15 días antes del salto del subte. |
+| **Tren, 6-may-2024 (+53,85%) y 16-sep-2024 (+40%, Res. 33/2024)** | Confirmados por prensa. Del primero, una nota da el 2-may y otra el lunes 6-may: se usa el 6-may (la versión anterior de esta tabla decía 2-may). Ocurre 3 días antes del paro general del 9-may-2024 y 11 días antes del salto del subte. |
 | **2025 y 2026** | Solo una fuente. La recopilación externa contradice a Ámbito sobre el tren del 1-sep-2026 ($450 contra $480) y menciona un aumento "entrado en vigor" el 1-nov-2026, que es posterior a la fecha de este registro. Se necesita fuente oficial. |
 
 Una conclusión sobre el subte: **hubo saltos de gran tamaño** (+37,5%, +13,6%, +359%, +13% y +16% entre enero y octubre de 2024), que la versión anterior de esta tabla no registraba por completo.
@@ -231,6 +231,26 @@ Además, el subte muestra un **escalón de −22,7% el 5-ene-2024**, cuando rige
 - Existe un conflicto judicial por los aumentos del subte de 2024 (prensa y recopilación externa lo describen de forma distinta): no se verificó si alteró las tarifas efectivas.
 - Hay que contrastar con fuente oficial los aumentos de 2025 y 2026.
 - No se buscaron aún las caídas de menor tamaño que quedaron sin explicar (por ejemplo 18-dic-2022, 17-dic-2023 y 10-oct-2025).
+
+### 7.5 Serie de tarifas por modo y jurisdicción
+
+Para estimar el efecto del precio sobre la demanda con **todos** los cambios confirmables (grandes y chicos) hace falta la tarifa por modo y fecha, no solo porcentajes. Archivos nuevos: `scripts/tarifas_serie.py`, `data/hitos/serie_tarifas.csv` (un cambio por fila, con fuente y estado), `data/hitos/serie_tarifas_diaria.csv` (tarifa vigente por día), `data/hitos/hitos_tarifas.csv` (cambios clasificados) y `tabla_tarifas_cobertura.csv`. Reemplaza la lista de saltos que antes estaba en `hitos_eventos.py`.
+
+**Qué contiene:** el boleto mínimo con SUBE registrada de cinco series (colectivo de jurisdicción nacional, líneas porteñas, líneas provinciales, tren y subte), de dic-2023 a sep-2026: 59 cambios. Cada fila indica si la norma oficial identifica el cambio (`norma + prensa`), si lo confirman dos medios, una sola fuente, un conflicto entre fuentes o si se infirió. Los importes salen de prensa porque los anexos oficiales son imágenes o PDF no legibles; las normas confirman cambios y fechas.
+
+**Clasificación:** 17 saltos (≥ 10% y sin valores intermedios faltantes), 29 ajustes chicos y **6 "acumulados con huecos"**: variaciones grandes entre dos valores separados por varios meses de ajuste mensual (por ejemplo, el colectivo porteño de +28,9% entre febrero y septiembre de 2025), que son la suma de ajustes no relevados y no deben tratarse como un salto.
+
+**Lo que se encontró al verificar:**
+- **Colectivo nacional:** $52,96, luego $76,92 (15-ene-2024), $270 (6-feb-2024) y $371,13 (12-ago-2024). **Ocho meses sin aumentos** hasta el 23-may-2025 (Res. 28/2025: $397,11, $424,91 el 18-jun y $451,01 el 16-jul). En 2026: +31% el 18-feb ($650) y +7,6% el 16-mar ($700); la **Res. 27/2026** (sancionada el 15-may-2026, BO 18-may-2026) fija tres etapas de +2% (18-may, 15-jun y 15-jul).
+- **Tren:** $130 (6-feb-2024), $200 (6-may-2024) y $280 (16-sep-2024, Res. 33/2024), y **sin cambios durante unos veinte meses** hasta el 18-may-2026. La Res. 27/2026 prevé cinco etapas mensuales cuyos importes están en anexos no legibles; las fuentes se contradicen (por ejemplo, $330 o $310 para la primera etapa y $450, $480 o $530 para septiembre).
+- **Provincia y Ciudad:** hasta febrero de 2025 las líneas porteñas y las provinciales mantuvieron el valor nacional ($371,13). Después: Ciudad +10% el 21-feb-2025; Provincia +10% el 1-mar-2025 y +14,8% el 1-dic-2025 (incluye un 10% extraordinario); ambas con ajuste mensual (IPC + 2%) desde abril de 2025.
+- **Subte:** serie completa y oficialmente identificada hasta octubre de 2024 (ver 7.2), con ajustes mensuales desde 2025 (Res. 47/2025 y 70/2025, importes de prensa).
+
+**Huecos y límites:**
+- Faltan los valores mensuales de varios períodos con ajuste mensual: líneas porteñas (mar–ago de 2025, ene–mar y may/jul de 2026), líneas provinciales (jun–nov de 2025, ene–mar de 2026 y jul–ago de 2026) y subte (dic-2024 a mar-2025, ago–oct de 2025, dic-2025 y feb–abr de 2026).
+- Las líneas provinciales de 2024 se infieren del valor nacional (la Provincia adhirió a la tarifa del 6-feb-2024).
+- **No se cargó todavía 2022-2023:** el +40% de agosto de 2022 y la indexación mensual de 2023 hasta su suspensión (Res. 501/2023). La serie arranca en diciembre de 2023.
+- Hay cuatro cambios de tren y dos de subte con conflicto entre fuentes.
 
 ---
 
