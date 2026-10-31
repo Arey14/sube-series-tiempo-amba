@@ -1,0 +1,4 @@
+metodo,ventanas,MAPE_mediano,MAPE_p90,MAE_medio_M,ciclo_semanal_conservado
+lineal_por_dia_semana,89,17.4,32.3,0.39,0.95
+lineal,89,51.25,70.66,0.9,0.01
+spline,89,76.26,323.42,3.25,0.15
