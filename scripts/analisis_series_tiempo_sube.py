@@ -357,7 +357,7 @@ def train_and_evaluate_forecasting_models(df):
     fig, axes = plt.subplots(2, 2, figsize=(13, 8))
     
     axes[0, 0].plot(sarimax_resid, color='#2c3e50', lw=0.8)
-    axes[0, 0].set_title("Residuos Estandarizados SARIMAX", fontweight='bold')
+    axes[0, 0].set_title("Residuos SARIMAX (millones de usuarios)", fontweight='bold')
     axes[0, 0].axhline(0, color='red', linestyle='--')
     
     sns.histplot(sarimax_resid, kde=True, ax=axes[0, 1], color='#2980b9')

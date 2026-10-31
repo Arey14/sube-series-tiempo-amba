@@ -72,11 +72,13 @@ Entre 2020 y 2026, la demanda atravesó eventos exógenos sin precedentes:
 
 ```text
 ├── data/
-│   └── total-usuarios-por-dia-AMBA.csv    # Dataset oficial (2020–2026, 2.391 días)
+│   ├── total-usuarios-por-dia-AMBA.csv    # Dataset oficial (2020–2026, 2.391 filas)
+│   └── procesado/                         # Serie diaria imputada, con columna `imputado`
 ├── notebooks/
 │   └── TP_Final_Series_de_Tiempo.ipynb    # Notebook reproducible con análisis y gráficos
 ├── scripts/
 │   ├── analisis_series_tiempo_sube.py    # Pipeline completo de procesamiento y modelado
+│   ├── calidad_datos.py                  # Huecos, imputación, qué mide el total y días atípicos
 │   └── descargar_datos.py                # Actualizador de datos desde el portal oficial
 ├── resultados/
 │   ├── figuras/                          # Gráficos generados en alta resolución (PNG 300 DPI)
@@ -91,6 +93,8 @@ Entre 2020 y 2026, la demanda atravesó eventos exógenos sin precedentes:
 │       ├── tabla_recuperacion_porcentual_modos.csv
 │       ├── tabla_comparacion_modelos_metricas.csv
 │       └── tabla_diagnostico_ljung_box.csv
+├── docs/
+│   └── registro_de_cambios.md            # Qué se cambió respecto del repo original y por qué
 ├── .gitignore
 ├── LICENSE
 ├── requirements.txt
@@ -103,14 +107,15 @@ Entre 2020 y 2026, la demanda atravesó eventos exógenos sin precedentes:
 
 Los datos provienen de los registros de validadoras de la red SUBE publicados por la **Secretaría de Transporte de la Nación** en el portal [datos.transporte.gob.ar](https://datos.transporte.gob.ar/dataset/sube-cantidad-de-tarjetas-usuarios-por-dia-en-amba).
 
-* **Período temporal**: **2020-01-01 a 2026-09-18** (2.391 observaciones diarias continuas).
-* **Calidad**: 100% de cobertura sin valores faltantes.
+* **Período temporal**: **2020-01-01 a 2026-09-18**: 2.391 filas sobre 2.453 días calendario.
+* **Calidad**: faltan **62 días**, que son dos meses completos (**agosto de 2022** y **enero de 2024**). Se imputan por día de la semana y se marcan con la columna `imputado` (ver `scripts/calidad_datos.py` y `docs/registro_de_cambios.md`).
+* **Unidad de medida**: según el portal, es la cantidad de **tarjetas diferentes** usadas por día, no viajes ni pasajeros. El total nunca supera la suma de los modos (0,83–0,89 de ella), lo que sugiere que deduplica tarjetas que usan más de un modo (inferencia: el portal no lo documenta).
 * **Variables**:
   * `indice_tiempo`: Fecha ($AAAA-MM-DD$).
-  * `total_amba`: Cantidad total de usuarios únicos diarios.
-  * `colectivo_amba`: Usuarios diarios en la red de colectivos.
-  * `subte_amba`: Usuarios diarios en la red de subterráneos de CABA.
-  * `tren_amba`: Usuarios diarios en ferrocarriles metropolitanos.
+  * `total_amba`: Tarjetas distintas usadas ese día en cualquier modo.
+  * `colectivo_amba`: Tarjetas distintas usadas en colectivos.
+  * `subte_amba`: Tarjetas distintas usadas en el subte.
+  * `tren_amba`: Tarjetas distintas usadas en trenes metropolitanos.
 
 ---
 
