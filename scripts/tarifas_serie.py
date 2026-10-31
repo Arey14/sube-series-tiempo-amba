@@ -42,7 +42,13 @@ MESES_MAX_ENTRE_VALORES = 1.6   # en régimen de ajuste mensual, más separació
 
 # desde cuándo cada serie se ajusta todos los meses (IPC + 2%): ahí, un salto grande entre dos valores
 # separados por varios meses puede ser la suma de ajustes mensuales no relevados
-INICIO_AJUSTE_MENSUAL = {'colectivo_caba': '2025-04-01', 'colectivo_provincial': '2025-04-01', 'subte': '2025-03-01'}
+AJUSTE_MENSUAL = {
+    'colectivo_caba': [('2025-04-01', '2099-12-31')],
+    'colectivo_provincial': [('2025-04-01', '2099-12-31')],
+    'subte': [('2025-03-01', '2099-12-31')],
+    'colectivo_nacional': [('2023-03-01', '2023-08-31')],
+    'tren': [('2023-03-01', '2023-08-31'), ('2026-05-18', '2026-09-30')],
+}
 
 # cambios cuyo porcentaje informan directamente las fuentes como un solo paso, aunque falten meses previos
 SALTOS_INFORMADOS = {
@@ -138,7 +144,7 @@ SERIE = [
     # --- Tren (jurisdicción nacional) ---------------------------------------------------------------
     ('2024-02-06', 'tren', 130.0, True, NP,
      'https://eleconomista.com.ar/economia/confirmado-martes-aumenta-250-boleto-minimo-colectivo-tren-amba-n70624 | https://www.a24.com/politica/trenes-y-colectivos-el-gobierno-confirmo-que-este-martes-suben-las-tarifas-amba-n1289001/amp',
-     'Res. 5/2024 de la Secretaría de Transporte. Tarifa para SUBE nominalizada. Valor previo ≈ $37,5 (+247%)'),
+     'Res. 5/2024 de la Secretaría de Transporte. Tarifa para SUBE nominalizada. Mitre, Sarmiento y San Martín: de $48,38 a $130 (+169%); Roca, Belgrano y Urquiza: de $37,38 (+247%)'),
     ('2024-05-06', 'tren', 200.0, True, CON,
      'https://www.ciudad.com.ar/actualidad/2024/04/22/aumento-en-trenes-cuanto-costara-viajar-en-mayo | https://www.a24.com/economia/aumenta-la-tarifa-los-trenes-cuanto-saldra-el-boleto-partir-mayo-n1313012',
      '+53,85%. Una nota da el 2-may y otra el lunes 6-may: se toma el 6-may (que fue lunes)'),
@@ -199,6 +205,92 @@ SERIE = [
      '+4%. La Res. de Directorio 238/2026 corresponde a octubre y no se pudo leer el importe'),
 ]
 
+
+# --- Filas agregadas: 2022-2023 y huecos de 2025 ---------------------------------------------------
+# Tren: la serie sigue los ramales Mitre, Sarmiento, San Martín y Tren de la Costa (los de mayor tarifa).
+# Roca, Belgrano Norte, Belgrano Sur y Urquiza tuvieron valores menores hasta enero de 2024.
+SERIE_EXTRA = [
+    # --- Colectivo nacional, 2022-2023 ---
+    ('2022-01-01', 'colectivo_nacional', 18.0, False, PR,
+     'https://lanacion.com.ar/economia/nuevas-tarifas-en-amba-cuanto-cuesta-el-colectivo-y-el-tren-nid01082022',
+     'Tarifa vigente desde 2019 (más de tres años sin cambios)'),
+    ('2022-08-01', 'colectivo_nacional', 25.20, True, PR,
+     'https://lanacion.com.ar/economia/nuevas-tarifas-en-amba-cuanto-cuesta-el-colectivo-y-el-tren-nid01082022 | https://www.forbesargentina.com/today/se-disparan-tarifas-aumenta-40-boleto-colectivos-trenes-amba-n19196',
+     'Res. 469/2022 (Ministerio de Transporte), +40%'),
+    ('2023-01-01', 'colectivo_nacional', 35.0, True, PR,
+     'https://eleconomista.com.ar/economia/estas-son-nuevas-tarifas-transporte-publico-1-enero-n58589 | https://www.forbesargentina.com/today/a-cuanto-ira-boleto-colectivo-partir-2023-n26979',
+     '+39%; la prensa cita la Res. 952/2022. La indexación mensual por IPC arranca en marzo'),
+    ('2023-03-01', 'colectivo_nacional', 37.10, False, UNA,
+     'https://www.forbesargentina.com/today/a-cuanto-ira-boleto-colectivo-partir-2023-n26979', '+6%. No se encontró el valor de febrero de 2023'),
+    ('2023-04-01', 'colectivo_nacional', 39.59, False, CON,
+     'https://www.baenegocios.com/economia/Aumento-del-boleto-en-abril-cuanto-saldra-viajar-en-colectivo-el-proximo-mes-20230329-0087.html | https://www.izquierdadiario.es/El-ajuste-es-un-bondi-nuevo-aumento-de-boletos-de-colectivos-y-trenes-en-el-AMBA',
+     'Una nota da $39,04 y otra $39,59 como valor previo a mayo; $39,59 es coherente con +6,6% sobre $37,10 y con +7,8% hasta $42,67'),
+    ('2023-05-01', 'colectivo_nacional', 42.67, True, PR,
+     'https://www.izquierdadiario.es/El-ajuste-es-un-bondi-nuevo-aumento-de-boletos-de-colectivos-y-trenes-en-el-AMBA | https://www.baenegocios.com/economia/Aumento-del-boleto-en-abril-cuanto-saldra-viajar-en-colectivo-el-proximo-mes-20230329-0087.html', ''),
+    ('2023-06-01', 'colectivo_nacional', 46.35, False, PR,
+     'https://lanacion.com.ar/economia/cuanto-sale-el-subte-el-tren-y-el-colectivo-en-junio-2023-nid01062023', '+8,6%'),
+    ('2023-07-01', 'colectivo_nacional', 50.06, False, UNA,
+     'https://eleconomista.com.ar/actualidad/aumento-colectivos-trenes-amba-cuanto-pasara-costar-boleto-partir-agosto-n64752', 'Valor previo a agosto ($50,06 → $52,96)'),
+    ('2023-08-01', 'colectivo_nacional', 52.96, True, PR,
+     'https://eleconomista.com.ar/actualidad/aumento-colectivos-trenes-amba-cuanto-pasara-costar-boleto-partir-agosto-n64752', '+5,8%. Último ajuste antes del congelamiento'),
+    ('2023-09-01', 'colectivo_nacional', 52.96, True, NP,
+     'https://eleconomista.com.ar/economia/el-gobierno-congela-tarifas-colectivos-trenes-despues-elecciones-n65789 | https://www.eltucumano.com/adjunto/2023/08/31/aviso_293214.pdf',
+     'Res. 501/2023 (30-ago-2023): suspende la indexación mensual; sin cambio de valor hasta enero de 2024'),
+    # --- Tren, 2022-2024 (ramales Mitre, Sarmiento, San Martín, Tren de la Costa) ---
+    ('2022-01-01', 'tren', 12.32, False, INF,
+     'https://www.forbesargentina.com/today/se-disparan-tarifas-aumenta-40-boleto-colectivos-trenes-amba-n19196', 'Inferido de $17,25 / 1,40; los valores de tren previos a agosto de 2022 no se encontraron'),
+    ('2022-08-01', 'tren', 17.25, True, PR,
+     'https://www.forbesargentina.com/today/se-disparan-tarifas-aumenta-40-boleto-colectivos-trenes-amba-n19196 | https://www.bloomberglinea.com/2022/07/21/aumenta-40-el-boleto-de-colectivo-y-tren-en-el-amba-cuanto-costara-el-pasaje/',
+     '+40% (Res. 469/2022). Roca y Belgrano: valores menores'),
+    ('2023-01-01', 'tren', 22.0, True, PR,
+     'https://infozona.com.ar/nuevo-aumento-en-colectivos-y-trenes-en-el-amba-a-partir-de-enero/ | https://eleconomista.com.ar/economia/estas-son-nuevas-tarifas-transporte-publico-1-enero-n58589', '+27,5%'),
+    ('2023-03-01', 'tren', 23.32, False, UNA,
+     'https://www.c5n.com/sociedad/aumenta-el-boleto-colectivos-y-trenes-el-amba-cuanto-costara-el-1-marzo-n100984/amp', '+6%'),
+    ('2023-05-01', 'tren', 26.82, False, UNA,
+     'https://www.izquierdadiario.es/El-ajuste-es-un-bondi-nuevo-aumento-de-boletos-de-colectivos-y-trenes-en-el-AMBA', '+15% desde marzo: falta el valor de abril de 2023'),
+    ('2023-06-01', 'tren', 29.12, False, CON,
+     'https://lanacion.com.ar/economia/cuanto-sale-el-subte-el-tren-y-el-colectivo-en-junio-2023-nid01062023', 'Otra nota atribuye $29,12 a la tarifa social del colectivo'),
+    ('2023-08-01', 'tren', 33.28, False, UNA,
+     'https://eleconomista.com.ar/actualidad/aumento-colectivos-trenes-amba-cuanto-pasara-costar-boleto-partir-agosto-n64752', '+14% desde junio: falta el valor de julio'),
+    ('2024-01-15', 'tren', 48.38, True, PR,
+     'https://www.izquierdadiario.es/Otro-golpe-al-salario-el-precio-del-boleto-del-tren-subira-45-32-a-partir-del-15-de-enero | https://elintransigente.com/2023/12/los-pasajes-de-tren-subiran-4532-desde-el-15-de-enero-las-nuevas-tarifas-linea-por-linea/',
+     '+45,32% (Res. 8/2023, rige desde el 15-ene-2024)'),
+    # --- Subte, 2022-2023 ---
+    ('2022-01-01', 'subte', 30.0, False, INF,
+     OBS, 'Inferido: $42 / 1,40 (+40% de la Res. 17/2022) y $58 / 1,381 (+38,1% de marzo de 2023); el Observatorio cita $30 en abril de 2022'),
+    ('2022-09-23', 'subte', 42.0, True, NP,
+     BO_CABA + '620342', 'Res. 17/SBASE/22 (sancionada 9-sep-2022, publicada 14-sep-2022): rige desde el 23-sep-2022, +40%. El importe se infiere de las variaciones informadas'),
+    ('2023-03-07', 'subte', 58.0, True, NP,
+     BO_CABA + '647733 | https://lanacion.com.ar/economia/cuanto-cuesta-el-subte-desde-el-martes-7-de-marzo-nid06032023',
+     'Res. 5/SBASE/23 (sancionada 15-feb, publicada 27-feb-2023), tramo A luego del quinto día hábil: +38,1%'),
+    ('2023-05-06', 'subte', 67.0, True, NP,
+     BO_CABA + '647733 | https://www.izquierdadiario.es/Ataques-al-bolsillo-otra-vez-cuales-son-los-aumentos-de-mayo', 'Tramo B: 60 días corridos después del A (+15,5%)'),
+    ('2023-06-05', 'subte', 74.0, True, NP,
+     BO_CABA + '647733 | https://lanacion.com.ar/economia/cuanto-cuesta-el-subte-desde-este-lunes-5-de-junio-nid05062023', 'Tramo C: 30 días corridos después del B'),
+    ('2023-09-03', 'subte', 80.0, True, CON,
+     BO_CABA + '647733 | https://www.clubmitsubishiasx.com/faq/cuanto-esta-el-subte-agosto-2023',
+     'Tramo D: 90 días corridos después del C, lo que da el 3-sep-2023; algunas notas lo ubican en octubre. Se toma la fecha derivada de la norma'),
+    # --- Subte, 2025 (corrige la fecha del $832) ---
+    ('2025-02-28', 'subte', 832.0, True, NP,
+     BO_CABA + '778582 | https://www.perfil.com/noticias/actualidad/aumento-del-boleto-del-subte-cuanto-costara-a-partir-de-este-viernes-28-febrero.phtml | https://www.minutouno.com/economia/el-subte-aumenta-este-viernes-28-febrero-cuanto-se-va-el-boleto-n6118525',
+     'Res. 47/SBASE/25 (sancionada 19-feb, publicada 20-feb-2025): rige luego del quinto día hábil (28-feb) y fija ajuste mensual por doce meses. De $757 (+9,9%). Una fuente anterior ubicaba el $832 en diciembre de 2024: es incorrecto'),
+    # --- Colectivos CABA y PBA, 2025 ---
+    ('2025-04-01', 'colectivo_caba', 426.21, True, UNA,
+     'https://www.izquierdadiario.es/Un-nuevo-logro-de-bajar-la-inflacion-aumentan-6-los-colectivos-y-subtes-en-mayo', 'Valor previo a mayo ($426,21 → $450,63); +4,4%'),
+    ('2025-05-01', 'colectivo_caba', 450.63, True, UNA,
+     'https://www.izquierdadiario.es/Un-nuevo-logro-de-bajar-la-inflacion-aumentan-6-los-colectivos-y-subtes-en-mayo', '+5,7%'),
+    ('2025-06-01', 'colectivo_caba', 472.27, True, UNA,
+     'https://www.izquierdadiario.es/Inflacion-domada-colectivos-y-subtes-aumentaran-5-en-junio', '+4,8%; faltan julio y agosto de 2025'),
+    ('2025-06-01', 'colectivo_provincial', 472.66, True, UNA,
+     'https://www.izquierdadiario.es/Inflacion-domada-colectivos-y-subtes-aumentaran-5-en-junio', '+4,8%'),
+    ('2025-07-01', 'colectivo_provincial', 489.61, True, UNA,
+     'https://www.cronista.com/informacion-gral/nuevo-aumento-en-colectivos-estos-son-los-precios-que-vas-a-pagar-desde-el-1-de-julio/', '+3,5%'),
+    ('2025-09-01', 'colectivo_provincial', 529.25, True, UNA,
+     'https://www.canal26.com/economia/2025/08/28/aumentan-las-tarifas-en-el-amba-cual-sera-el-nuevo-valor-del-boleto-del-colectivo-y-subte-en-septiembre-de-2025/', '+3,9%; falta agosto de 2025'),
+]
+SERIE = [r for r in SERIE
+         if not (r[1] == 'subte' and r[0] in ('2023-12-01', '2024-12-01'))] + SERIE_EXTRA
+
 COLS = ['fecha_vigencia', 'serie', 'valor_minimo', 'fecha_exacta', 'estado_verificacion', 'fuentes', 'nota']
 
 
@@ -245,8 +337,9 @@ def hitos_derivados(t):
     grande = h['variacion_pct'].abs() >= UMBRAL_SALTO
     informado = pd.Series([(f.strftime('%Y-%m-%d'), s) in SALTOS_INFORMADOS
                            for f, s in zip(h['fecha_vigencia'], h['serie'])], index=h.index)
-    inicio = h['serie'].map(INICIO_AJUSTE_MENSUAL)
-    en_regimen_mensual = inicio.notna() & (h['fecha_vigencia'] >= pd.to_datetime(inicio))
+    en_regimen_mensual = pd.Series(
+        [any(pd.Timestamp(a) <= f <= pd.Timestamp(b) for a, b in AJUSTE_MENSUAL.get(s, []))
+         for f, s in zip(h['fecha_vigencia'], h['serie'])], index=h.index)
     sin_huecos = (h['meses_desde_valor_previo'] <= MESES_MAX_ENTRE_VALORES) | ~en_regimen_mensual
     h['tipo'] = np.select([grande & (sin_huecos | informado), grande], ['salto', 'acumulado con huecos'],
                           default='ajuste')
