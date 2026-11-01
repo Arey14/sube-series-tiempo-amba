@@ -225,3 +225,22 @@ Las series se llevan a estacionariedad (primera diferencia del log de la demanda
 ### Qué se puede afirmar
 
 Hay evidencia de que la tarifa precede y predice la demanda del subte; no la hay para el colectivo nacional ni el tren, ni para efectos cruzados. No se afirma causalidad: falta ingreso, y el Granger solo cuenta como un chequeo de precedencia. Los coeficientes cruzados del bloque 1 no son interpretables por colinealidad.
+
+## 8. Hitos de calendario: paros, elecciones, feriados y pandemia — 1-nov-2026
+
+Script: `scripts/hitos_efectos.py`. Tablas: `tabla_hitos_cociente_dias.csv` (un renglón por día), `tabla_hitos_resumen.csv`, `tabla_covid_descriptivo.csv`. Figuras: `fig16_covid_descriptivo.png`, `fig17_hitos_cociente.png`.
+
+### Qué se mide
+
+Para cada día de paro, elección o feriado, el cociente entre lo observado y lo esperable: la mediana del mismo día de la semana en las cuatro semanas anteriores y las cuatro posteriores, sin contar feriados ni hitos. Un cociente de 0,5 es la mitad de lo habitual. Para saber qué es ruido se calcula el mismo cociente en 1.112 días laborables ordinarios: el 95% queda entre **0,78 y 1,13** (colectivo), 0,78 y 1,11 (tren) y 0,83 y 1,14 (subte). Un hito se toma como efecto solo si cae fuera de esa banda.
+
+### Resultados
+
+- **Feriados en día laborable (76 días):** la demanda baja a cerca de un tercio de un día normal (mediana 0,36 en colectivo, 0,28 en tren y 0,31 en subte), el 100% fuera de la banda. Es un comportamiento similar al de un domingo. Los feriados que caen en fin de semana casi no cambian nada (mediana 0,84 a 0,96).
+- **Elecciones:** con transporte gratuito (PASO y generales de 2023 y balotaje) la demanda se desploma a 0,00 a 0,13 en todos los modos. Sin gratuidad (2025) queda en 0,54 a 1,07: el 18-may-2025 no cambia nada (0,96, 0,91 y 1,07); el 7-sep y el 26-oct-2025 son domingos electorales con caída de colectivo y tren (0,54 a 0,71) pero no del subte. Los tres domingos de 2025 no tienen gratuidad confirmada; la caída es un domingo electoral normal.
+- **Paros:** los paros de la UTA hunden el colectivo a 0,06 a 0,20 (7-jul-2023, 11-abr-2024, 9-may-2024, 6-may-2025 y 19-feb-2026); los de La Fraternidad hunden el tren a 0,00; los del subte, el subte a 0,00. **Los modos que no paran no absorben a los que sí**: en los paros de colectivo, el tren queda en 0,66 a 0,79 (no sube) y el subte en 1,0; cuando para el tren, el colectivo queda en 1,0 o 0,75 (no sube). El efecto es de oferta cortada, no de sustitución.
+- **Pandemia (solo descripción):** semana mínima del 29-mar-2020, con la demanda de días hábiles en 12% (colectivo), 4% (tren) y 2% (subte) del verano de 2020. En diciembre de 2020: 57%, 37% y 17%. En diciembre de 2021: 97%, 75% y 65%. El subte y el tren se recuperaron más lento que el colectivo. No es una medida de recuperación: el período de referencia son dos meses de verano.
+
+### Qué se puede afirmar
+
+Los feriados laborables y los paros propios del modo son los efectos más grandes y claros del calendario (bajan la demanda entre 65% y 100%), con una magnitud que supera con creces el ruido. La gratuidad electoral es el caso extremo: demanda casi nula. Los paros de un modo no trasladan viajeros a los otros. Esto ordena los eventos que se excluyen o se controlan en el resto de los modelos (días de paro y de elección fuera de las ventanas, dummies de feriado).

@@ -1,0 +1,13 @@
+tipo,modo,dias,mediana_cociente,minimo,maximo,banda_ruido_inf,banda_ruido_sup,pct_fuera_de_banda
+eleccion,colectivo,6,0.34,0.08,0.96,0.78,1.13,83
+eleccion,tren,6,0.34,0.01,0.91,0.78,1.11,83
+eleccion,subte,6,0.44,0.0,1.07,0.83,1.14,50
+feriado,colectivo,76,0.36,0.14,0.71,0.78,1.13,100
+feriado,tren,76,0.28,0.08,0.71,0.78,1.11,100
+feriado,subte,76,0.31,0.1,0.56,0.83,1.14,100
+feriado en fin de semana,colectivo,18,0.88,0.39,1.11,0.78,1.13,28
+feriado en fin de semana,tren,18,0.84,0.43,1.14,0.78,1.11,33
+feriado en fin de semana,subte,18,0.96,0.45,1.9,0.83,1.14,33
+paro,colectivo,9,0.2,0.06,1.02,0.78,1.13,89
+paro,tren,9,0.0,0.0,0.79,0.78,1.11,89
+paro,subte,9,0.7,0.0,1.01,0.83,1.14,67
