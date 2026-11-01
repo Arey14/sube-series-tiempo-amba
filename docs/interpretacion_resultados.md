@@ -70,3 +70,23 @@ Se puede afirmar que la demanda respondió poco al precio en el colectivo y el t
 **Diferencia con CEPA desde 2025:** el tren coincide con CEPA entre 1% y 3% en todos los meses revisados; el subte coincide hasta 2024 (1,5% a 3%) y desde 2025 queda 18% a 30% por debajo (julio de 2025: 13,0 M contra 18,4 M; febrero de 2026: 8,0 M contra 11,7 M). Se revisó la serie por línea: no desaparece ninguna línea ni hay registros faltantes en 2025 que lo expliquen (todas las líneas bajan parejas). Es probable que sea una diferencia de definición (CEPA usa datos de la concesionaria, que pueden incluir viajes sin SUBE) y no un error del archivo. No se resolvió: la serie de SUBE sigue siendo la fuente del modelo y la diferencia queda documentada como limitación.
 
 Las **tarifas** del subte no dependen de esto: salen de las resoluciones del Boletín Oficial.
+
+## 3. Hipótesis complementaria H-ingreso (pre-registro) — 1-nov-2026
+
+Se escribe antes de mirar ningún resultado por línea, para que no se pueda ajustar a lo que salga.
+
+**Hipótesis (propuesta por Germán):** las líneas de subte que sirven a zonas de mayor poder adquisitivo se ven menos afectadas por los saltos tarifarios que las que sirven a zonas de ingresos medios o bajos.
+
+**Por qué no se saca la línea D:** la línea D (Palermo, Recoleta, Belgrano) es la única línea de ingresos altos con servicio normal en casi todo el período y es clave para esta comparación. Se excluye solo la línea D entre el 8-ene-2024 y el 6-mar-2024 (cierre por obras), no toda la línea.
+
+**Diseño previsto:**
+1. Panel semanal por línea (A, B, C, D, E, H). La tarifa es la misma para todas las líneas, así que cualquier efecto común (inflación, ingreso general, estación, feriados, paros) se absorbe con efectos fijos por semana. Lo que queda identifica la diferencia entre líneas: log(usos línea, semana) = efecto de línea + efecto de semana + δ · log(tarifa) · índice de ingreso de la línea. El coeficiente δ dice cuánto cambia la elasticidad al subir el ingreso de la línea. La hipótesis predice δ > 0 (menos sensibles las de ingreso alto).
+2. Estudio de eventos por línea en los saltos del subte (mayo-2023, ene–feb-2024, mayo-2024, oct-2024), con la misma ventana y el mismo placebo del bloque 1.
+3. El índice de ingreso por línea se define **antes** de correr nada, a partir de datos oficiales (ingreso per cápita familiar por zona de la Ciudad y ubicación de las estaciones por comuna). La clasificación se muestra y se aprueba antes de usarla. Se probará también con un índice alternativo (por ejemplo, ingreso medio de las comunas donde la línea tiene estaciones, ponderado por usos de cada estación si hay datos) para que el resultado no dependa de una sola definición.
+4. Una sola comparación está planteada de antemano (ingreso alto contra ingreso bajo). No se recorren las seis líneas buscando diferencias.
+
+**Límites que se declaran de antemano:**
+- Es el ingreso de la zona de la línea, no el de sus pasajeros: muchos pasajeros viven en el conurbano y usan las líneas que llegan a las terminales (Constitución, Retiro, Once). Es una falacia ecológica posible.
+- Hay solo seis líneas y cuatro saltos: pocos puntos, intervalos amplios.
+- Las líneas tienen choques propios (cierre de la D, obras, extensiones de la E y la H). Se controla con efectos fijos y tendencias por línea, y se muestra con y sin ellas.
+- La elasticidad por línea mide la respuesta de los usuarios de esa línea al precio, no la de los usuarios que cambiaron de modo. No se interpreta como sustitución.
