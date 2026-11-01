@@ -154,3 +154,34 @@ Con la tabla de ingreso per cápita familiar por comuna (`data/externos/MT_eah_2
 **Lectura:** la línea D es claramente la de mayor ingreso (cerca de 30% por encima de las demás). Las otras cinco quedan juntas (0,89 a 0,96, una diferencia de 8%), con orden estable entre los dos promedios salvo la C. La prueba tiene poder para una sola comparación: la D contra el resto. Dentro del resto, el gradiente es demasiado chico para sostener un contraste por línea, y la H mezcla comunas muy distintas (0,66 a 1,29), así que no se le asigna un grupo.
 
 **Comparación pre-registrada para el panel:** (1) principal: índice continuo de la línea (2022–2025) interactuado con la tarifa real; (2) contraste simple: línea D contra el promedio de A, B, C y E (la H queda afuera). Se corren ambas. Todavía no se miró ningún resultado por línea.
+
+## 6. H-ingreso: panel por línea y eventos por línea — 1-nov-2026
+
+Script: `scripts/panel_subte_lineas.py`. Tablas: `tabla_panel_subte_delta.csv`, `tabla_eventos_subte_por_linea.csv`. Figura: `fig15_eventos_subte_por_linea.png`. Diseño y límites: bloques 3, 5 y 5.1.
+
+### Cómo se lee el panel
+
+`delta` multiplica el índice de ingreso de la línea por la tarifa real. La elasticidad de una línea es la del subte entero más `delta` por su índice (centrado). **La hipótesis predice `delta` positivo** (las líneas de ingreso alto, con índice mayor, reaccionan menos: elasticidad más cercana a cero). Un `delta` negativo va en sentido contrario.
+
+| Línea D excluida hasta | Especificación | Tendencia por línea | delta | p de permutación |
+|---|---|---|---|---|
+| 10-mar-2024 | índice continuo | no | −0,49 | 0,015 |
+| 10-mar-2024 | índice continuo | sí | −0,05 | 0,54 |
+| 10-mar-2024 | D contra A, B, C, E | no | −0,12 | 0,20 (mínimo posible) |
+| 10-mar-2024 | D contra A, B, C, E | sí | −0,005 | 0,80 |
+| 30-abr-2024 | índice continuo | no | −0,58 | 0,015 |
+| 30-abr-2024 | índice continuo | sí | −0,23 | 0,026 |
+| 30-abr-2024 | D contra A, B, C, E | no / sí | −0,15 / −0,06 | 0,20 / 0,20 |
+
+El p de permutación reparte los índices entre las líneas de todas las formas posibles (720 para el índice continuo; solo 5 para D contra el resto, por lo que el p no puede bajar de 0,20: ese contraste no tiene poder estadístico con seis líneas).
+
+### Lectura
+
+- **El signo es negativo o nulo, nunca positivo.** Ninguna especificación respalda la hipótesis. Cuando `delta` es significativo (−0,49 y −0,58 sin tendencia, −0,23 con tendencia y cierre ampliado), apunta en sentido opuesto: la línea de mayor ingreso (D) pierde más demanda a medida que sube la tarifa real.
+- **Es muy sensible a cómo se trata la línea D alrededor de su reapertura.** Con tendencia propia por línea y cierre hasta el 10-mar, `delta` es casi cero (−0,05, p = 0,54); al alargar la exclusión hasta el 30-abr pasa a −0,23 (p = 0,026). Eso indica que la recuperación gradual de la D después del cierre (y la caída de su participación de ~22% a ~19% desde 2024) pesa más que el precio. Sin tendencia propia, la deriva de la D se atribuye al precio.
+- **Eventos por línea:** la D cae menos que el promedio de A, B, C, E y H en mayo-2024 (−15% contra −19%) y oct-2024 (−7% contra −10%), pero cae más en mayo-2023 (−16,5% contra −8%) y no se puede medir en ene–feb 2024 (cerrada). Dos de tres sentidos a favor, el más grande en contra: no hay patrón.
+- **Las otras líneas no siguen el orden de ingreso:** en mayo-2024 la A (ingreso medio) cae −27% y la E (la de menor ingreso) −13%.
+
+### Qué se puede afirmar
+
+No hay evidencia a favor de H-ingreso con estos datos, y tampoco se la puede descartar: el contraste D contra el resto no tiene poder (una sola línea de ingreso alto, un cierre justo en el medio) y la unidad de análisis es el ingreso de la comuna de la estación, no el de los pasajeros. Sería necesario otro tipo de dato (por ejemplo, viajes por tarjeta o por estación de origen) para ponerla a prueba de verdad. Resultado a conservar tal cual: la hipótesis no queda respaldada.

@@ -1,0 +1,9 @@
+definicion_D_excluida,especificacion,tendencia_por_linea,observaciones,delta,error_std,p_permutacion,n_permutaciones
+cierre,indice continuo,False,1419,-0.49,0.044,0.015,720
+cierre,indice continuo,True,1419,-0.052,0.064,0.539,720
+cierre,"D contra A,B,C,E",False,1181,-0.123,0.013,0.2,5
+cierre,"D contra A,B,C,E",True,1181,-0.005,0.019,0.8,5
+cierre ampliado,indice continuo,False,1411,-0.58,0.036,0.015,720
+cierre ampliado,indice continuo,True,1411,-0.225,0.068,0.026,720
+cierre ampliado,"D contra A,B,C,E",False,1173,-0.149,0.011,0.2,5
+cierre ampliado,"D contra A,B,C,E",True,1173,-0.055,0.023,0.2,5
