@@ -244,3 +244,44 @@ Para cada día de paro, elección o feriado, el cociente entre lo observado y lo
 ### Qué se puede afirmar
 
 Los feriados laborables y los paros propios del modo son los efectos más grandes y claros del calendario (bajan la demanda entre 65% y 100%), con una magnitud que supera con creces el ruido. La gratuidad electoral es el caso extremo: demanda casi nula. Los paros de un modo no trasladan viajeros a los otros. Esto ordena los eventos que se excluyen o se controlan en el resto de los modelos (días de paro y de elección fuera de las ventanas, dummies de feriado).
+
+## 9. Control sintético para los saltos del colectivo — 1-nov-2026
+
+Script: `scripts/control_sintetico.py`. Tablas: `tabla_control_sintetico.csv`, `tabla_control_sintetico_donantes.csv`. Figura: `fig18_control_sintetico.png`.
+
+### Qué se hizo
+
+Se estima qué habría pasado con la demanda de colectivo del AMBA sin el aumento con una combinación de 30 ciudades del interior (también en SUBE, con al menos 3.000 usos diarios y datos casi completos), con pesos no negativos que suman 1, elegidos para replicar la demanda del AMBA en las 52 semanas previas. La brecha entre el AMBA real y el sintético, promediada entre la segunda y la octava semana posterior, es el efecto estimado. La inferencia es por placebos en el espacio: se repite el procedimiento tratando como tratada a cada ciudad donante y se compara.
+
+### Resultados
+
+| Salto | Brecha estimada | Rango de placebos (p5 a p95) | p de placebos |
+|---|---|---|---|
+| Ene–feb 2024 (tarifa ×5) | −2,8% | −20% a +23% | 0,43 |
+| Ago 2024 (+37%) | −2,5% | −9% a +13% | 0,27 |
+| Feb 2026 (+31%) | −1,5% | −18% a +13% | 0,27 |
+
+### Lectura
+
+Ninguno de los tres efectos se distingue de lo que producen las ciudades donantes sin tratamiento. El ajuste previo es mediano (error de 3%) y empeora después del aumento (7% en 2024), pero los placebos muestran que ese tamaño de brecha aparece sin tratamiento. **El control sintético no confirma la caída de 13% del estudio de eventos del bloque 1 (colectivo nacional, ene–feb 2024):** da −3% y sin significancia. Los dos métodos coinciden en que no hay un efecto grande y claro del precio en el colectivo; no se pueden reconciliar en una cifra.
+
+### Límites que pesan
+
+- Las ciudades del interior fijan sus propias tarifas y las ajustan seguido; si subieron en la misma ventana (enero-febrero de 2024 fue un período de aumentos generalizados), el efecto se subestima. No se verificó la tarifa de cada donante.
+- Varias donantes con mucho peso son ciudades turísticas (General Pueyrredón, Bariloche), cuya estacionalidad de verano difiere de la del AMBA justo en la ventana de 2024.
+- La ventana de 2024 es la más contaminada por otros cambios (devaluación de diciembre de 2023, inflación mensual de 20% a 25%).
+- Para el tren y el subte no hay donantes: el método solo se pudo aplicar al colectivo.
+
+## 10. Síntesis de P-1: respuesta de la demanda a los hitos — 1-nov-2026
+
+Esta es la lectura conjunta de los bloques 1 a 9. Se redacta antes de armar la presentación, para evaluar al final si se sostuvo.
+
+| Pregunta | Resultado | Confianza |
+|---|---|---|
+| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (dos métodos), y Granger lo respalda (p de Holm 0,019). **Colectivo nacional y tren:** cerca de cero, no se distinguen de cero. | Subte: media. Colectivo y tren: baja (poco poder: pocos saltos que se mueven juntos) |
+| ¿Cuánto cayó con los saltos grandes? | Colectivo nacional ene–feb 2024: −13% (eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente (+1% y −15%). | Baja a media |
+| ¿Hay sustitución entre modos? | No: los casos limpios muestran cambios dentro del ruido; en paros los modos que no paran no absorben a los que sí. | Media (pocos casos limpios) |
+| ¿Las líneas de más ingreso reaccionan menos? | No hay respaldo: signo contrario o nulo según la especificación; la prueba solo compara D con el resto. | Baja (poder bajo) |
+| ¿Cómo se comporta la demanda en los hitos del calendario? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta |
+
+**Mensaje para la presentación:** el precio importa para el subte y casi nada para el colectivo y el tren en los saltos observados, pero eso no es un efecto causal limpio: queda sin controlar el ingreso y el período es de inflación alta. Los hitos de calendario son los efectos más claros y estables. Para el video se muestra primero lo que se sostiene (calendario, subte) y después lo inestable (saltos del colectivo), con los límites a la vista.
