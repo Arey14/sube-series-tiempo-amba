@@ -185,3 +185,43 @@ El p de permutación reparte los índices entre las líneas de todas las formas 
 ### Qué se puede afirmar
 
 No hay evidencia a favor de H-ingreso con estos datos, y tampoco se la puede descartar: el contraste D contra el resto no tiene poder (una sola línea de ingreso alto, un cierre justo en el medio) y la unidad de análisis es el ingreso de la comuna de la estación, no el de los pasajeros. Sería necesario otro tipo de dato (por ejemplo, viajes por tarjeta o por estación de origen) para ponerla a prueba de verdad. Resultado a conservar tal cual: la hipótesis no queda respaldada.
+
+## 7. Efecto cruzado entre modos y Granger — 1-nov-2026
+
+Script: `scripts/efectos_cruzados_granger.py`. Tablas: `tabla_efecto_cruzado_interanual.csv`, `tabla_efecto_cruzado_eventos.csv`, `tabla_estacionariedad_granger.csv`, `tabla_granger_precio_demanda.csv`. Modos: colectivo nacional, tren y subte (sin línea D). El colectivo provincial queda afuera porque su tarifa se conoce solo desde febrero de 2024.
+
+### Qué se busca
+
+Efecto cruzado: si cuando sube la tarifa de un modo la demanda de otro sube (sustitutos) o baja (complementarios). Granger: si el pasado de la tarifa ayuda a predecir la demanda futura más allá del pasado de la propia demanda. Granger no prueba causalidad: es una condición de precedencia temporal, y las tarifas se anuncian con anticipación y comparten shocks (inflación).
+
+### 1. Diferencias interanuales con las tres tarifas reales a la vez
+
+| Demanda de | Tarifa propia | Tarifa de tren | Tarifa de colectivo | Tarifa de subte |
+|---|---|---|---|---|
+| Colectivo nacional | −0,11 | +0,16 | (propia) | −0,10 |
+| Tren | +0,22 | (propia) | −0,21 | −0,13 |
+| Subte | −0,26 | +0,06 (no signif.) | +0,02 (no signif.) | (propia) |
+
+VIF entre 2,4 y 6,9: las tarifas del colectivo y del tren se mueven juntas (VIF 4,4 y 6,9). **El coeficiente propio del tren da positivo (+0,22), lo que no tiene interpretación económica: es la señal de que, con tarifas tan correlacionadas, los coeficientes no se separan.** Solo el subte da una estimación estable y negativa (−0,26, igual que en el bloque 4) y sin efectos cruzados significativos.
+
+### 2. Eventos: demanda de los otros modos ante un salto
+
+Solo hay cuatro casos "limpios" (la tarifa nominal del modo observado no cambió en la ventana): el colectivo nacional en feb-2026 con el tren (−2,5%), el subte en oct-2024 con el colectivo (+0,4%), el tren en mayo-2026 con el subte (+5,4%) y el tren en ago-2026 con el subte (−0,1%). Ninguno muestra sustitución sistemática (todos entre −2,5% y +5,4%, dentro del ruido). En los casos no limpios (por ejemplo, el subte con el colectivo en ene–feb 2024) los modos cambiaron de precio al mismo tiempo y no se pueden separar.
+
+### 3. Granger
+
+Las series se llevan a estacionariedad (primera diferencia del log de la demanda sin feriados, paros, elecciones y mes; primera diferencia del log de la tarifa real). ADF + KPSS (tabla de la clase) da estacionaria en las seis series (KPSS del tren 0,06, en el límite). Rezago por AIC (3 a 5 semanas). Corrección de Holm por las nueve pruebas de cada sentido.
+
+| Sentido | Resultado |
+|---|---|
+| Tarifa → demanda, subte (propia) | p = 0,002 (Holm 0,019): **significativo**, rezago 4 semanas |
+| Tarifa → demanda, tren (propia) | p = 0,018 (Holm 0,14): no sobrevive la corrección |
+| Tarifa del colectivo → demanda del tren | p = 0,026 (Holm 0,18): no sobrevive la corrección |
+| Resto de las pruebas cruzadas y el colectivo | p entre 0,18 y 0,99, sin señal |
+| Demanda → tarifa (control) | ninguna significativa tras Holm; la más cercana (subte propia) p = 0,046, Holm 0,42 |
+
+**Lectura:** el pasado de la tarifa predice la demanda del subte (y solo esa) una vez corregido por pruebas múltiples, coherente con las elasticidades de los bloques 1 y 4. No hay evidencia de efectos cruzados ni de que la demanda anticipe o determine la tarifa (la política tarifaria no parece responder a la demanda semanal). La poca señal en el colectivo y el tren es coherente con elasticidades cercanas a cero, pero también con poca potencia: son pocos saltos y se mueven juntos.
+
+### Qué se puede afirmar
+
+Hay evidencia de que la tarifa precede y predice la demanda del subte; no la hay para el colectivo nacional ni el tren, ni para efectos cruzados. No se afirma causalidad: falta ingreso, y el Granger solo cuenta como un chequeo de precedencia. Los coeficientes cruzados del bloque 1 no son interpretables por colinealidad.

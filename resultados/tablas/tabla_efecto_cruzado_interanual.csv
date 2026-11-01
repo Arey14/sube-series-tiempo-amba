@@ -1,0 +1,10 @@
+demanda_de,tarifa_de,tipo,coeficiente,error_std_HAC,ic95_inf,ic95_sup,VIF,semanas
+colectivo_nacional,colectivo_nacional,propia,-0.114,0.078,-0.267,0.038,4.4,186
+colectivo_nacional,tren,cruzada,0.164,0.082,0.003,0.325,6.9,186
+colectivo_nacional,subte,cruzada,-0.104,0.044,-0.189,-0.018,2.4,186
+tren,colectivo_nacional,cruzada,-0.21,0.028,-0.266,-0.155,4.4,186
+tren,tren,propia,0.216,0.034,0.149,0.282,6.9,186
+tren,subte,cruzada,-0.131,0.03,-0.19,-0.072,2.4,186
+subte,colectivo_nacional,cruzada,0.022,0.061,-0.097,0.142,4.4,186
+subte,tren,cruzada,0.056,0.063,-0.068,0.18,6.9,186
+subte,subte,propia,-0.262,0.031,-0.323,-0.201,2.4,186
