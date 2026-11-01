@@ -316,3 +316,7 @@ Script: `scripts/modelo_precio_demanda.py`. Demanda: transacciones diarias por m
 - **Placebo:** en fechas sin cambio de precio el efecto neto queda casi siempre entre −0,05 y +0,08 en log. Los saltos del colectivo nacional de 2024, los del subte y el del tren de mayo de 2024 quedan fuera de esa banda; los demás no se distinguen del ruido.
 
 Lectura: la demanda respondió poco al precio (elasticidades de colectivo y tren cercanas a cero, subte más sensible), pero las estimaciones son inestables entre métodos y eventos. No es un efecto causal: faltan el ingreso, la inflación y las tarifas de los demás modos. Pendientes: tarifa real (deflactada por IPC), efecto cruzado entre modos, Granger y el control con serie sintética.
+
+### 9.1 Corrección sobre el subte: línea D cerrada en 2024
+
+La línea D estuvo sin servicio del 8-ene-2024 al 6-mar-2024. Eso explica la caída del subte en el evento de enero–febrero de 2024: sin la línea D el efecto pasa de −21,5% a −6,1%. El modelo debe usar el subte sin línea D en esas semanas. Detalle y lectura de los resultados en `docs/interpretacion_resultados.md`.
