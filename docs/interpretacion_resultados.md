@@ -135,3 +135,22 @@ Se ubicó cada estación en su comuna (puntos de las estaciones y polígonos de 
 | A, B, C, E | 18, 17, 9, 18 | 0% / 100% / 0% | $548.042 |
 
 **Limitación detectada antes de usar el índice:** con zonas, cuatro de las seis líneas empatan (todas atraviesan solo la zona Centro). La comparación de H-ingreso quedaría reducida a la línea D contra el resto, con la H en el medio. No distingue, por ejemplo, Caballito y Almagro de Flores y Balvanera. Se necesita ingreso por comuna para separar las líneas del Centro. No se miró ningún resultado por línea al armar esta clasificación.
+
+### 5.1 Índice por comuna (EAH del IDECBA) — 1-nov-2026
+
+Con la tabla de ingreso per cápita familiar por comuna (`data/externos/MT_eah_2417.xlsx`, una hoja por año, 2019 a 2025; en 2020 solo hay total de la Ciudad) se reemplaza la zona por la comuna. El ingreso se expresa **relativo al total de la Ciudad de cada año** (los valores están en pesos corrientes y no se pueden comparar entre años), y el índice principal es su promedio entre 2022 y 2025. El orden de las comunas es estable: la 14, la 13 y la 2 son las más ricas (1,41, 1,29 y 1,29) y la 8, la 4 y la 9 las más pobres (0,48, 0,66 y 0,73) en todos los años. Tabla: `resultados/tablas/tabla_comunas_ingreso_relativo.csv`.
+
+Índice de cada línea (promedio de sus estaciones, sin ponderar por usos):
+
+| Línea | Índice 2022–2025 | Índice 2019–2025 | Rango de comunas de sus estaciones |
+|---|---|---|---|
+| D | **1,235** | 1,253 | 0,84 a 1,41 |
+| B | 0,961 | 0,958 | 0,84 a 1,08 |
+| A | 0,940 | 0,941 | 0,82 a 1,16 |
+| H | 0,930 | 0,926 | 0,66 a 1,29 |
+| C | 0,898 | 0,927 | 0,90 |
+| E | 0,885 | 0,891 | 0,82 a 1,16 |
+
+**Lectura:** la línea D es claramente la de mayor ingreso (cerca de 30% por encima de las demás). Las otras cinco quedan juntas (0,89 a 0,96, una diferencia de 8%), con orden estable entre los dos promedios salvo la C. La prueba tiene poder para una sola comparación: la D contra el resto. Dentro del resto, el gradiente es demasiado chico para sostener un contraste por línea, y la H mezcla comunas muy distintas (0,66 a 1,29), así que no se le asigna un grupo.
+
+**Comparación pre-registrada para el panel:** (1) principal: índice continuo de la línea (2022–2025) interactuado con la tarifa real; (2) contraste simple: línea D contra el promedio de A, B, C y E (la H queda afuera). Se corren ambas. Todavía no se miró ningún resultado por línea.
