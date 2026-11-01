@@ -375,3 +375,39 @@ MAE (millones de usuarios): colectivo 0,181 con Gradient Boosting; tren 0,041 (G
 ### Límites
 
 Mismas condiciones del bloque 11: configuración estándar sin ajuste fino, un solo horizonte (28 días), los paros y elecciones se excluyen de las métricas por modo y por tipo de día. En cada modo los paros propios hunden la demanda (bloque 8), pero un paro del colectivo no es atípico para el tren; aquí se excluyen para todos los modos por simplicidad, con un costo menor. Las series por modo no se reconstruyeron aparte: los huecos de ago-2022 y ene-2024 son los mismos del total.
+
+## 13. P-2: modelo híbrido (cada método donde rinde mejor) — 1-nov-2026
+
+Script: `modelo_hibrido_p2.py`. Tablas: `tabla_p2_hibrido_metricas.csv`, `tabla_p2_hibrido_tipo_dia.csv`, `tabla_p2_hibrido_dm.csv`, `tabla_p2_hibrido_elecciones.csv`. Figura: `fig23_p2_hibrido.png`. No se reajustó ningún modelo: se combinan los pronósticos ya calculados en el origen móvil (42 cortes, 28 días, sin atípicos).
+
+### Qué se probó
+
+Pregunta, nacida del bloque 12: si en tren y subte los modelos aditivos ganan en días hábiles y el Gradient Boosting en feriados y fines de semana, ¿combinarlos mejora a ambos?
+
+- **Híbrido fijo:** hábiles con SARIMAX; sábados, domingos y feriados con Gradient Boosting. La regla sale del patrón visto en toda la muestra de prueba, así que es una cota optimista.
+- **Híbrido walk-forward:** en cada corte y tipo de día usa el método (SARIMAX, Prophet o Gradient Boosting) con menor error en los cortes anteriores. No mira el futuro: es la versión honesta. Con menos de 8 cortes previos usa Gradient Boosting.
+- **Promedio SARIMAX + Gradient Boosting:** referencia para saber si alcanza con combinar sin regla.
+
+### Resultados (MASE)
+
+| Modelo | Total | Colectivo | Tren | Subte |
+|---|---|---|---|---|
+| SARIMAX | 0,82 | 0,83 | 0,62 | 0,75 |
+| Prophet | 0,77 | 0,79 | 0,65 | 0,91 |
+| Gradient Boosting | **0,57** | **0,59** | 0,62 | 0,71 |
+| Híbrido fijo | 0,68 | 0,69 | 0,55 | 0,60 |
+| **Híbrido walk-forward** | 0,58 | 0,61 | **0,54** | 0,61 |
+| Promedio SARIMAX + GB | 0,62 | 0,64 | 0,55 | 0,63 |
+
+### Lectura
+
+- **En tren y subte el híbrido mejora a los dos métodos de origen.** MASE de 0,62 a 0,54 en el tren y de 0,71 a 0,61 en el subte (el MAPE del subte baja de 12,0% a 10,5%). Diebold-Mariano contra el Gradient Boosting y contra el SARIMAX: p < 0,01 en todos los casos. La versión honesta (walk-forward) rinde igual que la fija, así que la mejora no depende de haber mirado la muestra de prueba para armar la regla.
+- **No hay que elegir bien para ganar:** el promedio simple de los dos métodos ya mejora a ambos en tren y subte (MASE 0,55 y 0,63). Lo que aporta el híbrido es la complementariedad de errores, más que una regla fina.
+- **En total y colectivo el híbrido no aporta.** El Gradient Boosting gana también en días hábiles (0,198 contra 0,255 del SARIMAX en el total), así que sacarlo de los hábiles empeora (el híbrido fijo pasa de 0,57 a 0,68). El walk-forward lo detecta y casi siempre elige Gradient Boosting; queda apenas peor (diferencia de 0,004 millones, p = 0,08 en el total y 0,04 en el colectivo), por los cortes en que eligió otro método sin necesidad.
+- **Qué eligió el walk-forward:** en domingo y feriado siempre Gradient Boosting, en todos los modos. En días hábiles del tren eligió Prophet 26 veces y SARIMAX 8; en el subte, Prophet 18, SARIMAX 8 y Gradient Boosting 8. Es decir, la regla que se había intuido (aditivo en hábiles, Gradient Boosting en el resto) aparece sola, pero el aditivo preferido es Prophet más que SARIMAX.
+- **Respuesta a P-2:** no existe un único método mejor. Para el total y el colectivo, el Gradient Boosting solo es lo mejor; para tren y subte, la combinación por tipo de día. La explicación es que los modelos aditivos capturan bien el ciclo semanal regular de los días hábiles y fallan en feriados y fines de semana, donde el Gradient Boosting aprende los niveles de cada tipo de día.
+
+### Límites
+
+- La regla del híbrido fijo se definió viendo la muestra de prueba; por eso se informa el walk-forward como resultado principal. Aun así, los candidatos y el patrón vienen del mismo análisis exploratorio, y se hicieron 24 comparaciones de Diebold-Mariano; las diferencias en tren y subte son lo bastante grandes (p ≤ 0,009) para sobrevivir a eso, pero conviene presentarlas como un hallazgo que merece confirmarse en otro período.
+- Se evaluó solo a 28 días. Los demás tramos de los bloques 11 y 12 siguen aplicando (configuración estándar sin ajuste fino, series con huecos reconstruidos).
