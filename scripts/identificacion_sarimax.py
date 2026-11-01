@@ -38,6 +38,8 @@ SERIE = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_reconstru
 TABLA_DIR = os.path.join(BASE_DIR, "resultados", "tablas")
 FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
 INICIO, FIN_IDENT = '2022-01-01', '2023-06-30'
+COL = sys.argv[1] if len(sys.argv) > 1 else 'total_amba'    # serie a identificar: total_amba, colectivo_amba, tren_amba o subte_amba
+SUF = '' if COL == 'total_amba' else '_' + COL
 
 
 def decision(x):
@@ -47,19 +49,19 @@ def decision(x):
 
 
 def main():
-    s = pd.read_csv(SERIE, parse_dates=['fecha']).set_index('fecha').asfreq('D')['total_amba'].loc[INICIO:FIN_IDENT] / 1e6
+    s = pd.read_csv(SERIE, parse_dates=['fecha']).set_index('fecha').asfreq('D')[COL].loc[INICIO:FIN_IDENT] / 1e6
     filas = []
     for nombre, x in [('nivel', s), ('dif. estacional (7)', s.diff(7)), ('dif. estacional (7) + dif. (1)', s.diff(7).diff())]:
         pa, pk, dec = decision(x)
         filas.append({'serie': nombre, 'p_ADF': pa, 'p_KPSS': pk, 'decision': dec})
-    t_dif = pd.DataFrame(filas); t_dif.to_csv(os.path.join(TABLA_DIR, 'tabla_sarimax_diferenciacion.csv'), index=False)
+    t_dif = pd.DataFrame(filas); t_dif.to_csv(os.path.join(TABLA_DIR, f'tabla_sarimax_diferenciacion{SUF}.csv'), index=False)
     print(t_dif.to_string(index=False))
 
     x = s.diff(7).dropna()
     fig, axs = plt.subplots(1, 2, figsize=(13, 4))
     plot_acf(x, lags=42, ax=axs[0], title='ACF de la serie con diferencia estacional (7)')
     plot_pacf(x, lags=42, ax=axs[1], title='PACF de la serie con diferencia estacional (7)', method='ywm')
-    plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig19_acf_pacf_sarimax.png'), dpi=200); plt.close()
+    plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, f'fig19_acf_pacf_sarimax{SUF}.png'), dpi=200); plt.close()
 
     cal = P.calendario(s.index)[['feriado', 'nochebuena_fin_anio'] + [c for c in P.calendario(s.index[:1]).columns if c.startswith(('sen_', 'cos_'))]]
     filas = []
@@ -72,7 +74,7 @@ def main():
                           'LjungBox_p7': round(lb.iloc[0], 3), 'LjungBox_p14': round(lb.iloc[1], 3)})
         except Exception as e:
             filas.append({'orden': f'({p},0,{q})x({PP},1,{Q},7)', 'AIC': np.nan, 'BIC': np.nan, 'LjungBox_p7': np.nan, 'LjungBox_p14': np.nan})
-    g = pd.DataFrame(filas).sort_values('BIC'); g.to_csv(os.path.join(TABLA_DIR, 'tabla_sarimax_grilla.csv'), index=False)
+    g = pd.DataFrame(filas).sort_values('BIC'); g.to_csv(os.path.join(TABLA_DIR, f'tabla_sarimax_grilla{SUF}.csv'), index=False)
     print('\nGrilla (ordenada por BIC):'); print(g.head(12).to_string(index=False))
     ok = g[(g.LjungBox_p7 > 0.05) & (g.LjungBox_p14 > 0.05)]
     print('\nMejor por BIC con residuos sin autocorrelación:'); print(ok.head(3).to_string(index=False))

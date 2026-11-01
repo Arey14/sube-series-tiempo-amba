@@ -29,13 +29,31 @@ warnings.filterwarnings('ignore')
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SERIE = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_reconstruida.csv")
-ABLACIONES = len(sys.argv) > 1 and sys.argv[1] == "ablaciones"
-SALIDA = os.path.join(BASE_DIR, "data", "procesado", "pronosticos_p2_ablaciones.csv" if ABLACIONES else "pronosticos_p2_folds.csv")
+ABLACIONES = 'ablaciones' in sys.argv
+COL = next((a.split('=')[1] for a in sys.argv if a.startswith('col=')), 'total_amba')   # col=colectivo_amba, tren_amba, subte_amba
+if COL != 'total_amba':
+    nombre_salida = f"pronosticos_p2_{COL}.csv"
+else:
+    nombre_salida = "pronosticos_p2_ablaciones.csv" if ABLACIONES else "pronosticos_p2_folds.csv"
+SALIDA = os.path.join(BASE_DIR, "data", "procesado", nombre_salida)
 
 INICIO, FIN = '2022-01-01', '2026-09-30'
 PRIMER_CORTE = '2023-06-30'
 HORIZONTE = 28
 ORDEN_SARIMAX = dict(order=(2, 0, 1), seasonal_order=(0, 1, 1, 7))
+
+
+def orden_identificado(col):
+    """Lee el orden elegido por BIC con residuos sin autocorrelación (identificacion_sarimax.py) para la serie `col`."""
+    f = os.path.join(BASE_DIR, "resultados", "tablas", f"tabla_sarimax_grilla_{col}.csv")
+    if not os.path.exists(f):
+        return ORDEN_SARIMAX
+    g = pd.read_csv(f)
+    g = g[(g.LjungBox_p7 > 0.05) & (g.LjungBox_p14 > 0.05)].sort_values('BIC')
+    o = g.iloc[0]['orden']          # formato (p,0,q)x(P,1,Q,7)
+    a, b = o.split('x')
+    ev = lambda t: tuple(int(x) for x in t.strip('()').split(','))
+    return dict(order=ev(a), seasonal_order=ev(b))
 
 
 def cortes(serie):
@@ -46,7 +64,7 @@ def cortes(serie):
 
 
 def main():
-    serie = pd.read_csv(SERIE, parse_dates=['fecha']).set_index('fecha').asfreq('D')['total_amba'].loc[INICIO:FIN] / 1e6
+    serie = pd.read_csv(SERIE, parse_dates=['fecha']).set_index('fecha').asfreq('D')[COL].loc[INICIO:FIN] / 1e6
     assert serie.notna().all()
     hechos = set()
     if os.path.exists(SALIDA):
@@ -61,7 +79,16 @@ def main():
         'prophet': lambda s, c: P.prophet(s, c, HORIZONTE),
         'gradient_boosting': lambda s, c: P.gradient_boosting(s, c, HORIZONTE),
     }
-    if ABLACIONES:
+    if COL != 'total_amba':
+        ord_ = orden_identificado(COL)
+        print('Serie', COL, 'orden SARIMAX', ord_, flush=True)
+        modelos = {
+            'naive_7': modelos['naive_7'], 'naive_364': modelos['naive_364'],
+            'sarimax': lambda s, c: P.sarimax(s, c, HORIZONTE, **ord_)[0],
+            'sarimax_en_logs': lambda s, c: P.sarimax(s, c, HORIZONTE, en_logs=True, **ord_)[0],
+            'prophet': modelos['prophet'], 'gradient_boosting': modelos['gradient_boosting'],
+        }
+    elif ABLACIONES:
         modelos = {
             'sarimax_en_logs': lambda s, c: P.sarimax(s, c, HORIZONTE, en_logs=True, **ORDEN_SARIMAX)[0],
             'gb_solo_calendario': lambda s, c: P.gradient_boosting(s, c, HORIZONTE, con_rezagos=False),

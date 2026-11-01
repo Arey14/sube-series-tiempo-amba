@@ -342,3 +342,36 @@ Los intervalos salen de los errores de los cortes anteriores en el mismo horizon
 - La explicación es mayormente el tratamiento del calendario (feriados, patrón semanal multiplicativo, estacionalidad anual) y, en segundo lugar, los rezagos.
 - Límites: todos los modelos se usaron con configuración estándar, sin ajuste fino de hiperparámetros (ni siquiera el Gradient Boosting); se evalúa un solo horizonte (28 días); los paros y elecciones no se pronostican, y en esos días los errores son mucho mayores (por eso se informa también con todos los días); la serie es el total de usuarios del AMBA, no cada modo.
 - **Pendiente de P-2:** pronósticos por modo (colectivo, tren y subte), efecto de la reconstrucción de los huecos sobre el pronóstico, y otros horizontes (7 y 90 días).
+
+## 12. P-2 por modo: colectivo, tren y subte — 1-nov-2026
+
+Scripts: `analisis_pronosticos_por_modo.py` (análisis) y `evaluacion_pronosticos.py col=<modo>` (evaluación); el orden del SARIMAX de cada modo se identifica como en el bloque 11 (`identificacion_sarimax.py <modo>`). Tablas: `tabla_p2_modo_metricas.csv`, `tabla_p2_modo_tipo_dia.csv`, `tabla_p2_modo_diebold_mariano.csv`. Figura: `fig22_p2_mase_por_modo.png`. Mismo origen móvil que el total: 42 cortes, horizonte de 28 días. Cada serie es el número de usuarios distintos por día en ese modo (millones). Sin atípicos: sin paros ni elecciones y, en el subte, sin el cierre de la línea D (8-ene a 6-mar de 2024).
+
+### Órdenes del SARIMAX identificados (BIC con residuos sin autocorrelación)
+
+Colectivo (1,0,0)x(0,1,1,7); tren (1,0,1)x(0,1,1,7); subte (2,0,1)x(0,1,1,7). El total daba (2,0,1)x(0,1,1,7).
+
+### Resultados (MASE; menor a 1 es mejor que el Naive de 7 días)
+
+| Modelo | Colectivo | Tren | Subte |
+|---|---|---|---|
+| Naive 7 días | 1,43 | 1,25 | 1,28 |
+| Naive 364 días | 1,19 | 1,32 | 1,86 |
+| SARIMAX | 0,83 | **0,62** | 0,75 |
+| SARIMAX en logs | 0,75 | 0,72 | 0,90 |
+| Prophet | 0,79 | 0,65 | 0,91 |
+| **Gradient Boosting** | **0,59** | **0,62** | **0,71** |
+
+MAE (millones de usuarios): colectivo 0,181 con Gradient Boosting; tren 0,041 (Gradient Boosting y SARIMAX); subte 0,028 con Gradient Boosting y 0,029 con SARIMAX.
+
+### Lectura
+
+- **Colectivo:** el Gradient Boosting es claramente mejor (MAPE 7,6% contra 11,9% de SARIMAX y 12,0% de Prophet; p < 0,0001 contra cada uno). Es el mismo resultado que para el total, que se explica porque el colectivo es el 90% de los usuarios.
+- **Tren y subte:** el Gradient Boosting **empata con el SARIMAX** (Diebold-Mariano: diferencia de 0,0004 y 0,0012 millones, p = 0,82 y 0,53). En el tren tampoco se distingue de Prophet (p = 0,43). En el subte sí supera a Prophet y al SARIMAX en logs (p < 0,002). No hay un ganador único: el método mejor para el total no lo es por una diferencia clara en los dos modos más chicos.
+- **Los métodos se complementan según el tipo de día.** En días hábiles, los modelos aditivos le ganan al Gradient Boosting en tren y subte (MAE tren: SARIMAX 0,037 y Prophet 0,035 contra 0,044; subte: SARIMAX 0,026 contra 0,033). En feriados y fines de semana ocurre lo contrario (feriado tren: Gradient Boosting 0,065 contra SARIMAX 0,130; subte: 0,031 contra 0,077). Un modelo que usara cada uno donde rinde mejor probablemente mejoraría a ambos; no se probó.
+- **En los modos chicos los errores porcentuales son altos:** en el tren y el subte el MAPE de los domingos y feriados va de 17% a 111%, porque la demanda base es baja y cualquier desvío pesa. Los feriados siguen siendo el problema principal en todos los modos (los Naive fallan 3 a 5 veces más que los modelos con calendario).
+- **El Naive anual (364 días) solo ayuda en el colectivo.** En el tren empata con el de 7 días (p = 0,34) y en el subte es peor (MASE 1,86), probablemente porque el subte cambió de nivel con las tarifas y la línea D.
+
+### Límites
+
+Mismas condiciones del bloque 11: configuración estándar sin ajuste fino, un solo horizonte (28 días), los paros y elecciones se excluyen de las métricas por modo y por tipo de día. En cada modo los paros propios hunden la demanda (bloque 8), pero un paro del colectivo no es atípico para el tren; aquí se excluyen para todos los modos por simplicidad, con un costo menor. Las series por modo no se reconstruyeron aparte: los huecos de ago-2022 y ene-2024 son los mismos del total.
