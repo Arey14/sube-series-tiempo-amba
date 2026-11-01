@@ -411,3 +411,53 @@ Pregunta, nacida del bloque 12: si en tren y subte los modelos aditivos ganan en
 
 - La regla del híbrido fijo se definió viendo la muestra de prueba; por eso se informa el walk-forward como resultado principal. Aun así, los candidatos y el patrón vienen del mismo análisis exploratorio, y se hicieron 24 comparaciones de Diebold-Mariano; las diferencias en tren y subte son lo bastante grandes (p ≤ 0,009) para sobrevivir a eso, pero conviene presentarlas como un hallazgo que merece confirmarse en otro período.
 - Se evaluó solo a 28 días. Los demás tramos de los bloques 11 y 12 siguen aplicando (configuración estándar sin ajuste fino, series con huecos reconstruidos).
+
+## 14. P-2: sensibilidad al tratamiento de los días sin dato — 1-nov-2026
+
+Script: `sensibilidad_huecos_p2.py`. Tablas: `tabla_p2_huecos_metricas.csv`, `tabla_p2_huecos_dm.csv`. Total AMBA, horizonte de 28 días, mismos cortes. La fuente no tiene dato en 62 días (ago-2022 y ene-2024); la serie principal los rellena con la reconstrucción desde las transacciones. Se reentrenaron SARIMAX, Prophet y Gradient Boosting con dos alternativas: **interpolada** (por día de la semana) y **faltantes** (esos días vacíos en el entrenamiento). Todas se evalúan contra la serie reconstruida, sin paros ni elecciones y sin los 62 días reconstruidos como objetivo.
+
+### Resultados (MASE, sin atípicos ni días reconstruidos)
+
+| Modelo | Reconstruida (principal) | Interpolada | Faltantes |
+|---|---|---|---|
+| Gradient Boosting | **0,56** | 0,63 | 0,61 |
+| Prophet | 0,76 | 0,80 | 0,81 |
+| SARIMAX | 0,81 | 0,82 | 0,81 |
+
+### Lectura
+
+- **El ranking no depende del tratamiento.** Gradient Boosting primero en las tres versiones (Diebold-Mariano contra SARIMAX y Prophet: p < 0,0001 en todas). Prophet y SARIMAX no se distinguen entre sí en interpolada y faltantes (p = 0,27 y 0,84); en la serie principal quedan al borde (p = 0,07). La conclusión de P-2 es robusta a cómo se traten los huecos.
+- **La reconstrucción sí mejora el nivel de error del Gradient Boosting:** su MASE sube de 0,56 a 0,63 con interpolación y a 0,61 con faltantes (el MAE de 0,186 a 0,208 y 0,199). Para Prophet y SARIMAX la diferencia es pequeña. Es un argumento a favor de haber reconstruido, aunque no cambia qué método gana.
+- **Hallazgo adicional:** con los días faltantes, el SARIMAX del primer corte (30-jun-2023, con 31 días vacíos en el entrenamiento) divergió (pronósticos del orden de 10^117, porque el ajuste no impone estacionariedad). Ese corte se excluyó de todas las variantes para comparar los mismos días (41 cortes, 1.104 días). Con datos completos no ocurre.
+- Los 62 días reconstruidos caen en dos cortes de la evaluación; sacarlos de la muestra casi no mueve las métricas de la serie principal (MASE del Gradient Boosting 0,564 a 0,562), así que la evaluación no está inflada por evaluar contra valores estimados.
+
+### Límites
+
+Solo el total AMBA y 28 días. No se probó otra reconstrucción alternativa (por ejemplo con otro modelo), solo las dos formas simples de tratar los días sin dato.
+
+## 15. P-2: horizontes de 7, 28 y 90 días — 1-nov-2026
+
+Scripts: `analisis_horizontes_p2.py` y `evaluacion_pronosticos.py h=7|h=90`. Tablas: `tabla_p2_horizontes_metricas.csv`, `tabla_p2_horizontes_dm.csv`, `tabla_p2_horizontes_por_tramo.csv`. Figura: `fig24_p2_horizontes.png`. Total AMBA, mismo origen móvil con bloques de 7 días (169 cortes), 28 días (42) y 90 días (13); modelos con la configuración y órdenes de siempre. Sin atípicos.
+
+### Resultados (MASE; menor a 1 es mejor que el naive de 7 días de entrenamiento)
+
+| Modelo | 7 días | 28 días | 90 días |
+|---|---|---|---|
+| Naive 7 días | 1,19 | 1,43 | 1,44 |
+| Naive 364 días | 1,19 | 1,20 | 1,21 |
+| SARIMAX | 0,77 | 0,82 | 0,85 |
+| Prophet | 0,76 | 0,77 | 0,78 |
+| **Gradient Boosting** | **0,56** | **0,57** | **0,61** |
+
+MAPE del Gradient Boosting: 7,2% (7 días), 7,4% (28) y 8,1% (90).
+
+### Lectura
+
+- **El ranking es el mismo en los tres horizontes:** Gradient Boosting, luego Prophet y SARIMAX, luego los Naive. El Gradient Boosting es mejor que Prophet y SARIMAX en todos (Diebold-Mariano, p < 0,0001 en las seis comparaciones); entre Prophet y SARIMAX no se probó diferencia.
+- **El error crece poco con el horizonte.** El Gradient Boosting pasa de 0,56 a 0,61 entre 7 y 90 días; el SARIMAX, de 0,77 a 0,85; Prophet casi no cambia. Esto tiene sentido porque la mayor parte del error viene de los feriados (que se conocen con meses de anticipación) y no de la tendencia reciente, y lo único que pierden los modelos a 90 días es el último dato observado.
+- **El Naive de 7 días se degrada más rápido** (1,19 a 1,43), porque repite la última semana, que a 7 días suele ser comparable con la próxima y a más días ya no. El Naive anual (364 días) no depende del horizonte, como corresponde.
+- **El Naive de 7 días a 7 días de horizonte no mejora al anual** (p = 0,95): confirma que aun con la información más reciente, repetir la semana pasada no alcanza por los feriados.
+
+### Límites
+
+Solo total AMBA (no por modo ni el híbrido). El horizonte de 90 días tiene 13 cortes: la comparación entre modelos se apoya en 1.155 días, pero con pocas realizaciones independientes de tendencia, así que sus intervalos son más inciertos. Los bloques de 7 días consecutivos tienen errores correlacionados; el Diebold-Mariano usa errores HAC con 27 rezagos.

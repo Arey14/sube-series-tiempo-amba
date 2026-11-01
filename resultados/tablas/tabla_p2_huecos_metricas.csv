@@ -1,0 +1,19 @@
+muestra,variante,modelo,dias,MAE,RMSE,MAPE_pct,sesgo,MASE
+sin atípicos (como bloque 11),faltantes,gradient_boosting,1134.0,0.199,0.286,7.89,0.022,0.605
+sin atípicos (como bloque 11),faltantes,prophet,1134.0,0.267,0.402,12.522,-0.017,0.812
+sin atípicos (como bloque 11),faltantes,sarimax,1134.0,0.268,0.368,11.871,0.009,0.813
+sin atípicos (como bloque 11),interpolada,gradient_boosting,1134.0,0.208,0.294,8.24,-0.002,0.632
+sin atípicos (como bloque 11),interpolada,prophet,1134.0,0.265,0.388,12.366,-0.009,0.805
+sin atípicos (como bloque 11),interpolada,sarimax,1134.0,0.274,0.373,11.951,-0.003,0.829
+sin atípicos (como bloque 11),reconstruida,gradient_boosting,1134.0,0.186,0.267,7.451,0.023,0.564
+sin atípicos (como bloque 11),reconstruida,prophet,1134.0,0.255,0.378,11.97,-0.002,0.772
+sin atípicos (como bloque 11),reconstruida,sarimax,1134.0,0.268,0.367,11.775,0.003,0.811
+sin atípicos ni días reconstruidos,faltantes,gradient_boosting,1104.0,0.199,0.287,7.816,0.024,0.606
+sin atípicos ni días reconstruidos,faltantes,prophet,1104.0,0.265,0.398,12.198,-0.015,0.805
+sin atípicos ni días reconstruidos,faltantes,sarimax,1104.0,0.267,0.367,11.693,0.007,0.808
+sin atípicos ni días reconstruidos,interpolada,gradient_boosting,1104.0,0.208,0.295,8.154,0.0,0.63
+sin atípicos ni días reconstruidos,interpolada,prophet,1104.0,0.264,0.384,12.054,-0.007,0.798
+sin atípicos ni días reconstruidos,interpolada,sarimax,1104.0,0.273,0.372,11.773,-0.004,0.824
+sin atípicos ni días reconstruidos,reconstruida,gradient_boosting,1104.0,0.186,0.268,7.372,0.027,0.562
+sin atípicos ni días reconstruidos,reconstruida,prophet,1104.0,0.253,0.374,11.647,-0.0,0.764
+sin atípicos ni días reconstruidos,reconstruida,sarimax,1104.0,0.267,0.367,11.607,0.003,0.806

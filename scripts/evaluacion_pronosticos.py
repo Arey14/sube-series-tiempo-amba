@@ -31,7 +31,10 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SERIE = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_reconstruida.csv")
 ABLACIONES = 'ablaciones' in sys.argv
 COL = next((a.split('=')[1] for a in sys.argv if a.startswith('col=')), 'total_amba')   # col=colectivo_amba, tren_amba, subte_amba
-if COL != 'total_amba':
+HORIZONTE = int(next((a.split('=')[1] for a in sys.argv if a.startswith('h=')), 28))      # h=7 o h=90: bloques de prueba de ese largo
+if HORIZONTE != 28:
+    nombre_salida = f"pronosticos_p2_h{HORIZONTE}.csv" if COL == 'total_amba' else f"pronosticos_p2_{COL}_h{HORIZONTE}.csv"
+elif COL != 'total_amba':
     nombre_salida = f"pronosticos_p2_{COL}.csv"
 else:
     nombre_salida = "pronosticos_p2_ablaciones.csv" if ABLACIONES else "pronosticos_p2_folds.csv"
@@ -39,7 +42,6 @@ SALIDA = os.path.join(BASE_DIR, "data", "procesado", nombre_salida)
 
 INICIO, FIN = '2022-01-01', '2026-09-30'
 PRIMER_CORTE = '2023-06-30'
-HORIZONTE = 28
 ORDEN_SARIMAX = dict(order=(2, 0, 1), seasonal_order=(0, 1, 1, 7))
 
 

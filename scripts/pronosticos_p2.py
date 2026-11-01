@@ -74,7 +74,7 @@ def sarimax(serie, fin_train, horizonte, order=(1, 0, 1), seasonal_order=(1, 1, 
 def prophet(serie, fin_train, horizonte):
     train, idx = _dividir(serie, fin_train, horizonte)
     cal_tr, cal_fu = calendario(train.index), calendario(idx)
-    d = pd.DataFrame({'ds': train.index, 'y': train.values, 'nochebuena_fin_anio': cal_tr['nochebuena_fin_anio'].values})
+    d = pd.DataFrame({'ds': train.index, 'y': train.values, 'nochebuena_fin_anio': cal_tr['nochebuena_fin_anio'].values}).dropna(subset=['y'])
     m = Prophet(weekly_seasonality=True, yearly_seasonality=True, daily_seasonality=False, changepoint_prior_scale=0.05)
     m.add_country_holidays(country_name='AR')
     m.add_regressor('nochebuena_fin_anio')
@@ -110,7 +110,8 @@ def gradient_boosting(serie, fin_train, horizonte, random_state=42, con_rezagos=
     hist = dict(train.items())
     X = [_features(hist, f, cal_tr.loc[f]) for f in train.index[max(LAGS):]]
     X = pd.DataFrame(X); cols = list(X.columns)
-    modelo = HistGradientBoostingRegressor(max_iter=200, random_state=random_state).fit(X, train.iloc[max(LAGS):].values)
+    y = train.iloc[max(LAGS):].values; ok = ~np.isnan(y)       # con días faltantes en la serie se descartan como objetivo
+    modelo = HistGradientBoostingRegressor(max_iter=200, random_state=random_state).fit(X[ok], y[ok])
     pred = []
     for f in idx:
         p = float(modelo.predict(pd.DataFrame([_features(hist, f, cal_fu.loc[f])])[cols])[0])
