@@ -90,3 +90,36 @@ Se escribe antes de mirar ningún resultado por línea, para que no se pueda aju
 - Hay solo seis líneas y cuatro saltos: pocos puntos, intervalos amplios.
 - Las líneas tienen choques propios (cierre de la D, obras, extensiones de la E y la H). Se controla con efectos fijos y tendencias por línea, y se muestra con y sin ellas.
 - La elasticidad por línea mide la respuesta de los usuarios de esa línea al precio, no la de los usuarios que cambiaron de modo. No se interpreta como sustitución.
+
+## 4. Segunda corrida: tarifa real (IPC) y subte sin línea D — 1-nov-2026
+
+Cambios respecto del bloque 1: (a) todos los métodos se repiten con la tarifa deflactada por el IPC nacional de INDEC (`data/externos/ipc_nacional_indec.csv`; el IPC de septiembre de 2026 todavía no estaba publicado en la API y se prolongó con la variación de agosto); (b) el subte se modela sin la línea D (`scripts/usos_por_linea.py`), que además queda disponible por línea para la hipótesis H-ingreso. Tablas actualizadas: las mismas del bloque 1, con una columna `precio` (nominal o real).
+
+### Qué cambió al usar la tarifa real
+
+Con la tarifa nominal, una tarifa que solo sube se confunde con cualquier tendencia. Con la real (la tarifa dividida por el nivel de precios) el precio sube y baja: sube en los saltos y cae entre saltos por la inflación. Eso da variación propia para estimar el efecto.
+
+**A. Niveles semanales, con tendencia (la lectura prudente):**
+
+| Modo | Nominal | Real | Intervalo 95% real |
+|---|---|---|---|
+| Colectivo nacional | +0,097 | −0,016 | −0,150 a +0,118 |
+| Colectivo provincial | −0,260 | −0,256 | −0,361 a −0,152 |
+| Tren | +0,031 | −0,037 | −0,103 a +0,030 |
+| Subte (sin D) | −0,091 | **−0,255** | −0,317 a −0,192 |
+
+**B. Diferencias interanuales, tarifa real:** colectivo nacional −0,012; colectivo provincial −0,268; tren −0,043; subte −0,224 (intervalo −0,275 a −0,173).
+
+**Lectura:** con la tarifa real el signo ya no se invierte con la tendencia en el subte ni en el colectivo provincial. El subte da −0,26 en niveles con tendencia y −0,22 en diferencias interanuales: dos métodos con supuestos distintos coinciden en que una suba de 10% de la tarifa real se asocia con una baja de alrededor de 2,5% en la demanda del subte. El colectivo nacional y el tren quedan cerca de cero y con intervalos que contienen el cero. El colectivo provincial da −0,26 pero solo cubre desde febrero de 2024 (138 semanas) y sus eventos individuales no son confiables.
+
+### C. Estudio de eventos, subte sin D
+
+Los eventos del subte dan caídas netas de −7% (may-2023), −6% (ene–feb 2024, ahora sin el cierre de la D), −19% (may-2024, tarifa ×4,2) y −10% (oct-2024). La elasticidad de arco con tarifa real es inestable cuando el cambio real de precio es casi cero (ene–feb 2024: tarifa real +4%, elasticidad −1,6, que no tiene interpretación). Se reportan, pero no se promedian.
+
+### Qué se puede afirmar
+
+El subte reacciona al precio (elasticidad cerca de −0,25 a −0,22 en dos métodos) y el colectivo nacional y el tren no se distinguen de cero. Sigue sin ser un efecto causal: queda sin controlar el ingreso real y las tarifas de los otros modos. Para el subte, además, las diferencias entre líneas (H-ingreso) deberían decir si esa reacción promedio esconde grupos muy distintos.
+
+### Observación descriptiva (no es la prueba de H-ingreso)
+
+La participación de la línea D en el subte fue de 21% a 23% en 2022–2023 y de 18% a 20% desde 2024. La caída empieza en el primer trimestre de 2024, que incluye el cierre, y no se recupera. No se interpreta como respuesta al precio: puede ser el cierre, obras posteriores o un cambio en las rutas de los pasajeros.

@@ -40,6 +40,8 @@ USOS = os.path.join(BASE_DIR, "data", "procesado", "usos_diarios_amba.csv")
 TAR_D = os.path.join(BASE_DIR, "data", "hitos", "serie_tarifas_diaria.csv")
 TAR_H = os.path.join(BASE_DIR, "data", "hitos", "hitos_tarifas.csv")
 EVT = os.path.join(BASE_DIR, "data", "hitos", "hitos_paros_elecciones.csv")
+IPC = os.path.join(BASE_DIR, "data", "externos", "ipc_nacional_indec.csv")
+SUBTE_LINEAS = os.path.join(BASE_DIR, "data", "procesado", "usos_diarios_subte_por_linea.csv")
 TABLA_DIR = os.path.join(BASE_DIR, "resultados", "tablas")
 FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
 
@@ -54,7 +56,19 @@ def cargar():
     usos = pd.read_csv(USOS, parse_dates=['fecha']).set_index('fecha').asfreq('D')
     tar = pd.read_csv(TAR_D, parse_dates=['fecha']).pivot(index='fecha', columns='serie', values='tarifa')
     evt = pd.read_csv(EVT, parse_dates=['fecha'])
+    # el subte se modela sin la línea D: estuvo cerrada del 8-ene al 6-mar de 2024 y ese cierre no es una respuesta al precio
+    lineas = pd.read_csv(SUBTE_LINEAS, parse_dates=['fecha']).set_index('fecha')
+    usos['subte'] = lineas['subte_sin_D'].reindex(usos.index)
     return usos, tar, evt
+
+
+def deflactor_diario(indice):
+    """IPC nacional (INDEC) asignado a cada día de su mes. Si falta el último mes, se prolonga con la variación del anterior."""
+    ipc = pd.read_csv(IPC, parse_dates=['indice_tiempo']).set_index('indice_tiempo').iloc[:, 0]
+    while ipc.index[-1] < indice[-1].to_period('M').to_timestamp():
+        ipc.loc[ipc.index[-1] + pd.offsets.MonthBegin(1)] = ipc.iloc[-1] * ipc.iloc[-1] / ipc.iloc[-2]
+    d = ipc.reindex(ipc.index.union(indice)).ffill().reindex(indice)
+    return d / d.iloc[0]
 
 
 def semanal(usos, tar, evt):
@@ -63,6 +77,8 @@ def semanal(usos, tar, evt):
     semana = d.index.to_period('W-SUN').start_time
     y = np.log(d.groupby(semana).mean())
     p = np.log(tar.loc[INICIO:FIN, MODOS].groupby(semana).mean())
+    defl = deflactor_diario(d.index)
+    pr = np.log((tar.loc[INICIO:FIN, MODOS].div(defl, axis=0)).groupby(semana).mean())
     feriados = holidays.Argentina(years=range(2021, 2027))
     es_fer = pd.Series([(f in feriados) and f.day_of_week < 5 for f in d.index], index=d.index)
     ctrl = pd.DataFrame({'feriados_habiles': es_fer.groupby(semana).sum().astype(float)})
@@ -80,14 +96,14 @@ def semanal(usos, tar, evt):
     dn = d.where(normal, np.nan)
     cuenta = dn.notna().groupby(semana).sum()
     yh = np.log(dn.groupby(semana).mean()).where(cuenta >= 3)
-    return y, p, ctrl, yh
+    return y, p, ctrl, yh, pr
 
 
 def _hac(res_modelo, lags=8):
     return res_modelo.get_robustcov_results(cov_type='HAC', maxlags=lags)
 
 
-def niveles(y, p, ctrl):
+def niveles(y, p, ctrl, precio='nominal'):
     filas = []
     meses = pd.get_dummies(ctrl['mes'], prefix='m', drop_first=True).astype(float)
     for m in MODOS:
@@ -101,14 +117,14 @@ def niveles(y, p, ctrl):
             X = sm.add_constant(X)
             res = _hac(sm.OLS(y.loc[idx, m], X).fit())
             i = list(X.columns).index('log_tarifa')
-            filas.append({'modo': m, 'con_tendencia': con_tendencia, 'semanas': len(idx),
+            filas.append({'precio': precio, 'modo': m, 'con_tendencia': con_tendencia, 'semanas': len(idx),
                           'elasticidad': round(res.params[i], 3), 'error_std_HAC': round(res.bse[i], 3),
                           'ic95_inf': round(res.params[i] - 1.96 * res.bse[i], 3),
                           'ic95_sup': round(res.params[i] + 1.96 * res.bse[i], 3), 'R2': round(res.rsquared, 3)})
     return pd.DataFrame(filas)
 
 
-def interanual(y, p, ctrl):
+def interanual(y, p, ctrl, precio='nominal'):
     filas = []
     for m in MODOS:
         dy = y[m] - y[m].shift(SEMANAS_ANIO)
@@ -122,7 +138,7 @@ def interanual(y, p, ctrl):
             datos = datos[datos.index >= ini]
         res = _hac(sm.OLS(datos['dy'], sm.add_constant(datos.drop(columns='dy'))).fit())
         i = 1
-        filas.append({'modo': m, 'semanas': len(datos), 'elasticidad': round(res.params[i], 3),
+        filas.append({'precio': precio, 'modo': m, 'semanas': len(datos), 'elasticidad': round(res.params[i], 3),
                       'error_std_HAC': round(res.bse[i], 3), 'ic95_inf': round(res.params[i] - 1.96 * res.bse[i], 3),
                       'ic95_sup': round(res.params[i] + 1.96 * res.bse[i], 3), 'R2': round(res.rsquared, 3)})
     return pd.DataFrame(filas)
@@ -211,17 +227,24 @@ def graficar(y, filas_ev):
 
 def main():
     usos, tar, evt = cargar()
-    y, p, ctrl, yh = semanal(usos, tar, evt)
+    y, p, ctrl, yh, pr = semanal(usos, tar, evt)
     ex = set()
 
-    t_niv = niveles(y, p, ctrl); t_niv.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_niveles.csv'), index=False)
-    t_ia = interanual(y, p, ctrl); t_ia.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_interanual.csv'), index=False)
+    t_niv = pd.concat([niveles(y, p, ctrl, 'nominal'), niveles(y, pr, ctrl, 'real')], ignore_index=True); t_niv.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_niveles.csv'), index=False)
+    t_ia = pd.concat([interanual(y, p, ctrl, 'nominal'), interanual(y, pr, ctrl, 'real')], ignore_index=True); t_ia.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_interanual.csv'), index=False)
     print('A. Niveles (con y sin tendencia)'); print(t_niv.to_string(index=False))
     print('\nB. Diferencias interanuales'); print(t_ia.to_string(index=False))
 
     saltos = eventos_salto()
-    filas = [estudio_evento(yh, p, ex, m, a, b) for m, a, b in saltos
-             if pd.Timestamp(a) - pd.Timedelta(weeks=SEMANAS_ANIO + 8) >= y.index[0] and pd.Timestamp(b) <= y.index[-1] - pd.Timedelta(weeks=8)]
+    filas = []
+    for m, a, b in saltos:
+        if not (pd.Timestamp(a) - pd.Timedelta(weeks=SEMANAS_ANIO + 8) >= y.index[0] and pd.Timestamp(b) <= y.index[-1] - pd.Timedelta(weeks=8)):
+            continue
+        e = estudio_evento(yh, p, ex, m, a, b)
+        er = estudio_evento(yh, pr, ex, m, a, b)
+        e['dlog_tarifa_real'] = er['dlog_tarifa']
+        e['elasticidad_arco_real'] = er['elasticidad_arco']
+        filas.append(e)
     t_ev = pd.DataFrame(filas)
     t_ev.to_csv(os.path.join(TABLA_DIR, 'tabla_estudio_eventos.csv'), index=False)
     print('\nC. Estudio de eventos'); print(t_ev.to_string(index=False))
