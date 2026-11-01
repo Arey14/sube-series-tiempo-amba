@@ -123,3 +123,15 @@ El subte reacciona al precio (elasticidad cerca de −0,25 a −0,22 en dos mét
 ### Observación descriptiva (no es la prueba de H-ingreso)
 
 La participación de la línea D en el subte fue de 21% a 23% en 2022–2023 y de 18% a 20% desde 2024. La caída empieza en el primer trimestre de 2024, que incluye el cierre, y no se recupera. No se interpreta como respuesta al precio: puede ser el cierre, obras posteriores o un cambio en las rutas de los pasajeros.
+
+## 5. Clasificación de líneas por ingreso (antes de correr el panel) — 1-nov-2026
+
+Se ubicó cada estación en su comuna (puntos de las estaciones y polígonos de comunas de BA Data) y cada comuna en la zona del IDECBA (Norte: 2, 13, 14; Centro: 1, 3, 5, 6, 7, 11, 12, 15; Sur: 4, 8, 9, 10). Índice = ingreso per cápita familiar medio de la zona (2.º trimestre de 2024: Norte $805.736, Centro $548.042, Sur $377.273), promediado entre las estaciones de la línea. Tabla: `resultados/tablas/tabla_lineas_subte_ingreso.csv`.
+
+| Línea | Estaciones | Norte / Centro / Sur | Índice |
+|---|---|---|---|
+| D | 16 | 75% / 25% / 0% | $741.312 |
+| H | 12 | 33% / 33% / 33% | $577.017 |
+| A, B, C, E | 18, 17, 9, 18 | 0% / 100% / 0% | $548.042 |
+
+**Limitación detectada antes de usar el índice:** con zonas, cuatro de las seis líneas empatan (todas atraviesan solo la zona Centro). La comparación de H-ingreso quedaría reducida a la línea D contra el resto, con la H en el medio. No distingue, por ejemplo, Caballito y Almagro de Flores y Balvanera. Se necesita ingreso por comuna para separar las líneas del Centro. No se miró ningún resultado por línea al armar esta clasificación.
