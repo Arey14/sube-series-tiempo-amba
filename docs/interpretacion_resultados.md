@@ -285,3 +285,60 @@ Esta es la lectura conjunta de los bloques 1 a 9. Se redacta antes de armar la p
 | ¿Cómo se comporta la demanda en los hitos del calendario? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta |
 
 **Mensaje para la presentación:** el precio importa para el subte y casi nada para el colectivo y el tren en los saltos observados, pero eso no es un efecto causal limpio: queda sin controlar el ingreso y el período es de inflación alta. Los hitos de calendario son los efectos más claros y estables. Para el video se muestra primero lo que se sostiene (calendario, subte) y después lo inestable (saltos del colectivo), con los límites a la vista.
+
+## 11. P-2: qué método pronostica mejor la demanda diaria y por qué — 1-nov-2026
+
+Scripts: `pronosticos_p2.py` (modelos), `identificacion_sarimax.py`, `evaluacion_pronosticos.py` (origen móvil), `analisis_pronosticos_p2.py`. Tablas: `tabla_p2_*.csv`, `tabla_sarimax_*.csv`. Figuras: `fig19_acf_pacf_sarimax.png`, `fig20_p2_error_por_tipo_dia.png`, `fig21_p2_error_por_corte.png`. Los pronósticos de cada corte están en `data/procesado/pronosticos_p2_folds.csv` y `pronosticos_p2_ablaciones.csv`.
+
+### Diseño
+
+- **Serie:** usuarios distintos por día en el AMBA (`total_amba`), reconstruida en los dos huecos (ago-2022 y ene-2024), de enero de 2022 a septiembre de 2026. Octubre de 2026 queda afuera: sus transacciones son 100% preliminares.
+- **Origen móvil:** 42 cortes, el primero el 30-jun-2023 y luego cada 28 días. En cada uno, el modelo se ajusta con todo lo anterior y pronostica los 28 días siguientes. Los bloques no se solapan y cubren 1.176 días (1.161 sin paros ni elecciones).
+- **Sin fuga:** los modelos solo usan el pasado y el calendario (feriados, Nochebuena y fin de año, día de la semana, estacionalidad anual). Se verificó reemplazando el futuro real por basura (×10): los pronósticos no cambian (diferencia 0 en los cinco modelos).
+- **Modelos:** Naive de 7 días (repite la última semana), Naive de 364 días (mismo día del año anterior), SARIMAX, Prophet y Gradient Boosting recursivo. Variantes para explicar diferencias: SARIMAX sin estacionalidad anual, SARIMAX con el orden original del repositorio, SARIMAX en logaritmos y Gradient Boosting solo con calendario.
+- **Orden del SARIMAX:** la serie en nivel es indefinida (ADF y KPSS no coinciden) y con una diferencia estacional de 7 días queda estacionaria, así que d = 0 y D = 1. La grilla de 36 órdenes con AIC y BIC (solo datos hasta jun-2023) eligió **(2,0,1)x(0,1,1,7)** por BIC con residuos sin autocorrelación (Ljung-Box p > 0,3). Las diferencias de BIC entre los cinco primeros son de 2 puntos.
+
+### Resultados (sin días de paro ni elección; MAE en millones de usuarios)
+
+| Modelo | MAE | MAPE | MASE | sesgo |
+|---|---|---|---|---|
+| **Gradient Boosting recursivo** | **0,187** | **7,4%** | **0,57** | +0,02 |
+| Prophet | 0,254 | 11,9% | 0,77 | 0,00 |
+| SARIMAX (2,0,1)x(0,1,1,7) | 0,270 | 11,8% | 0,82 | +0,01 |
+| Naive 364 días | 0,395 | 17,4% | 1,20 | +0,08 |
+| Naive 7 días | 0,472 | 19,5% | 1,43 | −0,05 |
+
+MASE menor a 1 significa mejor que el Naive de 7 días dentro de la muestra. El Gradient Boosting supera a todos los demás con p < 0,0001 (Diebold-Mariano, errores estándar HAC con 27 rezagos), y todos los modelos superan al Naive de 7 días con p < 0,01. Es el mejor en los cuatro períodos (jul-dic 2023, 2024, 2025 y 2026) y en los cuatro tramos de horizonte (1 a 28 días).
+
+### Por qué
+
+| Hallazgo | Evidencia (MAE) |
+|---|---|
+| **Los feriados explican el grueso de la diferencia con los Naive.** Un Naive repite la semana anterior y falla cuando cae un feriado (error de 1,6 a 1,7 millones contra 0,28 a 0,88 de los modelos con calendario). | Feriados: Naive 7 = 1,73; GB = 0,28; SARIMAX = 0,67 |
+| **La estacionalidad anual importa y su ausencia se nota con el horizonte.** | SARIMAX sin anual 0,318 contra 0,270 con anual (−15%); a 22–28 días 0,380 contra 0,311 |
+| **El patrón semanal es multiplicativo.** En logaritmos el SARIMAX mejora 10% y el error de los domingos se reduce a la mitad. | SARIMAX en logs 0,243 contra 0,270; domingos 0,132 contra 0,253 |
+| **El Gradient Boosting gana por su flexibilidad con el calendario y por los rezagos.** Solo con calendario (sin rezagos) queda en 0,237, mejor que SARIMAX y Prophet; los rezagos le suman otro 21%. | GB solo calendario 0,237; GB completo 0,187 |
+| **Identificar el orden con ACF, PACF y BIC no cambió el resultado.** | SARIMAX identificado 0,270; orden original (1,1,1)x(1,1,1,7) 0,268 |
+| **El error del Gradient Boosting casi no crece con el horizonte** (0,17 a 0,18–0,20), lo que indica que se apoya sobre todo en el calendario y la estacionalidad semanal y no en el nivel reciente. | GB por tramos: 0,168 / 0,193 / 0,202 / 0,183 |
+
+### Por tipo de día (MAE, sin atípicos)
+
+| Tipo | Gradient Boosting | Prophet | SARIMAX | Naive 7 |
+|---|---|---|---|---|
+| Hábil | 0,198 | 0,213 | 0,255 | 0,501 |
+| Sábado | 0,151 | 0,215 | 0,206 | 0,183 |
+| Domingo | 0,131 | 0,252 | 0,253 | 0,141 |
+| Feriado | 0,284 | 0,884 | 0,674 | 1,730 |
+
+En sábados y domingos el Naive de 7 días es competitivo (0,18 y 0,14): el patrón de fin de semana es estable y el ruido es bajo. Las ganancias de los modelos vienen de los días hábiles y los feriados.
+
+### Intervalos de predicción (método conforme)
+
+Los intervalos salen de los errores de los cortes anteriores en el mismo horizonte. La cobertura observada es cercana a la nominal: al 80%, entre 79% y 85%; al 95%, entre 94% y 95%. El semiancho al 95% es de 0,57 millones (Gradient Boosting), 0,83 (SARIMAX), 0,85 (Prophet), 1,96 (Naive 364) y 2,33 (Naive 7): un modelo mejor da intervalos más estrechos con la misma cobertura.
+
+### Qué se puede afirmar y límites
+
+- El Gradient Boosting es el mejor método para esta serie en horizonte de 28 días, y la ventaja no es casualidad (prueba de Diebold-Mariano, estable en los cuatro períodos).
+- La explicación es mayormente el tratamiento del calendario (feriados, patrón semanal multiplicativo, estacionalidad anual) y, en segundo lugar, los rezagos.
+- Límites: todos los modelos se usaron con configuración estándar, sin ajuste fino de hiperparámetros (ni siquiera el Gradient Boosting); se evalúa un solo horizonte (28 días); los paros y elecciones no se pronostican, y en esos días los errores son mucho mayores (por eso se informa también con todos los días); la serie es el total de usuarios del AMBA, no cada modo.
+- **Pendiente de P-2:** pronósticos por modo (colectivo, tren y subte), efecto de la reconstrucción de los huecos sobre el pronóstico, y otros horizontes (7 y 90 días).
