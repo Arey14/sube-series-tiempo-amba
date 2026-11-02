@@ -6,7 +6,7 @@
 [![Prophet](https://img.shields.io/badge/Facebook-Prophet-blueviolet.svg)](https://facebook.github.io/prophet/)
 [![Open Data](https://img.shields.io/badge/Datos%20Abiertos-SUBE%20Argentina-yellow.svg)](https://datos.transporte.gob.ar/)
 
-> **Estado (2-nov-2026, rama `trabajo/herramientas-materia`).** Las hipótesis y veredictos de la versión inicial se reemplazaron por dos preguntas de trabajo (P-1 y P-2). Las métricas de la versión inicial tenían fuga de información y se rehicieron con una evaluación con origen móvil. Qué cambió y por qué: [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md). Lectura de cada resultado, con sus límites: [`docs/interpretacion_resultados.md`](docs/interpretacion_resultados.md). El notebook todavía conserva el enfoque original.
+> **Estado (2-nov-2026, rama `trabajo/herramientas-materia`).** Las hipótesis y veredictos de la versión inicial se reemplazaron por dos preguntas de trabajo (P-1 y P-2). Las métricas de la versión inicial tenían fuga de información y se rehicieron con una evaluación con origen móvil. Qué cambió y por qué: [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md). Lectura de cada resultado, con sus límites: [`docs/interpretacion_resultados.md`](docs/interpretacion_resultados.md). El notebook se reescribió con el mismo enfoque.
 
 Este repositorio contiene el análisis de la **demanda de transporte público del Área Metropolitana de Buenos Aires (AMBA)** con datos del **Sistema Único de Boleto Electrónico (SUBE)**, 2020–2026, para la materia Series Temporales de la Maestría en Ciencia de Datos.
 
@@ -14,13 +14,29 @@ Este repositorio contiene el análisis de la **demanda de transporte público de
 
 ## 📌 Tabla de Contenidos
 
+- [Motivación](#-motivación)
 - [Preguntas y respuestas](#-preguntas-y-respuestas)
+- [Qué cambiamos y por qué](#-qué-cambiamos-y-por-qué)
 - [Estructura del Repositorio](#-estructura-del-repositorio)
 - [Dataset y Fuente de Datos](#-dataset-y-fuente-de-datos)
 - [Metodología](#-metodología)
+- [Resultados y Visualizaciones](#-resultados-y-visualizaciones)
 - [Guía de Reproducibilidad](#-guía-de-reproducibilidad)
 - [Referencias Bibliográficas](#-referencias-bibliográficas)
 - [Licencia](#-licencia)
+
+---
+
+## 🧭 Motivación
+
+El AMBA es uno de los sistemas de transporte público más grandes de América Latina: millones de viajes diarios en colectivo, tren y subte, todos con la misma tarjeta SUBE. Entre 2020 y 2026 la demanda pasó por una pandemia, un cambio fuerte en los hábitos de trabajo, una secuencia de saltos tarifarios y, en el medio, paros, elecciones y feriados que alteran un día cualquiera.
+
+Dos preguntas prácticas ordenan el trabajo:
+
+- **Entender:** cuando algo cambia (el precio, el calendario, un paro), ¿cuánto se mueve la demanda y podemos atribuir ese movimiento a la causa, o solo lo observamos al mismo tiempo? (P-1)
+- **Anticipar:** para planificar el servicio, ¿qué método de pronóstico funciona mejor con la demanda diaria y por qué? (P-2)
+
+Son preguntas distintas y piden herramientas distintas: atribuir una causa exige aislar el efecto de todo lo demás (un contrafactual), mientras que pronosticar exige un modelo que acierte, aunque no explique. El trabajo trata las dos por separado.
 
 ---
 
@@ -30,15 +46,15 @@ Este repositorio contiene el análisis de la **demanda de transporte público de
 
 Hitos estudiados: pandemia (descriptivo), saltos tarifarios, feriados, paros y elecciones.
 
-| Pregunta | Resultado | Confianza |
-|---|---|---|
-| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC), respaldada por Granger (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero. | Subte: media. Colectivo y tren: baja |
-| ¿Cuánto cayó con los saltos grandes? | Colectivo nacional ene–feb 2024: −13% (estudio de eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente. | Baja a media |
-| ¿Hay sustitución entre modos? | No se observa. | Media |
-| ¿Las líneas de subte de mayor ingreso reaccionan menos? | Sin respaldo (poco poder: solo 6 líneas). | Baja |
-| ¿Cómo se comporta la demanda en los hitos de calendario? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta |
+| Pregunta | Resultado | Confianza | Por qué esa confianza |
+|---|---|---|---|
+| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC), respaldada por Granger (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero. | Subte: media. Colectivo y tren: baja | Subte: dos métodos independientes coinciden y el test predictivo lo respalda, pero son pocos saltos y no es un experimento. Colectivo y tren: pocos saltos que además se mueven juntos en el tiempo, así que el precio no se puede separar de otros cambios. |
+| ¿Cuánto cayó con los saltos grandes? | Colectivo nacional ene–feb 2024: −13% (estudio de eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente. | Baja a media | Los dos métodos discrepan para el colectivo y el control sintético tiene donantes sin verificar. El subte tiene un solo evento grande limpio. |
+| ¿Hay sustitución entre modos? | No se observa. | Media | Los casos limpios quedan dentro del ruido, pero hay pocos casos limpios. |
+| ¿Las líneas de subte de mayor ingreso reaccionan menos? | Sin respaldo. | Baja | Solo 6 líneas: la prueba no tiene poder para detectar un efecto. Es un resultado nulo, no una refutación. |
+| ¿Cómo se comporta la demanda en feriados, paros, elecciones y pandemia? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta | Muchos eventos, efectos mucho mayores que el ruido normal (banda de días ordinarios) y resultados consistentes entre modos y años. |
 
-El precio importa para el subte y casi nada para el colectivo y el tren en los saltos observados, pero **no es un efecto causal limpio**: el ingreso queda sin controlar y el período es de inflación alta. Los hitos de calendario son los efectos más claros.
+**Sobre la causalidad.** En la materia se distinguen dos ideas: Granger (si el pasado del precio mejora la predicción de la demanda, lo que no demuestra una causa) y el efecto de una intervención contra un contrafactual estimado con series de control. Acá se usan las dos: el estudio de eventos con el año anterior como control y el control sintético con ciudades del interior (que absorben los shocks nacionales comunes, como inflación e ingreso), más Granger como evidencia predictiva. Ningún diseño es un experimento: todos dependen de supuestos (controles comparables, sin otros eventos simultáneos propios del AMBA), y por eso las confianzas de la tabla son medias o bajas. Los hitos de calendario son los efectos más claros.
 
 ### P-2. ¿Qué métodos pronostican mejor la demanda diaria, y por qué?
 
@@ -61,6 +77,23 @@ MASE menor a 1 significa mejor que repetir la última semana. Lo que se encontr�
 
 ---
 
+## 🔄 Qué cambiamos y por qué
+
+Resumen de las decisiones respecto del trabajo original; el detalle con evidencia está en [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md).
+
+| Cambio | Por qué |
+|---|---|
+| Las **Hipótesis 1 y 2** se reemplazan por las **Preguntas P-1 y P-2** | Las hipótesis emitían "veredictos" (por ejemplo, que el teletrabajo causó una pérdida permanente de demanda) que los datos no permiten sostener. Las preguntas ordenan mejor el trabajo y admiten respuestas con distinto grado de confianza. |
+| Se quita la **recuperación post-COVID contra el nivel pre-pandemia** | Del período previo solo hay enero y febrero de 2020 (59 días, temporada baja): no alcanza para distinguir recuperación de estacionalidad. El COVID pasa a ser un shock descriptivo y queda fuera del entrenamiento de los modelos. |
+| Se corrige la **fuga de información** en dos modelos | El Seasonal Naïve tomaba valores reales del tramo de prueba y el Gradient Boosting usaba rezagos reales al pronosticar (predecía cada día conociendo el anterior). El MAPE del Gradient Boosting pasaba de 8,8% a 11,0% con la corrección. Ahora los modelos solo usan el pasado y el calendario, y una prueba lo verifica. |
+| La evaluación pasa de una **ventana de 90 días** a **42 cortes sucesivos** (origen móvil) con prueba de significancia | Con una sola ventana no se puede saber si un modelo es mejor o tuvo suerte. Con 1.161 días de prueba y Diebold-Mariano sí. |
+| Se **reconstruyen los 62 días sin dato** desde las transacciones | La interpolación por día de la semana erraba entre 12% y 21% en meses de vacaciones; la reconstrucción, entre 1,6% y 3,2%. |
+| El **SARIMAX** se identifica con las herramientas de la materia | El orden original era fijo y sin justificación, con regresoras colineales y residuos con autocorrelación. |
+| Se agrega un análisis de **causalidad** (P-1) | El docente pidió incorporar causalidad: estudio de eventos, control sintético, Granger y panel por línea, con sus supuestos y límites. |
+| Se **reescriben el README y el notebook** | Para que todo el repositorio sea coherente con el nuevo enfoque y no muestre resultados que ya no se sostienen. |
+
+---
+
 ## 📂 Estructura del Repositorio
 
 ```text
@@ -71,7 +104,7 @@ MASE menor a 1 significa mejor que repetir la última semana. Lo que se encontr�
 │   ├── procesado/                         # Series reconstruidas, usos por línea y pronósticos de cada corte
 │   └── raw_usos/                          # (no versionado) CSV de transacciones, los baja usos_transacciones.py
 ├── notebooks/
-│   └── TP_Final_Series_de_Tiempo.ipynb    # Notebook original (pendiente de rehacer)
+│   └── TP_Final_Series_de_Tiempo.ipynb    # Notebook con el análisis completo (P-1 y P-2)
 ├── scripts/
 │   ├── descargar_datos.py                 # Datos: actualizador desde el portal oficial
 │   ├── calidad_datos.py                   # Datos: huecos, imputación, qué mide el total, días atípicos
@@ -132,6 +165,61 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 
 ---
 
+## 🖼️ Resultados y Visualizaciones
+
+### Datos
+**Reconstrucción de los días sin dato.** Se ocultaron bloques de 31 días de la propia serie y se comparó la reconstrucción desde transacciones con la interpolación simple.
+![Reconstrucción de huecos](resultados/figuras/fig12_reconstruccion_huecos.png)
+
+### P-1. Demanda ante los hitos
+
+**Saltos tarifarios y respuesta de la demanda.** Cada punto es un salto; cambio de la demanda (neto de lo ocurrido un año antes) contra el cambio de la tarifa, en logaritmos. Los saltos grandes del colectivo nacional y del subte caen más.
+![Estudio de eventos](resultados/figuras/fig14_estudio_eventos.png)
+
+**Transacciones en días hábiles contra el mismo día del año anterior** (mediana móvil de 7 días hábiles), por modo, alrededor de los saltos tarifarios de 2024 (líneas verticales). El subte se despega de los demás con sus saltos.
+![Usos interanual y tarifas 2024](resultados/figuras/fig13_usos_yoy_tarifas_2024.png)
+
+**Control sintético para los saltos del colectivo nacional.** La línea azul es el AMBA real; la punteada, el AMBA que habría resultado sin el salto (combinación de ciudades del interior). La línea vertical marca el salto.
+![Control sintético](resultados/figuras/fig18_control_sintetico.png)
+
+**Subte por línea.** Cambio neto de la demanda de cada línea en cuatro saltos tarifarios, con las líneas ordenadas por ingreso de la zona (de menor a mayor); la línea D, en rojo, es la de mayor ingreso. No se ve que la D reaccione menos (hipótesis de ingreso).
+![Eventos del subte por línea](resultados/figuras/fig15_eventos_subte_por_linea.png)
+
+**Demanda en días de paro, elección y feriado**, como cociente contra un día normal del mismo día de la semana. La banda gris es el ruido de los días ordinarios.
+![Hitos de calendario](resultados/figuras/fig17_hitos_cociente.png)
+
+**Pandemia (descriptivo).** Demanda semanal de días hábiles de cada modo, como porcentaje del promedio de enero–marzo de 2020.
+![COVID descriptivo](resultados/figuras/fig16_covid_descriptivo.png)
+
+### P-2. Pronóstico
+
+**Identificación del SARIMAX.** ACF y PACF de la serie con diferencia estacional de 7 días; guían los órdenes autorregresivo y de medias móviles.
+![ACF y PACF](resultados/figuras/fig19_acf_pacf_sarimax.png)
+
+**Error por tipo de día** (total AMBA, 28 días). Los feriados concentran la diferencia entre los modelos con calendario y los Naive.
+![Error por tipo de día](resultados/figuras/fig20_p2_error_por_tipo_dia.png)
+
+**Error de cada bloque de 28 días** a lo largo del tiempo, por método.
+![Error por corte](resultados/figuras/fig21_p2_error_por_corte.png)
+
+**MASE por modo.** En el colectivo gana el Gradient Boosting; en tren y subte empata con el SARIMAX.
+![MASE por modo](resultados/figuras/fig22_p2_mase_por_modo.png)
+
+**Híbrido por tipo de día** contra los métodos individuales. Mejora a ambos en tren y subte.
+![Híbridos](resultados/figuras/fig23_p2_hibrido.png)
+
+**Horizontes de 7, 28 y 90 días.** El ranking de métodos no cambia.
+![Horizontes](resultados/figuras/fig24_p2_horizontes.png)
+
+### Herramientas de la materia
+**Espectro de la serie (FFT):** los picos en 1/7, 2/7 y 3/7 ciclos por día son el ciclo semanal. **Correlación cruzada tren–colectivo y ACF del total:** los modos se mueven juntos (pico en rezago 0, sin adelantos) y la autocorrelación tiene picos en múltiplos de 7 días.
+![Espectro semanal](resultados/figuras/fig8_fft_espectro_semanal.png)
+![CCF tren y colectivo](resultados/figuras/fig11_ccf_tren_colectivo_y_acf.png)
+
+> Las figuras `fig4`, `fig5` y `fig6` (recuperación post-COVID, comparativa de pronósticos de 90 días y residuos del SARIMAX original) pertenecen al análisis de la versión inicial. Se conservan como referencia, pero ya no sustentan ninguna conclusión del trabajo.
+
+---
+
 ## 💻 Guía de Reproducibilidad
 
 ### 1. Clonar el repositorio
@@ -175,7 +263,7 @@ python scripts/modelo_hibrido_p2.py
 ```
 Variantes de la evaluación: `ablaciones`, `col=colectivo_amba|tren_amba|subte_amba` y `h=7|90`. Los datos externos (IPC, ingreso por comuna, geografía del subte) ya están en `data/externos/`.
 
-### 5. Notebook original
+### 5. Notebook
 ```bash
 jupyter notebook notebooks/TP_Final_Series_de_Tiempo.ipynb
 ```

@@ -15,7 +15,7 @@ Rama de trabajo: `trabajo/herramientas-materia`.
 | Las Hipótesis 1 y 2 se reemplazan por las **Preguntas 1 y 2** de la presentación | Las hipótesis emitían "veredictos" (por ejemplo, que el teletrabajo causó una pérdida permanente de demanda) que los datos no permiten sostener. Las preguntas ordenan mejor el trabajo: P-1 = demanda ante hitos (COVID, saltos tarifarios, feriados); P-2 = qué métodos predicen mejor y por qué. |
 | Se quita el sub-objetivo de medir la **recuperación post-COVID contra el nivel pre-pandemia** | Del período previo a la pandemia solo hay enero y febrero de 2020 (59 días), que además son temporada baja. No alcanza para distinguir "recuperación" de estacionalidad anual. El COVID pasa a tratarse como **shock descriptivo** (colapso y reapertura) y queda **fuera del entrenamiento** de los modelos, que ya usaban datos desde 2022. Se declara como limitación. |
 
-Estado (2-nov-2026): el README ya está reescrito en torno a las Preguntas 1 y 2. El notebook (`notebooks/TP_Final_Series_de_Tiempo.ipynb`) todavía conserva el enfoque original; se rehará junto con la presentación.
+Estado (2-nov-2026): el README y el notebook (`notebooks/TP_Final_Series_de_Tiempo.ipynb`) están reescritos en torno a las Preguntas 1 y 2. La sección 12 resume todos los cambios de enfoque y sus motivos en un solo lugar.
 
 ---
 
@@ -256,7 +256,7 @@ Para estimar el efecto del precio sobre la demanda con **todos** los cambios con
 
 ## 8. Pendientes que ya identificamos (no se tocaron todavía)
 
-*Actualización del 2-nov-2026: el origen móvil con test de significancia, la revisión del SARIMAX, la ventana de test y el diseño causal de P-1 están hechos (secciones 10 y 11). Queda el notebook. La lista de abajo es la original.*
+*Actualización del 2-nov-2026: el origen móvil con test de significancia, la revisión del SARIMAX, la ventana de test, el diseño causal de P-1 y la reescritura del README y el notebook están hechos (secciones 10, 11 y 12). La lista de abajo es la original.*
 
 - Evaluar con **rolling origin** (varios cortes) y comparar modelos con un test de significancia, en lugar de un único corte de 90 días; recalcular con la serie reconstruida y los datos actualizados.
 - Revisar el SARIMAX: orden fijo sin justificación, regresoras redundantes (`es_dia_habil`, `es_fin_de_semana`, `es_feriado` son colineales) y sin estacionalidad anual. Los residuos no son ruido blanco (Ljung-Box con p < 0,05 en los tres rezagos).
@@ -375,4 +375,24 @@ Detalle en `docs/interpretacion_resultados.md`, bloques 11 a 15.
 
 **Errores corregidos en el camino:** la comparación original tenía fuga de información (sección 5); ahora `scripts/verificar_sin_fuga_p2.py` reemplaza el futuro por basura (×10) en tres cortes y verifica que los pronósticos de los cinco modelos no cambian (diferencia 0).
 
-**Qué queda:** el notebook sigue con el enfoque original, y la presentación y el guion para el video.
+**Qué queda:** la presentación y el guion para el video.
+
+## 12. Resumen de cambios de enfoque y sus motivos (2-nov-2026)
+
+Esta sección junta en un solo lugar las decisiones que cambiaron el rumbo del trabajo respecto del repositorio original (commit `fadc6b6`). El detalle y la evidencia de cada una están en las secciones indicadas.
+
+| # | Qué se cambió | Por qué | Dónde |
+|---|---|---|---|
+| 1 | Las **Hipótesis 1 y 2** y sus veredictos se reemplazan por las **Preguntas P-1 y P-2** | Los veredictos (por ejemplo, que el teletrabajo causó una pérdida permanente de demanda) no son sostenibles con los datos disponibles. Las preguntas admiten respuestas con distinto grado de confianza y son las de la presentación de la materia. | 0 |
+| 2 | Se quita la **recuperación post-COVID contra el nivel pre-pandemia**; el COVID pasa a ser un shock **descriptivo** y queda fuera del entrenamiento | Solo hay enero y febrero de 2020 como base (59 días, temporada baja): no distingue recuperación de estacionalidad anual. | 0, 10 |
+| 3 | Se corrige la **fuga de información** del Seasonal Naïve y del Gradient Boosting | El Naïve tomaba valores reales del tramo de prueba y el Gradient Boosting usaba rezagos reales al pronosticar. El MAPE del Gradient Boosting pasó de 8,82% a 11,03% con la corrección. Ahora los modelos solo usan el pasado y el calendario y hay una prueba que lo verifica. | 5, 11 |
+| 4 | La evaluación pasa de **una ventana de 90 días** a **42 cortes sucesivos de 28 días** (origen móvil) con Diebold-Mariano | Con una sola ventana no se distingue un modelo mejor de uno con suerte. Con 1.161 días de prueba y una prueba de significancia sí. Después se verifica con horizontes de 7 y 90 días. | 11 |
+| 5 | Se **reconstruyen los 62 días sin dato** desde las transacciones, en lugar de interpolar | Error de 1,6% a 3,2% en meses de vacaciones, contra 12% a 21% de la interpolación. El ranking de modelos no depende de esta decisión (verificado). | 3, 11 |
+| 6 | El **SARIMAX** se identifica con ADF/KPSS, ACF/PACF y BIC, y se agrega estacionalidad anual | El orden original era fijo y sin justificación, con regresoras colineales y residuos autocorrelacionados. | 11 |
+| 7 | Se agrega **causalidad** a P-1: tarifa real, estudio de eventos con control del año anterior, control sintético, panel por línea y Granger | El docente pidió incorporar causalidad y explicar el porqué. Cada diseño declara sus supuestos y sus límites; ninguno es un experimento. | 10 |
+| 8 | Se agrega la **hipótesis de ingreso por línea de subte** (fijada antes de correr) | Hipótesis complementaria propuesta: las líneas de zonas de mayor ingreso reaccionarían menos a los saltos tarifarios. Resultado sin respaldo y con poco poder. | 10 |
+| 9 | Se agrega la **serie de tarifas con fuentes** y el **IPC** | Sin una serie de tarifas verificada no hay análisis de precio. Se usan resoluciones oficiales; lo inferido está marcado. | 7, 10 |
+| 10 | Se agregan el **modelo híbrido por tipo de día**, la **sensibilidad a los huecos** y los **horizontes de 7 y 90 días** | Responden "por qué" gana cada método y si el resultado es robusto. | 11 |
+| 11 | Se **reescriben el README y el notebook** | Para que el repositorio sea coherente con el nuevo enfoque y no muestre resultados que ya no se sostienen (el notebook original mostraba las métricas con fuga y las hipótesis "corroboradas"). El notebook lee los resultados guardados por los scripts. | 0 |
+
+**Qué se conserva del trabajo original:** los cuatro modelos (Seasonal Naïve, SARIMAX, Prophet y Gradient Boosting) y el pipeline inicial (`analisis_series_tiempo_sube.py`, `modelos_pronostico.py`). Las figuras `fig4`, `fig5` y `fig6` salen de ese pipeline y quedan como referencia: ya no sustentan ninguna conclusión.
