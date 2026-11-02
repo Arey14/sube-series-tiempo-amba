@@ -15,7 +15,7 @@ Rama de trabajo: `trabajo/herramientas-materia`.
 | Las Hipótesis 1 y 2 se reemplazan por las **Preguntas 1 y 2** de la presentación | Las hipótesis emitían "veredictos" (por ejemplo, que el teletrabajo causó una pérdida permanente de demanda) que los datos no permiten sostener. Las preguntas ordenan mejor el trabajo: P-1 = demanda ante hitos (COVID, saltos tarifarios, feriados); P-2 = qué métodos predicen mejor y por qué. |
 | Se quita el sub-objetivo de medir la **recuperación post-COVID contra el nivel pre-pandemia** | Del período previo a la pandemia solo hay enero y febrero de 2020 (59 días), que además son temporada baja. No alcanza para distinguir "recuperación" de estacionalidad anual. El COVID pasa a tratarse como **shock descriptivo** (colapso y reapertura) y queda **fuera del entrenamiento** de los modelos, que ya usaban datos desde 2022. Se declara como limitación. |
 
-Estado: aún no se reescribió el README ni el notebook en lo referido a hipótesis y veredictos. Se hará al final.
+Estado (2-nov-2026): el README ya está reescrito en torno a las Preguntas 1 y 2. El notebook (`notebooks/TP_Final_Series_de_Tiempo.ipynb`) todavía conserva el enfoque original; se rehará junto con la presentación.
 
 ---
 
@@ -256,6 +256,8 @@ Para estimar el efecto del precio sobre la demanda con **todos** los cambios con
 
 ## 8. Pendientes que ya identificamos (no se tocaron todavía)
 
+*Actualización del 2-nov-2026: el origen móvil con test de significancia, la revisión del SARIMAX, la ventana de test y el diseño causal de P-1 están hechos (secciones 10 y 11). Queda el notebook. La lista de abajo es la original.*
+
 - Evaluar con **rolling origin** (varios cortes) y comparar modelos con un test de significancia, en lugar de un único corte de 90 días; recalcular con la serie reconstruida y los datos actualizados.
 - Revisar el SARIMAX: orden fijo sin justificación, regresoras redundantes (`es_dia_habil`, `es_fin_de_semana`, `es_feriado` son colineales) y sin estacionalidad anual. Los residuos no son ruido blanco (Ljung-Box con p < 0,05 en los tres rezagos).
 - La ventana de test (junio–septiembre de 2026) incluye una caída fuerte a fines de julio que ningún modelo anticipa (probablemente vacaciones de invierno).
@@ -320,3 +322,57 @@ Lectura: la demanda respondió poco al precio (elasticidades de colectivo y tren
 ### 9.1 Corrección sobre el subte: línea D cerrada en 2024
 
 La línea D estuvo sin servicio del 8-ene-2024 al 6-mar-2024. Eso explica la caída del subte en el evento de enero–febrero de 2024: sin la línea D el efecto pasa de −21,5% a −6,1%. El modelo debe usar el subte sin línea D en esas semanas. Detalle y lectura de los resultados en `docs/interpretacion_resultados.md`.
+
+## 10. Pregunta 1 completa: precio, hitos y causalidad (2-nov-2026)
+
+Las lecturas de cada paso, con sus límites, están en `docs/interpretacion_resultados.md` (bloques 1 a 10). Acá solo se lista qué se agregó y por qué.
+
+**Datos nuevos**
+
+| Archivo | Qué es |
+|---|---|
+| `data/hitos/serie_tarifas*.csv`, `hitos_tarifas.csv` | Serie de tarifas por modo y jurisdicción (112 cambios, 29 saltos) armada desde resoluciones oficiales y, donde no había norma a mano, inferida (por ejemplo, Ciudad y Provincia con la fórmula IPC + 2% sobre el mes anterior); cada fila indica su fuente. Cobertura en `resultados/tablas/tabla_tarifas_cobertura.csv`. Generada por `scripts/tarifas_serie.py`. |
+| `data/externos/ipc_nacional_indec.csv` | IPC nacional (INDEC) para deflactar la tarifa. Septiembre de 2026 está extrapolado. |
+| `data/externos/MT_eah_2417.xlsx`, `comunas.geojson.txt`, `estaciones_de_subte.geojson.txt`, `red_subte.geojson.txt` | Ingreso per cápita por comuna (Encuesta Anual de Hogares, CABA) y geografía del subte, para ubicar cada línea en una comuna. |
+| `data/procesado/usos_diarios_subte_por_linea.csv` | Transacciones diarias por línea de subte (A, B, C, D, E, H, P) y `subte_sin_D`, de `scripts/usos_por_linea.py`. |
+
+**Cambios y hallazgos**
+
+1. **Tarifa real.** Las estimaciones se rehicieron con la tarifa deflactada por IPC (`scripts/modelo_precio_demanda.py`): en niveles el signo depende de si se incluye tendencia (no identificado); en diferencias interanuales y estudio de eventos, la demanda del subte responde (elasticidad de −0,22 a −0,26) y la del colectivo nacional y el tren no se distingue de cero.
+2. **Subte sin línea D.** La línea D estuvo cerrada del 8-ene al 6-mar de 2024, y confundía el evento de enero–febrero de 2024. Se usa `subte_sin_D` en esas estimaciones. No se descartó la línea D de la serie porque se necesita para la hipótesis siguiente.
+3. **Hipótesis de ingreso (H-ingreso).** Diseñada antes de correr (bloque 3): las líneas de zonas de mayor ingreso reaccionarían menos a los saltos de tarifa. Índice de ingreso por línea con `scripts/clasificacion_lineas_subte.py` y panel línea × semana con `scripts/panel_subte_lineas.py`. **No hay respaldo** (signo contrario o nulo; con 6 líneas la prueba tiene poco poder).
+4. **Efecto cruzado entre modos y Granger** (`scripts/efectos_cruzados_granger.py`): no hay sustitución visible; solo el precio propio del subte anticipa su demanda (p de Holm 0,019).
+5. **Hitos de calendario** (`scripts/hitos_efectos.py`): la demanda de feriados, paros propios, elecciones con gratuidad y pandemia, medida contra el mismo día de la semana de las semanas vecinas. Es el resultado más claro y estable de P-1.
+6. **Control sintético** (`scripts/control_sintetico.py`) para los saltos del colectivo, con ciudades del interior como donantes: da −3% sin significancia, contra −13% del estudio de eventos. No confirma el resultado de eventos.
+
+**Efecto sobre los resultados originales:** el resultado del precio del colectivo (casi nulo) queda con baja confianza; el del subte, con confianza media. Lo del COVID pasa a ser descriptivo, como se decidió en la sección 0.
+
+## 11. Pregunta 2 completa: qué método pronostica mejor y por qué (2-nov-2026)
+
+Detalle en `docs/interpretacion_resultados.md`, bloques 11 a 15.
+
+**Qué cambió respecto de la comparación original (sección 5):** la comparación de modelos de una sola ventana de 90 días se reemplazó por una **evaluación con origen móvil**, que repite el pronóstico en 42 cortes sucesivos (el primero el 30-jun-2023, uno cada 28 días), cada uno con 28 días de prueba que no se solapan. Así hay 1.161 días de evaluación en lugar de 90 y se puede probar si una diferencia es real (Diebold-Mariano) en vez de comparar un número contra otro.
+
+| Archivo | Qué hace |
+|---|---|
+| `scripts/pronosticos_p2.py` | Los cinco modelos (Naive de 7 días, Naive de 364 días, SARIMAX, Prophet, Gradient Boosting recursivo) con las reglas anti-fuga. |
+| `scripts/identificacion_sarimax.py` | Identifica el orden del SARIMAX con ADF/KPSS, ACF/PACF y BIC, solo con datos anteriores al primer corte. |
+| `scripts/evaluacion_pronosticos.py` | Origen móvil (argumentos: `ablaciones`, `col=<modo>`, `h=<días>`). |
+| `scripts/analisis_pronosticos_p2.py`, `analisis_pronosticos_por_modo.py` | Métricas (MAE, RMSE, MAPE, MASE), Diebold-Mariano, por tipo de día y período, intervalos de predicción. |
+| `scripts/modelo_hibrido_p2.py` | Híbrido por tipo de día. |
+| `scripts/sensibilidad_huecos_p2.py` | Qué pasa si los 62 días sin dato se tratan de otra forma. |
+| `scripts/analisis_horizontes_p2.py` | Horizontes de 7 y 90 días. |
+| `scripts/verificar_sin_fuga_p2.py` | Prueba de que los modelos no usan información posterior al corte. |
+
+**Resultados**
+
+- **Total AMBA, 28 días:** gana el Gradient Boosting (MAE 0,187 millones, MAPE 7,4%, MASE 0,57), seguido por Prophet (0,254) y SARIMAX (0,270); los Naive quedan en 0,40 y 0,47. La diferencia es significativa (p < 0,0001) y se sostiene en los cuatro períodos evaluados.
+- **Por qué:** los feriados explican el grueso de la diferencia con los Naive; la estacionalidad anual y el patrón semanal multiplicativo importan; el Gradient Boosting gana por su flexibilidad con el calendario y por los rezagos. Configuración estándar, sin ajuste fino.
+- **Por modo:** colectivo, igual que el total. Tren y subte: el Gradient Boosting empata con el SARIMAX.
+- **Híbrido por tipo de día** (aditivo en días hábiles, Gradient Boosting en el resto, con la elección hecha solo con cortes anteriores): mejora a ambos métodos en tren (MASE 0,62 → 0,54) y subte (0,71 → 0,61); no mejora en total ni colectivo. Hallazgo a confirmar en otro período.
+- **Huecos:** el ranking no depende de cómo se traten los 62 días sin dato; la reconstrucción mejora el error del Gradient Boosting (MASE 0,56 contra 0,63 con interpolación).
+- **Horizontes:** el ranking es el mismo a 7, 28 y 90 días; el error crece poco (MASE del Gradient Boosting 0,56, 0,57, 0,61).
+
+**Errores corregidos en el camino:** la comparación original tenía fuga de información (sección 5); ahora `scripts/verificar_sin_fuga_p2.py` reemplaza el futuro por basura (×10) en tres cortes y verifica que los pronósticos de los cinco modelos no cambian (diferencia 0).
+
+**Qué queda:** el notebook sigue con el enfoque original, y la presentación y el guion para el video.
