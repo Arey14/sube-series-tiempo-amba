@@ -1,0 +1,16 @@
+variante,modelo,contra,dif_MAE,error_std_HAC,p_valor,dias
+con_hitos,gradient_boosting,sarimax,-0.083,0.0099,0.0,1133
+con_hitos,gradient_boosting,prophet,-0.0676,0.0083,0.0,1133
+con_hitos,prophet,sarimax,-0.0154,0.0078,0.0475,1133
+hitos_imputados,gradient_boosting,sarimax,-0.0719,0.0088,0.0,1133
+hitos_imputados,gradient_boosting,prophet,-0.066,0.008,0.0,1133
+hitos_imputados,prophet,sarimax,-0.0059,0.0077,0.439,1133
+sin_hitos,gradient_boosting,sarimax,-0.113,0.036,0.0017,1133
+sin_hitos,gradient_boosting,prophet,-0.065,0.0084,0.0,1133
+sin_hitos,prophet,sarimax,-0.048,0.0361,0.1839,1133
+sin_hitos - con_hitos,sarimax,sarimax,0.0315,0.0374,0.4,1133
+sin_hitos - con_hitos,prophet,prophet,-0.0011,0.0012,0.3411,1133
+sin_hitos - con_hitos,gradient_boosting,gradient_boosting,0.0015,0.0038,0.7039,1133
+hitos_imputados - con_hitos,sarimax,sarimax,-0.011,0.0031,0.0004,1133
+hitos_imputados - con_hitos,prophet,prophet,-0.0015,0.0012,0.1956,1133
+hitos_imputados - con_hitos,gradient_boosting,gradient_boosting,0.0001,0.0035,0.9867,1133

@@ -1,0 +1,19 @@
+muestra,variante,modelo,dias,MAE,RMSE,MAPE_pct,sesgo,MASE
+sin atípicos,con_hitos,gradient_boosting,1133.0,0.186,0.266,7.416,0.016,0.568
+sin atípicos,con_hitos,prophet,1133.0,0.254,0.376,11.865,-0.005,0.771
+sin atípicos,con_hitos,sarimax,1133.0,0.269,0.37,11.818,0.003,0.819
+sin atípicos,hitos_imputados,gradient_boosting,1133.0,0.186,0.271,7.532,0.03,0.568
+sin atípicos,hitos_imputados,prophet,1133.0,0.252,0.375,11.889,0.005,0.766
+sin atípicos,hitos_imputados,sarimax,1133.0,0.258,0.361,11.427,0.021,0.785
+sin atípicos,sin_hitos,gradient_boosting,1133.0,0.188,0.271,7.544,0.02,0.572
+sin atípicos,sin_hitos,prophet,1133.0,0.253,0.375,11.909,0.005,0.767
+sin atípicos,sin_hitos,sarimax,1133.0,0.301,0.523,12.734,-0.023,0.909
+solo paros y elecciones,con_hitos,gradient_boosting,15.0,1.581,1.904,282.648,1.581,4.918
+solo paros y elecciones,con_hitos,prophet,15.0,1.623,1.891,301.143,1.623,5.064
+solo paros y elecciones,con_hitos,sarimax,15.0,1.608,1.869,282.371,1.608,4.997
+solo paros y elecciones,hitos_imputados,gradient_boosting,15.0,1.582,1.904,289.965,1.582,4.926
+solo paros y elecciones,hitos_imputados,prophet,15.0,1.642,1.903,304.797,1.642,5.121
+solo paros y elecciones,hitos_imputados,sarimax,15.0,1.647,1.909,293.782,1.647,5.123
+solo paros y elecciones,sin_hitos,gradient_boosting,15.0,1.589,1.935,292.069,1.589,4.947
+solo paros y elecciones,sin_hitos,prophet,15.0,1.642,1.903,304.961,1.642,5.123
+solo paros y elecciones,sin_hitos,sarimax,15.0,1.652,1.914,294.614,1.652,5.137

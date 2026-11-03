@@ -512,3 +512,23 @@ Solo total AMBA (no por modo ni el híbrido). El horizonte de 90 días tiene 13 
 - **C.** Tras los saltos moderados el error no se distingue del habitual. El subte de mayo de 2024 (tarifa ×4) es el único caso con sobreestimación clara del modelo sin precio (+14% contra +5% habitual). Incorporar el precio con la elasticidad de P-1 mejora levemente los saltos moderados (MAPE del Gradient Boosting de 6,3% a 5,8%) y empeora los grandes (de 8,6% a 11,8%), porque sobrecorrige.
 
 **Límites.** Pocos eventos por grupo (3 a 6; 3 saltos grandes). La elasticidad se estimó con toda la muestra, así que el pronóstico con precio es optimista. Es una ilustración, no una prueba.
+
+## 20. P-2: entrenar con y sin los días de paro y de elección — 3-nov-2026
+
+**Qué se hizo.** Se repitió el origen móvil (total AMBA, 28 días, 42 cortes) con SARIMAX, Prophet y Gradient Boosting entrenados de dos maneras sin los 15 días de paro y de elección: con esos días **vacíos** (`sin_hitos`) y **imputados** con la mediana del mismo día de la semana de las cuatro semanas anteriores (`hitos_imputados`, solo usa el pasado). Los feriados no se quitan. `scripts/sensibilidad_hitos_p2.py`; `tabla_p2_sin_hitos_{metricas,tipo_dia,dm}.csv`, `fig28_p2_sin_hitos.png`. Se excluye el corte del 24-jul-2026 (el SARIMAX con hitos imputados no devolvió pronóstico): 1.133 días.
+
+**Resultado (MASE, sin atípicos).**
+
+| Modelo | con hitos | sin_hitos (vacíos) | hitos_imputados |
+|---|---|---|---|
+| Gradient Boosting | 0,568 | 0,572 | 0,568 |
+| Prophet | 0,771 | 0,767 | 0,766 |
+| SARIMAX | 0,819 | 0,909 | 0,785 |
+
+**Lectura.**
+- Gradient Boosting y Prophet no cambian (Diebold-Mariano contra sí mismos, p de 0,20 a 0,99).
+- El SARIMAX empeora con los días vacíos (MAE 0,269 a 0,301; p = 0,40, no significativo), probablemente porque los vacíos rompen las diferencias estacionales de 7 días, y mejora con los días imputados (MAE 0,269 a 0,258, −4%; p = 0,0004).
+- El ranking no cambia: el Gradient Boosting sigue primero con p < 0,01. La ventaja marginal de Prophet sobre el SARIMAX (p = 0,048 con hitos) desaparece con hitos imputados (p = 0,44).
+- En los propios días de paro y de elección nadie mejora (MASE de 4,9 a 5,1).
+
+**Límites.** Solo total AMBA. La explicación del SARIMAX (los valores extremos contaminan las semanas siguientes por el término de media móvil estacional) no se probó directamente. Un corte excluido por falla numérica en una variante.

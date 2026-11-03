@@ -76,6 +76,7 @@ MASE menor a 1 significa mejor que repetir la última semana. Lo que se encontr�
 - **No hay un método único:** en colectivo gana el Gradient Boosting, pero en tren y subte empata con el SARIMAX. Un **híbrido por tipo de día** (modelo aditivo en días hábiles, Gradient Boosting en el resto, con la regla elegida solo con cortes anteriores) mejora a ambos en tren (MASE 0,62 a 0,54) y subte (0,71 a 0,61), pero no en total ni colectivo. Es un hallazgo a confirmar en otro período.
 - **Robusto** al tratamiento de los 62 días sin dato en la fuente (la reconstrucción desde transacciones mejora el error del Gradient Boosting: MASE 0,56 contra 0,63 con interpolación) y al horizonte (mismo ranking a 7, 28 y 90 días).
 - **Hitos de P-1:** los feriados se anticipan con el calendario (el Gradient Boosting reduce 85% el error del Naive de 7 días); los paros y las elecciones con gratuidad **no se anticipan con ningún método**, pero si se conoce el evento y se aplica el cociente típico medido en P-1, el error baja de 81% a 94% con cualquier método. Tras un salto tarifario, el error de los modelos sin precio no se distingue del habitual, salvo en el subte de mayo de 2024 (+14% de sobreestimación); incorporar el precio ayuda poco en saltos moderados y empeora en los grandes.
+- **Entrenar sin los días de paro y de elección** (vacíos o imputados con el valor habitual) no cambia al Gradient Boosting ni a Prophet; al SARIMAX lo empeora si los días quedan vacíos y lo mejora 4% si se imputan. El ranking no cambia.
 - **Límites:** configuración estándar sin ajuste fino de hiperparámetros; los paros y elecciones no se pronostican sin información externa.
 
 ---
@@ -129,6 +130,7 @@ Resumen de las decisiones respecto del trabajo original; el detalle con evidenci
 │   ├── analisis_pronosticos_por_modo.py   # P-2: colectivo, tren y subte
 │   ├── pronosticos_antes_del_salto_p2.py  # P-2: pronósticos hechos el día anterior a cada salto tarifario
 │   ├── pronostico_hitos_p2.py             # P-2: error en feriados, paros, elecciones y saltos tarifarios
+│   ├── sensibilidad_hitos_p2.py           # P-2: entrenar con y sin los días de paro y elección
 │   ├── modelo_hibrido_p2.py               # P-2: híbrido por tipo de día
 │   ├── sensibilidad_huecos_p2.py          # P-2: tratamiento de los días sin dato
 │   ├── analisis_horizontes_p2.py          # P-2: horizontes de 7 y 90 días
@@ -222,6 +224,9 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 
 **Horizontes de 7, 28 y 90 días.** El ranking de métodos no cambia.
 ![Horizontes](resultados/figuras/fig24_p2_horizontes.png)
+
+**Entrenar con y sin hitos.** MASE de cada método con la serie principal, con los días de paro y elección vacíos y con esos días imputados; a la derecha, el cambio del error por tipo de día.
+![Sin hitos](resultados/figuras/fig28_p2_sin_hitos.png)
 
 **Pronóstico de los hitos de P-1.** A la izquierda, error de cada método según el tipo de día (total AMBA): los feriados se anticipan con el calendario; paros y elecciones gratuitas no. A la derecha, el error del Gradient Boosting en días de paro y elección sin y con el cociente típico medido en P-1.
 ![Hitos en P-2](resultados/figuras/fig27_p2_hitos.png)
