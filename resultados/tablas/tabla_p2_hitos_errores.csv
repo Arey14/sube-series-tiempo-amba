@@ -1,0 +1,116 @@
+modo,grupo,modelo,dias,MAE,no_materializado_pct
+total,día hábil ordinario,gradient_boosting,780.0,0.198,0.317
+total,día hábil ordinario,naive_364,780.0,0.37,-8.198
+total,día hábil ordinario,naive_7,780.0,0.501,-15.097
+total,día hábil ordinario,prophet,780.0,0.213,-0.73
+total,día hábil ordinario,sarimax,780.0,0.255,-0.623
+total,elección con gratuidad,gradient_boosting,3.0,1.3,82.233
+total,elección con gratuidad,naive_364,3.0,1.26,81.844
+total,elección con gratuidad,naive_7,3.0,1.368,82.928
+total,elección con gratuidad,prophet,3.0,1.51,84.175
+total,elección con gratuidad,sarimax,3.0,1.275,81.843
+total,elección sin gratuidad,gradient_boosting,3.0,0.323,22.802
+total,elección sin gratuidad,naive_364,3.0,0.412,26.788
+total,elección sin gratuidad,naive_7,3.0,0.189,15.187
+total,elección sin gratuidad,prophet,3.0,0.427,28.396
+total,elección sin gratuidad,sarimax,3.0,0.546,32.795
+total,feriado laborable,gradient_boosting,51.0,0.298,1.377
+total,feriado laborable,naive_364,51.0,1.909,48.728
+total,feriado laborable,naive_7,51.0,2.024,53.753
+total,feriado laborable,prophet,51.0,0.732,16.219
+total,feriado laborable,sarimax,51.0,0.507,21.319
+total,paro (cualquier modo),gradient_boosting,9.0,2.094,54.85
+total,paro (cualquier modo),naive_364,9.0,2.069,46.268
+total,paro (cualquier modo),naive_7,9.0,2.085,54.7
+total,paro (cualquier modo),prophet,9.0,2.06,55.183
+total,paro (cualquier modo),sarimax,9.0,2.072,55.38
+colectivo,día hábil ordinario,gradient_boosting,780.0,0.195,-0.105
+colectivo,día hábil ordinario,naive_364,780.0,0.347,-8.832
+colectivo,día hábil ordinario,naive_7,780.0,0.471,-15.105
+colectivo,día hábil ordinario,prophet,780.0,0.207,-0.812
+colectivo,día hábil ordinario,sarimax,780.0,0.244,-0.605
+colectivo,elección con gratuidad,gradient_boosting,3.0,1.229,81.777
+colectivo,elección con gratuidad,naive_364,3.0,1.165,81.095
+colectivo,elección con gratuidad,naive_7,3.0,1.274,82.319
+colectivo,elección con gratuidad,prophet,3.0,1.41,83.647
+colectivo,elección con gratuidad,sarimax,3.0,1.196,81.301
+colectivo,elección sin gratuidad,gradient_boosting,3.0,0.318,23.413
+colectivo,elección sin gratuidad,naive_364,3.0,0.404,27.764
+colectivo,elección sin gratuidad,naive_7,3.0,0.197,16.707
+colectivo,elección sin gratuidad,prophet,3.0,0.441,30.547
+colectivo,elección sin gratuidad,sarimax,3.0,0.531,33.862
+colectivo,feriado laborable,gradient_boosting,51.0,0.289,0.199
+colectivo,feriado laborable,naive_364,51.0,1.764,48.414
+colectivo,feriado laborable,naive_7,51.0,1.882,53.678
+colectivo,feriado laborable,prophet,51.0,0.682,17.033
+colectivo,feriado laborable,sarimax,51.0,0.48,21.644
+colectivo,paro: modo que no paró,gradient_boosting,3.0,0.725,19.776
+colectivo,paro: modo que no paró,naive_364,3.0,0.926,-34.6
+colectivo,paro: modo que no paró,naive_7,3.0,0.865,21.882
+colectivo,paro: modo que no paró,prophet,3.0,0.834,23.458
+colectivo,paro: modo que no paró,sarimax,3.0,0.872,23.543
+colectivo,paro: modo que paró,gradient_boosting,6.0,2.732,75.596
+colectivo,paro: modo que paró,naive_364,6.0,2.708,74.966
+colectivo,paro: modo que paró,naive_7,6.0,2.63,74.93
+colectivo,paro: modo que paró,prophet,6.0,2.606,75.078
+colectivo,paro: modo que paró,sarimax,6.0,2.612,75.35
+tren,día hábil ordinario,gradient_boosting,780.0,0.044,1.448
+tren,día hábil ordinario,naive_364,780.0,0.086,-1496.635
+tren,día hábil ordinario,naive_7,780.0,0.082,-20.725
+tren,día hábil ordinario,prophet,780.0,0.035,-0.523
+tren,día hábil ordinario,sarimax,780.0,0.037,0.064
+tren,elección con gratuidad,gradient_boosting,3.0,0.171,95.166
+tren,elección con gratuidad,naive_364,3.0,0.177,95.252
+tren,elección con gratuidad,naive_7,3.0,0.18,95.009
+tren,elección con gratuidad,prophet,3.0,0.202,95.422
+tren,elección con gratuidad,sarimax,3.0,0.172,94.987
+tren,elección sin gratuidad,gradient_boosting,3.0,0.037,25.869
+tren,elección sin gratuidad,naive_364,3.0,0.058,35.423
+tren,elección sin gratuidad,naive_7,3.0,0.025,20.328
+tren,elección sin gratuidad,prophet,3.0,0.039,27.539
+tren,elección sin gratuidad,sarimax,3.0,0.082,43.511
+tren,feriado laborable,gradient_boosting,51.0,0.072,-0.737
+tren,feriado laborable,naive_364,51.0,0.4,54.592
+tren,feriado laborable,naive_7,51.0,0.411,60.856
+tren,feriado laborable,prophet,51.0,0.142,14.28
+tren,feriado laborable,sarimax,51.0,0.094,24.253
+tren,paro: modo que no paró,gradient_boosting,3.0,0.255,33.237
+tren,paro: modo que no paró,naive_364,3.0,0.232,31.005
+tren,paro: modo que no paró,naive_7,3.0,0.24,31.989
+tren,paro: modo que no paró,prophet,3.0,0.19,27.239
+tren,paro: modo que no paró,sarimax,3.0,0.202,28.459
+tren,paro: modo que paró,gradient_boosting,6.0,0.616,89.719
+tren,paro: modo que paró,naive_364,6.0,0.603,90.132
+tren,paro: modo que paró,naive_7,6.0,0.602,91.072
+tren,paro: modo que paró,prophet,6.0,0.598,90.066
+tren,paro: modo que paró,sarimax,6.0,0.604,90.791
+subte,día hábil ordinario,gradient_boosting,780.0,0.033,2.207
+subte,día hábil ordinario,naive_364,780.0,0.08,-50145.591
+subte,día hábil ordinario,naive_7,780.0,0.051,-19.358
+subte,día hábil ordinario,prophet,780.0,0.029,2.148
+subte,día hábil ordinario,sarimax,780.0,0.028,1.333
+subte,elección con gratuidad,gradient_boosting,3.0,0.16,99.277
+subte,elección con gratuidad,naive_364,3.0,0.158,99.253
+subte,elección con gratuidad,naive_7,3.0,0.158,99.246
+subte,elección con gratuidad,prophet,3.0,0.174,99.259
+subte,elección con gratuidad,sarimax,3.0,0.154,99.218
+subte,elección sin gratuidad,gradient_boosting,3.0,0.007,7.536
+subte,elección sin gratuidad,naive_364,3.0,0.026,21.699
+subte,elección sin gratuidad,naive_7,3.0,0.004,-0.725
+subte,elección sin gratuidad,prophet,3.0,0.049,-127.264
+subte,elección sin gratuidad,sarimax,3.0,0.043,29.145
+subte,feriado laborable,gradient_boosting,51.0,0.031,9.829
+subte,feriado laborable,naive_364,51.0,0.255,60.082
+subte,feriado laborable,naive_7,51.0,0.226,58.841
+subte,feriado laborable,prophet,51.0,0.088,0.369
+subte,feriado laborable,sarimax,51.0,0.046,-22.495
+subte,paro: modo que no paró,gradient_boosting,4.0,0.044,9.981
+subte,paro: modo que no paró,naive_364,4.0,0.103,21.104
+subte,paro: modo que no paró,naive_7,4.0,0.035,9.294
+subte,paro: modo que no paró,prophet,4.0,0.056,9.9
+subte,paro: modo que no paró,sarimax,4.0,0.035,8.383
+subte,paro: modo que paró,gradient_boosting,5.0,0.355,86.334
+subte,paro: modo que paró,naive_364,5.0,0.412,87.975
+subte,paro: modo que paró,naive_7,5.0,0.334,84.739
+subte,paro: modo que paró,prophet,5.0,0.351,87.483
+subte,paro: modo que paró,sarimax,5.0,0.361,88.101

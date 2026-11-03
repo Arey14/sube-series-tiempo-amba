@@ -1,0 +1,4 @@
+evento,brecha_log,cambio_pct,rmspe_previo,rmspe_posterior,razon_post_pre,p_placebos,n_placebos,donantes_con_peso_mayor_5pct,placebo_p5_brecha,placebo_p95_brecha
+"colectivo nacional, enero-febrero 2024 (tarifa x5)",-0.028,-2.8,0.03,0.071,2.38,0.433,30,6,-0.203,0.228
+"colectivo nacional, agosto 2024 (+37%)",-0.026,-2.5,0.029,0.034,1.15,0.267,30,5,-0.087,0.127
+"colectivo nacional, febrero 2026 (+31%)",-0.015,-1.5,0.028,0.046,1.63,0.267,30,4,-0.176,0.134

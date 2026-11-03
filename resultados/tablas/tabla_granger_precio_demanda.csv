@@ -1,0 +1,19 @@
+sentido,demanda_de,tarifa_de,tipo,rezago_AIC,p_valor,semanas,p_Holm
+tarifa -> demanda,colectivo_nacional,colectivo_nacional,propia,3,0.797,237,1.0
+tarifa -> demanda,colectivo_nacional,tren,cruzada,3,0.7931,237,1.0
+tarifa -> demanda,colectivo_nacional,subte,cruzada,3,0.3114,237,1.0
+tarifa -> demanda,tren,colectivo_nacional,cruzada,5,0.0258,237,0.1807
+tarifa -> demanda,tren,tren,propia,5,0.0176,237,0.1411
+tarifa -> demanda,tren,subte,cruzada,4,0.1809,237,1.0
+tarifa -> demanda,subte,colectivo_nacional,cruzada,3,0.9932,237,1.0
+tarifa -> demanda,subte,tren,cruzada,3,0.3967,237,1.0
+tarifa -> demanda,subte,subte,propia,4,0.0021,237,0.0192
+demanda -> tarifa,colectivo_nacional,colectivo_nacional,propia,3,0.6195,237,1.0
+demanda -> tarifa,colectivo_nacional,tren,cruzada,3,0.5119,237,1.0
+demanda -> tarifa,colectivo_nacional,subte,cruzada,3,0.7756,237,1.0
+demanda -> tarifa,tren,colectivo_nacional,cruzada,5,0.905,237,1.0
+demanda -> tarifa,tren,tren,propia,5,0.5327,237,1.0
+demanda -> tarifa,tren,subte,cruzada,4,0.0578,237,0.4627
+demanda -> tarifa,subte,colectivo_nacional,cruzada,3,0.8607,237,1.0
+demanda -> tarifa,subte,tren,cruzada,3,0.3483,237,1.0
+demanda -> tarifa,subte,subte,propia,4,0.0463,237,0.417

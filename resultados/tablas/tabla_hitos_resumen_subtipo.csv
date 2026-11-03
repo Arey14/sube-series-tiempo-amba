@@ -1,0 +1,22 @@
+tipo,subtipo,modo,dias,mediana_cociente,minimo,maximo,banda_ruido_inf,banda_ruido_sup
+eleccion,con gratuidad,colectivo,2,0.11,0.08,0.13,0.78,1.13
+eleccion,con gratuidad,tren,2,0.04,0.01,0.08,0.78,1.11
+eleccion,con gratuidad,subte,2,0.0,0.0,0.01,0.83,1.14
+eleccion,con gratuidad (inferida del dato),colectivo,1,0.09,0.09,0.09,0.78,1.13
+eleccion,con gratuidad (inferida del dato),tren,1,0.03,0.03,0.03,0.78,1.11
+eleccion,con gratuidad (inferida del dato),subte,1,0.0,0.0,0.0,0.83,1.14
+eleccion,sin gratuidad aparente,colectivo,3,0.59,0.54,0.96,0.78,1.13
+eleccion,sin gratuidad aparente,tren,3,0.71,0.59,0.91,0.78,1.11
+eleccion,sin gratuidad aparente,subte,3,1.0,0.87,1.07,0.83,1.14
+paro,colectivo (UTA),colectivo,3,0.18,0.09,0.2,0.78,1.13
+paro,colectivo (UTA),tren,3,0.67,0.66,0.79,0.78,1.11
+paro,colectivo (UTA),subte,3,1.01,1.0,1.01,0.83,1.14
+paro,general (CGT),colectivo,4,0.36,0.06,0.62,0.78,1.13
+paro,general (CGT),tren,4,0.0,0.0,0.53,0.78,1.11
+paro,general (CGT),subte,4,0.0,0.0,0.73,0.83,1.14
+paro,tren (La Fraternidad),colectivo,1,1.02,1.02,1.02,0.78,1.13
+paro,tren (La Fraternidad),tren,1,0.0,0.0,0.0,0.78,1.11
+paro,tren (La Fraternidad),subte,1,0.7,0.7,0.7,0.83,1.14
+paro,tren y subte,colectivo,1,0.75,0.75,0.75,0.78,1.13
+paro,tren y subte,tren,1,0.0,0.0,0.0,0.78,1.11
+paro,tren y subte,subte,1,0.0,0.0,0.0,0.83,1.14

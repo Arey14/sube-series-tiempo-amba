@@ -1,0 +1,9 @@
+mes,metodo,MAPE (%),sesgo (%)
+ene-2025,reconstruccion_desde_transacciones,1.57,-0.52
+ene-2025,lineal_por_dia_semana,15.92,-3.76
+ene-2026,reconstruccion_desde_transacciones,1.64,0.4
+ene-2026,lineal_por_dia_semana,12.07,-5.73
+jul-2025,reconstruccion_desde_transacciones,2.21,1.0
+jul-2025,lineal_por_dia_semana,16.46,6.81
+jul-2026,reconstruccion_desde_transacciones,3.22,0.03
+jul-2026,lineal_por_dia_semana,20.75,13.5

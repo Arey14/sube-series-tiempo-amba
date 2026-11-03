@@ -1,0 +1,11 @@
+grande,modelo,sobreestimacion_pct,sobreestimacion_pct_habitual,MAPE,MAPE_habitual,MAPE_con_precio
+False,gradient_boosting,2.08,2.28,6.26,7.79,5.75
+False,naive_364,4.15,2.63,14.78,14.18,13.67
+False,naive_7,-5.72,-3.04,12.88,14.78,12.63
+False,prophet,1.25,0.98,5.21,6.06,4.75
+False,sarimax,0.17,1.78,6.16,7.16,5.83
+True,gradient_boosting,3.55,2.69,8.55,8.49,11.79
+True,naive_364,-2.18,4.64,14.41,15.85,17.31
+True,naive_7,6.46,-2.67,10.81,15.38,9.64
+True,prophet,6.31,1.67,7.29,6.69,12.34
+True,sarimax,5.26,2.27,8.03,7.77,12.44

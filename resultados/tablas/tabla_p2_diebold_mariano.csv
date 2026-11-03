@@ -1,0 +1,17 @@
+modelo,contra,dif_MAE,error_std_HAC,p_valor,dias
+naive_7,gradient_boosting,0.286,0.031,0.0,1161
+naive_364,naive_7,-0.078,0.024,0.0012,1161
+naive_364,gradient_boosting,0.208,0.021,0.0,1161
+sarimax,naive_7,-0.203,0.027,0.0,1161
+sarimax,gradient_boosting,0.083,0.01,0.0,1161
+sarimax_sin_anual,naive_7,-0.155,0.028,0.0,1161
+sarimax_sin_anual,gradient_boosting,0.131,0.019,0.0,1161
+sarimax_orden_original,naive_7,-0.204,0.029,0.0,1161
+sarimax_orden_original,gradient_boosting,0.081,0.009,0.0,1161
+prophet,naive_7,-0.219,0.03,0.0,1161
+prophet,gradient_boosting,0.067,0.008,0.0,1161
+gradient_boosting,naive_7,-0.286,0.031,0.0,1161
+sarimax_en_logs,naive_7,-0.229,0.031,0.0,1161
+sarimax_en_logs,gradient_boosting,0.057,0.009,0.0,1161
+gb_solo_calendario,naive_7,-0.236,0.031,0.0,1161
+gb_solo_calendario,gradient_boosting,0.05,0.009,0.0,1161

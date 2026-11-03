@@ -1,0 +1,110 @@
+fecha,tipo,subtipo,detalle,dia_semana,colectivo,tren,subte
+2023-07-07,paro,colectivo (UTA),Paro de colectivos de la UTA por paritaria (AMBA),Fri,0.09,0.66,1.01
+2023-08-13,eleccion,con gratuidad,"PASO 2023: transporte gratuito (Res. 435/2023, jurisdicción nacional, ",Sun,0.13,0.08,0.01
+2023-10-22,eleccion,con gratuidad,Generales 2023: transporte gratuito (Res. 435/2023),Sun,0.08,0.01,0.0
+2023-11-19,eleccion,con gratuidad (inferida del dato),Balotaje 2023,Sun,0.09,0.03,0.0
+2024-01-24,paro,general (CGT),Primer paro general de la CGT contra el Gobierno de Milei,Wed,0.62,0.53,0.73
+2024-02-21,paro,tren (La Fraternidad),Paro nacional de trenes de La Fraternidad (24 h),Wed,1.02,0.0,0.7
+2024-04-11,paro,colectivo (UTA),Retención de tareas de la UTA por sueldos impagos (líneas de colectivo,Thu,0.2,0.79,1.01
+2024-05-09,paro,general (CGT),"Segundo paro general de la CGT (UTA, trenes y subte adhirieron)",Thu,0.06,0.0,0.0
+2024-10-30,paro,tren y subte,Paro de transporte (trenes y subte); la UTA no adhirió,Wed,0.75,0.0,0.0
+2025-04-10,paro,general (CGT),Tercer paro general de la CGT (subte paró; la UTA no adhirió por conci,Thu,0.62,0.0,0.0
+2025-05-06,paro,colectivo (UTA),"Paro de colectivos de la UTA de 24 h (adhesión parcial: DOTA, Metropol",Tue,0.18,0.67,1.0
+2025-05-18,eleccion,sin gratuidad aparente,Elecciones legislativas CABA 2025,Sun,0.96,0.91,1.07
+2025-09-07,eleccion,sin gratuidad aparente,Elecciones legislativas Provincia de Buenos Aires 2025,Sun,0.54,0.71,0.87
+2025-10-26,eleccion,sin gratuidad aparente,Elecciones legislativas nacionales 2025,Sun,0.59,0.59,1.0
+2026-02-19,paro,general (CGT),"Paro general de la CGT contra la reforma laboral (UTA excepto DOTA, La",Thu,0.09,0.0,0.0
+2022-03-01,feriado,,Martes de Carnaval,Tue,0.44,0.38,0.33
+2022-03-24,feriado,,Día Nacional de la Memoria por la Verdad y la Justicia,Thu,0.35,0.35,0.49
+2022-04-02,feriado en fin de semana,,Día del Veterano y de los Caidos en la Guerra de Malvinas,Sat,0.82,0.78,0.93
+2022-04-14,feriado,,Jueves Santo,Thu,0.63,0.68,0.5
+2022-04-15,feriado,,Viernes Santo,Fri,0.35,0.31,0.32
+2022-05-01,feriado en fin de semana,,Día del Trabajo,Sun,0.82,0.95,1.03
+2022-05-18,feriado,,Censo Nacional 2022,Wed,0.14,0.1,0.1
+2022-05-25,feriado,,Día de la Revolución de Mayo,Wed,0.25,0.19,0.25
+2022-06-17,feriado,,Paso a la Inmortalidad del General Don Martín Miguel de Güemes,Fri,0.45,0.39,0.42
+2022-06-20,feriado,,Paso a la Inmortalidad del General Don Manuel Belgrano,Mon,0.34,0.27,0.29
+2022-07-09,feriado en fin de semana,,Día de la Independencia,Sat,0.77,0.75,0.95
+2022-08-15,feriado,,Paso a la Inmortalidad del General Don José de San Martín,Mon,0.3,0.13,0.25
+2022-10-07,feriado,,Feriado con fines turísticos,Fri,0.5,0.44,0.4
+2022-10-10,feriado,,Día del Respeto a la Diversidad Cultural,Mon,0.37,0.3,0.28
+2022-11-20,feriado en fin de semana,,Día de la Soberanía Nacional,Sun,0.93,0.86,0.97
+2022-11-21,feriado,,Feriado con fines turísticos,Mon,0.34,0.22,0.25
+2022-12-08,feriado,,Inmaculada Concepción de María,Thu,0.47,0.27,0.34
+2022-12-09,feriado,,Feriado con fines turísticos,Fri,0.34,0.21,0.28
+2022-12-20,feriado,,Día de la Victoria de la Copa Mundial de la FIFA 2022,Tue,0.49,0.36,0.26
+2022-12-25,feriado en fin de semana,,Navidad,Sun,0.5,0.55,0.52
+2023-01-01,feriado en fin de semana,,Año Nuevo,Sun,0.39,0.43,0.45
+2023-02-20,feriado,,Lunes de Carnaval,Mon,0.46,0.3,0.31
+2023-02-21,feriado,,Martes de Carnaval,Tue,0.4,0.28,0.31
+2023-03-24,feriado,,Día Nacional de la Memoria por la Verdad y la Justicia,Fri,0.47,0.39,0.52
+2023-04-02,feriado en fin de semana,,Día del Veterano y de los Caidos en la Guerra de Malvinas,Sun,0.92,0.94,0.98
+2023-04-06,feriado,,Jueves Santo,Thu,0.65,0.68,0.38
+2023-04-07,feriado,,Viernes Santo,Fri,0.37,0.29,0.26
+2023-05-01,feriado,,Día del Trabajo,Mon,0.27,0.2,0.25
+2023-05-25,feriado,,Día de la Revolución de Mayo,Thu,0.3,0.25,0.32
+2023-05-26,feriado,,Feriado con fines turísticos,Fri,0.34,0.23,0.31
+2023-06-17,feriado en fin de semana,,Paso a la Inmortalidad del General Don Martín Miguel de Güemes,Sat,0.89,0.93,0.97
+2023-06-19,feriado,,Feriado con fines turísticos,Mon,0.35,0.25,0.33
+2023-06-20,feriado,,Paso a la Inmortalidad del General Don Manuel Belgrano,Tue,0.34,0.26,0.28
+2023-07-09,feriado en fin de semana,,Día de la Independencia,Sun,0.9,0.89,1.07
+2023-08-21,feriado,,Paso a la Inmortalidad del General Don José de San Martín,Mon,0.37,0.19,0.27
+2023-10-13,feriado,,Feriado con fines turísticos,Fri,0.52,0.47,0.43
+2023-10-16,feriado,,Día del Respeto a la Diversidad Cultural,Mon,0.35,0.29,0.28
+2023-11-20,feriado,,Día de la Soberanía Nacional,Mon,0.38,0.3,0.28
+2023-12-08,feriado,,Inmaculada Concepción de María,Fri,0.55,0.45,0.45
+2023-12-25,feriado,,Navidad,Mon,0.21,0.13,0.15
+2024-01-01,feriado,,Año Nuevo,Mon,0.2,0.12,0.21
+2024-02-12,feriado,,Lunes de Carnaval,Mon,0.3,0.19,0.23
+2024-02-13,feriado,,Martes de Carnaval,Tue,0.44,0.32,0.31
+2024-03-24,feriado en fin de semana,,Día Nacional de la Memoria por la Verdad y la Justicia,Sun,1.07,1.14,1.9
+2024-03-28,feriado,,Jueves Santo,Thu,0.71,0.71,0.47
+2024-03-29,feriado,,Viernes Santo,Fri,0.36,0.32,0.31
+2024-04-01,feriado,,Feriado con fines turísticos,Mon,0.33,0.28,0.28
+2024-04-02,feriado,,Día del Veterano y de los Caidos en la Guerra de Malvinas,Tue,0.33,0.28,0.25
+2024-05-01,feriado,,Día del Trabajo,Wed,0.25,0.2,0.23
+2024-05-25,feriado en fin de semana,,Día de la Revolución de Mayo,Sat,0.68,0.59,0.72
+2024-06-17,feriado,,Paso a la Inmortalidad del General Don Martín Miguel de Güemes,Mon,0.36,0.31,0.26
+2024-06-20,feriado,,Paso a la Inmortalidad del General Don Manuel Belgrano,Thu,0.43,0.4,0.34
+2024-06-21,feriado,,Feriado con fines turísticos,Fri,0.33,0.26,0.29
+2024-07-09,feriado,,Día de la Independencia,Tue,0.34,0.28,0.36
+2024-08-17,feriado en fin de semana,,Paso a la Inmortalidad del General Don José de San Martín,Sat,0.87,0.85,0.97
+2024-10-11,feriado,,Feriado con fines turísticos,Fri,0.47,0.42,0.39
+2024-10-12,feriado en fin de semana,,Día del Respeto a la Diversidad Cultural,Sat,0.75,0.71,0.75
+2024-11-18,feriado,,Día de la Soberanía Nacional,Mon,0.4,0.31,0.31
+2024-12-08,feriado en fin de semana,,Inmaculada Concepción de María,Sun,1.11,1.07,1.14
+2024-12-25,feriado,,Navidad,Wed,0.15,0.11,0.11
+2025-01-01,feriado,,Año Nuevo,Wed,0.17,0.09,0.12
+2025-03-03,feriado,,Lunes de Carnaval,Mon,0.29,0.19,0.26
+2025-03-04,feriado,,Martes de Carnaval,Tue,0.37,0.26,0.28
+2025-03-24,feriado,,Día Nacional de la Memoria por la Verdad y la Justicia,Mon,0.32,0.3,0.46
+2025-04-02,feriado,,Día del Veterano y de los Caidos en la Guerra de Malvinas,Wed,0.37,0.32,0.3
+2025-04-17,feriado,,Jueves Santo,Thu,0.55,0.6,0.47
+2025-04-18,feriado,,Viernes Santo,Fri,0.33,0.26,0.32
+2025-05-01,feriado,,Día del Trabajo,Thu,0.26,0.19,0.22
+2025-05-02,feriado,,Feriado con fines turísticos,Fri,0.59,0.55,0.56
+2025-05-25,feriado en fin de semana,,Día de la Revolución de Mayo,Sun,0.98,1.04,1.05
+2025-06-16,feriado,,Paso a la Inmortalidad del General Don Martín Miguel de Güemes,Mon,0.32,0.25,0.27
+2025-06-20,feriado,,Paso a la Inmortalidad del General Don Manuel Belgrano,Fri,0.43,0.33,0.37
+2025-07-09,feriado,,Día de la Independencia,Wed,0.39,0.2,0.31
+2025-08-15,feriado,,Feriado con fines turísticos,Fri,0.62,0.56,0.54
+2025-08-17,feriado en fin de semana,,Paso a la Inmortalidad del General Don José de San Martín,Sun,0.87,0.81,0.92
+2025-10-12,feriado en fin de semana,,Día del Respeto a la Diversidad Cultural,Sun,0.88,0.8,0.93
+2025-11-21,feriado,,Feriado con fines turísticos,Fri,0.64,0.59,0.54
+2025-11-24,feriado,,Día de la Soberanía Nacional,Mon,0.36,0.28,0.33
+2025-12-08,feriado,,Inmaculada Concepción de María,Mon,0.38,0.29,0.33
+2025-12-25,feriado,,Navidad,Thu,0.15,0.09,0.11
+2026-01-01,feriado,,Año Nuevo,Thu,0.17,0.08,0.13
+2026-02-16,feriado,,Lunes de Carnaval,Mon,0.42,0.24,0.34
+2026-02-17,feriado,,Martes de Carnaval,Tue,0.41,0.23,0.31
+2026-03-23,feriado,,Feriado con fines turísticos,Mon,0.53,0.52,0.49
+2026-03-24,feriado,,Día Nacional de la Memoria por la Verdad y la Justicia,Tue,0.37,0.36,0.55
+2026-04-02,feriado,,Día del Veterano y de los Caidos en la Guerra de Malvinas; Jueves Sant,Thu,0.38,0.3,0.32
+2026-04-03,feriado,,Viernes Santo,Fri,0.29,0.22,0.28
+2026-05-01,feriado,,Día del Trabajo,Fri,0.26,0.21,0.25
+2026-05-25,feriado,,Día de la Revolución de Mayo,Mon,0.28,0.21,0.27
+2026-06-15,feriado,,Paso a la Inmortalidad del General Don Martín Miguel de Güemes,Mon,0.32,0.26,0.28
+2026-06-20,feriado en fin de semana,,Paso a la Inmortalidad del General Don Manuel Belgrano,Sat,0.88,0.82,0.9
+2026-07-09,feriado,,Día de la Independencia,Thu,0.38,0.24,0.33
+2026-07-10,feriado,,Feriado con fines turísticos,Fri,0.62,0.46,0.55
+2026-08-17,feriado,,Paso a la Inmortalidad del General Don José de San Martín,Mon,0.31,0.25,0.3

@@ -1,0 +1,6 @@
+serie,primer_valor,tarifa_nominal_inicial,tarifa_nominal_final,nominal_x,real_inicial_pesos_ene22,real_final_pesos_ene22,real_x,pct_ripte_inicial,pct_ripte_julio_2026,pct_ripte_maximo,fecha_maximo
+colectivo_caba,2024-08-12,371.13,920.72,2.5,32.6,45.4,1.39,1.44,1.69,1.69,2026-07-01
+colectivo_nacional,2022-01-01,18.0,742.81,41.3,18.0,36.6,2.03,0.67,1.53,1.74,2024-02-06
+colectivo_provincial,2024-02-06,270.0,1215.12,4.5,33.9,59.9,1.77,1.74,2.17,2.17,2026-07-01
+subte,2022-01-01,30.0,1753.0,58.4,30.0,86.4,2.88,1.12,3.33,3.33,2026-07-01
+tren,2022-01-01,12.32,450.0,36.5,12.3,22.2,1.8,0.46,0.78,1.04,2024-09-16

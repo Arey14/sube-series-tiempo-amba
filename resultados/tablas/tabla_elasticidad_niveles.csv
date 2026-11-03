@@ -1,0 +1,17 @@
+precio,control_salario,modo,con_tendencia,semanas,elasticidad,error_std_HAC,ic95_inf,ic95_sup,R2
+nominal,False,colectivo_nacional,False,238,-0.08,0.012,-0.105,-0.056,0.646
+nominal,False,colectivo_nacional,True,238,0.097,0.027,0.043,0.15,0.779
+nominal,False,colectivo_provincial,False,138,-0.182,0.016,-0.213,-0.151,0.782
+nominal,False,colectivo_provincial,True,138,-0.26,0.07,-0.397,-0.124,0.784
+nominal,False,tren,False,238,-0.058,0.008,-0.073,-0.042,0.691
+nominal,False,tren,True,238,0.031,0.018,-0.005,0.067,0.76
+nominal,False,subte,False,238,-0.145,0.011,-0.167,-0.123,0.81
+nominal,False,subte,True,238,-0.091,0.055,-0.199,0.016,0.816
+real,False,colectivo_nacional,False,238,-0.268,0.043,-0.351,-0.184,0.635
+real,False,colectivo_nacional,True,238,-0.016,0.068,-0.15,0.118,0.742
+real,False,colectivo_provincial,False,138,-0.362,0.023,-0.408,-0.317,0.785
+real,False,colectivo_provincial,True,138,-0.256,0.053,-0.361,-0.152,0.792
+real,False,tren,False,238,-0.18,0.028,-0.235,-0.124,0.647
+real,False,tren,True,238,-0.037,0.034,-0.103,0.03,0.756
+real,False,subte,False,238,-0.371,0.021,-0.412,-0.33,0.862
+real,False,subte,True,238,-0.255,0.032,-0.317,-0.192,0.888

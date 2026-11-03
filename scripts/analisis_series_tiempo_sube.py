@@ -15,15 +15,13 @@ import seaborn as sns
 import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller, kpss
 from statsmodels.tsa.seasonal import STL
-from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
-# Prophet
-from prophet import Prophet
+# Modelos de pronóstico (sin fuga de información)
+import modelos_pronostico as mp
 
 # Scikit-learn
-from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 
 # Configuración visual
@@ -242,82 +240,28 @@ def train_and_evaluate_forecasting_models(df):
     train_df = df_model.iloc[:-test_days].copy()
     test_df = df_model.iloc[-test_days:].copy()
 
-    y_train = train_df['total_amba'] / 1e6
     y_test = test_df['total_amba'] / 1e6
-
-    exog_cols = ['es_dia_habil', 'es_fin_de_semana', 'es_feriado']
-    exog_train = train_df[exog_cols]
-    exog_test = test_df[exog_cols]
 
     predictions = pd.DataFrame(index=test_df.index)
     predictions['Real'] = y_test
 
-    # 1. Baseline: Seasonal Naïve (s=7)
-    s_naive = []
-    full_y = df_model['total_amba'] / 1e6
-    for date in test_df.index:
-        s_naive.append(full_y.loc[date - pd.Timedelta(days=7)])
-    predictions['Seasonal_Naive'] = s_naive
+    # Cada modelo solo ve datos hasta `fin_train` (ver modelos_pronostico.py).
+    fin_train = train_df.index[-1]
+
+    # 1. Baseline: Seasonal Naïve (s=7), repite la última semana observada del entrenamiento
+    predictions['Seasonal_Naive'] = mp.seasonal_naive(df_model, fin_train, test_days)
 
     # 2. Modelo SARIMAX (1, 1, 1) x (1, 1, 1, 7) con exógenas
     print("  - Ajustando SARIMAX(1, 1, 1)x(1, 1, 1, 7) con variables exógenas...")
-    sarimax_mod = SARIMAX(
-        y_train,
-        exog=exog_train,
-        order=(1, 1, 1),
-        seasonal_order=(1, 1, 1, 7),
-        enforce_stationarity=False,
-        enforce_invertibility=False
-    )
-    sarimax_res = sarimax_mod.fit(disp=False)
-    predictions['SARIMAX'] = sarimax_res.forecast(steps=test_days, exog=exog_test)
+    predictions['SARIMAX'], sarimax_res = mp.sarimax(df_model, fin_train, test_days)
 
     # 3. Modelo Facebook Prophet
     print("  - Ajustando Facebook Prophet con feriados y estacionalidades...")
-    prophet_train = pd.DataFrame({
-        'ds': train_df.index,
-        'y': y_train.values,
-        'es_dia_habil': train_df['es_dia_habil'].values,
-        'es_feriado': train_df['es_feriado'].values
-    })
-    
-    m_prophet = Prophet(
-        weekly_seasonality=True,
-        yearly_seasonality=True,
-        daily_seasonality=False,
-        changepoint_prior_scale=0.05
-    )
-    m_prophet.add_country_holidays(country_name='AR')
-    m_prophet.add_regressor('es_dia_habil')
-    m_prophet.add_regressor('es_feriado')
-    m_prophet.fit(prophet_train)
+    predictions['Prophet'] = mp.prophet(df_model, fin_train, test_days)
 
-    future = pd.DataFrame({
-        'ds': test_df.index,
-        'es_dia_habil': test_df['es_dia_habil'].values,
-        'es_feriado': test_df['es_feriado'].values
-    })
-    prophet_fcst = m_prophet.predict(future)
-    predictions['Prophet'] = prophet_fcst['yhat'].values
-
-    # 4. Modelo Machine Learning (HistGradientBoosting con retardos)
-    print("  - Ajustando Gradient Boosting Regressor con lags...")
-    df_feat = df_model.copy()
-    for lag in [1, 2, 7, 14, 21, 28]:
-        df_feat[f'lag_{lag}'] = df_feat['total_amba'].shift(lag) / 1e6
-    df_feat['rolling_mean_7'] = (df_feat['total_amba'] / 1e6).shift(1).rolling(7).mean()
-    df_feat['rolling_std_7'] = (df_feat['total_amba'] / 1e6).shift(1).rolling(7).std()
-    
-    feature_cols = [c for c in df_feat.columns if c.startswith('lag_') or c.startswith('rolling_')] + exog_cols + ['dia_semana', 'mes']
-    df_feat = df_feat.dropna()
-
-    X_tr = df_feat.loc[df_feat.index < test_df.index[0], feature_cols]
-    y_tr = df_feat.loc[df_feat.index < test_df.index[0], 'total_amba'] / 1e6
-    X_te = df_feat.loc[test_df.index, feature_cols]
-
-    gbr = HistGradientBoostingRegressor(max_iter=200, random_state=42)
-    gbr.fit(X_tr, y_tr)
-    predictions['Gradient_Boosting'] = gbr.predict(X_te)
+    # 4. Machine Learning (HistGradientBoosting con retardos, pronóstico recursivo)
+    print("  - Ajustando Gradient Boosting con lags (pronóstico recursivo a 90 días)...")
+    predictions['Gradient_Boosting'] = mp.gradient_boosting_recursivo(df_model, fin_train, test_days)
 
     # Cálculo de Métricas de Evaluación
     metrics_list = []
@@ -357,7 +301,7 @@ def train_and_evaluate_forecasting_models(df):
     fig, axes = plt.subplots(2, 2, figsize=(13, 8))
     
     axes[0, 0].plot(sarimax_resid, color='#2c3e50', lw=0.8)
-    axes[0, 0].set_title("Residuos Estandarizados SARIMAX", fontweight='bold')
+    axes[0, 0].set_title("Residuos SARIMAX (millones de usuarios)", fontweight='bold')
     axes[0, 0].axhline(0, color='red', linestyle='--')
     
     sns.histplot(sarimax_resid, kde=True, ax=axes[0, 1], color='#2980b9')

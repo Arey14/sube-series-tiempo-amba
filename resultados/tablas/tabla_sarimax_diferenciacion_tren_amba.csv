@@ -1,0 +1,4 @@
+serie,p_ADF,p_KPSS,decision
+nivel,0.0038,0.1,estacionaria
+dif. estacional (7),0.0,0.1,estacionaria
+dif. estacional (7) + dif. (1),0.0,0.1,estacionaria

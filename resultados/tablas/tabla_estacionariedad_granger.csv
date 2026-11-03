@@ -1,0 +1,7 @@
+serie,modo,p_ADF,p_KPSS,decision
+"demanda (dif. log, ajustada)",colectivo_nacional,0.0,0.1,estacionaria
+"demanda (dif. log, ajustada)",tren,0.0,0.0609,estacionaria
+"demanda (dif. log, ajustada)",subte,0.0,0.1,estacionaria
+tarifa real (dif. log),colectivo_nacional,0.0,0.1,estacionaria
+tarifa real (dif. log),tren,0.0049,0.1,estacionaria
+tarifa real (dif. log),subte,0.0,0.1,estacionaria

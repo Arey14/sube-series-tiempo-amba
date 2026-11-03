@@ -1,0 +1,28 @@
+fecha,paro,modo,rol,cociente,banda_ruido_inf,banda_ruido_sup,posicion
+2023-07-07,colectivo (UTA),colectivo,paró,0.09,0.78,1.13,bajo la banda
+2023-07-07,colectivo (UTA),tren,no paró,0.66,0.78,1.11,bajo la banda
+2023-07-07,colectivo (UTA),subte,no paró,1.01,0.83,1.14,dentro de la banda
+2024-01-24,general (CGT),colectivo,paró,0.62,0.78,1.13,bajo la banda
+2024-01-24,general (CGT),tren,paró,0.53,0.78,1.11,bajo la banda
+2024-01-24,general (CGT),subte,paró,0.73,0.83,1.14,bajo la banda
+2024-02-21,tren (La Fraternidad),colectivo,no paró,1.02,0.78,1.13,dentro de la banda
+2024-02-21,tren (La Fraternidad),tren,paró,0.0,0.78,1.11,bajo la banda
+2024-02-21,tren (La Fraternidad),subte,no paró,0.7,0.83,1.14,bajo la banda
+2024-04-11,colectivo (UTA),colectivo,paró,0.2,0.78,1.13,bajo la banda
+2024-04-11,colectivo (UTA),tren,no paró,0.79,0.78,1.11,dentro de la banda
+2024-04-11,colectivo (UTA),subte,no paró,1.01,0.83,1.14,dentro de la banda
+2024-05-09,general (CGT),colectivo,paró,0.06,0.78,1.13,bajo la banda
+2024-05-09,general (CGT),tren,paró,0.0,0.78,1.11,bajo la banda
+2024-05-09,general (CGT),subte,paró,0.0,0.83,1.14,bajo la banda
+2024-10-30,tren y subte,colectivo,no paró,0.75,0.78,1.13,bajo la banda
+2024-10-30,tren y subte,tren,paró,0.0,0.78,1.11,bajo la banda
+2024-10-30,tren y subte,subte,paró,0.0,0.83,1.14,bajo la banda
+2025-04-10,general (CGT),colectivo,no paró,0.62,0.78,1.13,bajo la banda
+2025-04-10,general (CGT),tren,paró,0.0,0.78,1.11,bajo la banda
+2025-04-10,general (CGT),subte,paró,0.0,0.83,1.14,bajo la banda
+2025-05-06,colectivo (UTA),colectivo,paró,0.18,0.78,1.13,bajo la banda
+2025-05-06,colectivo (UTA),tren,no paró,0.67,0.78,1.11,bajo la banda
+2025-05-06,colectivo (UTA),subte,no paró,1.0,0.83,1.14,dentro de la banda
+2026-02-19,general (CGT),colectivo,paró,0.09,0.78,1.13,bajo la banda
+2026-02-19,general (CGT),tren,paró,0.0,0.78,1.11,bajo la banda
+2026-02-19,general (CGT),subte,paró,0.0,0.83,1.14,bajo la banda
