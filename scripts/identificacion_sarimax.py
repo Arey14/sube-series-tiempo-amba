@@ -48,6 +48,19 @@ def decision(x):
     return round(pa, 4), round(pk, 4), dec
 
 
+def figura_acf(s):
+    """ACF y PACF de la serie con diferencia estacional de 7 días; las líneas marcan los múltiplos de 7."""
+    x = s.diff(7).dropna()
+    fig, axs = plt.subplots(1, 2, figsize=(13, 4.5))
+    plot_acf(x, lags=42, ax=axs[0], title='ACF de la serie con diferencia estacional (7)')
+    plot_pacf(x, lags=42, ax=axs[1], title='PACF de la serie con diferencia estacional (7)', method='ywm')
+    for ax, y in zip(axs, ['autocorrelación', 'autocorrelación parcial']):
+        ax.set_xlabel('rezago (días)'); ax.set_ylabel(y)
+        for k in (7, 14, 21, 28, 35, 42):
+            ax.axvline(k, color='grey', lw=0.6, ls=':')
+    plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, f'fig19_acf_pacf_sarimax{SUF}.png'), dpi=200); plt.close()
+
+
 def main():
     s = pd.read_csv(SERIE, parse_dates=['fecha']).set_index('fecha').asfreq('D')[COL].loc[INICIO:FIN_IDENT] / 1e6
     filas = []
@@ -57,11 +70,7 @@ def main():
     t_dif = pd.DataFrame(filas); t_dif.to_csv(os.path.join(TABLA_DIR, f'tabla_sarimax_diferenciacion{SUF}.csv'), index=False)
     print(t_dif.to_string(index=False))
 
-    x = s.diff(7).dropna()
-    fig, axs = plt.subplots(1, 2, figsize=(13, 4))
-    plot_acf(x, lags=42, ax=axs[0], title='ACF de la serie con diferencia estacional (7)')
-    plot_pacf(x, lags=42, ax=axs[1], title='PACF de la serie con diferencia estacional (7)', method='ywm')
-    plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, f'fig19_acf_pacf_sarimax{SUF}.png'), dpi=200); plt.close()
+    figura_acf(s)
 
     cal = P.calendario(s.index)[['feriado', 'nochebuena_fin_anio'] + [c for c in P.calendario(s.index[:1]).columns if c.startswith(('sen_', 'cos_'))]]
     filas = []
