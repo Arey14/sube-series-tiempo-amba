@@ -15,9 +15,14 @@ Pandemia (solo descripción): demanda semanal de 2020 y 2021 relativa a enero-fe
 lo que la caída está sobrestimada de manera moderada. No se mide recuperación (decisión del plan: el período de
 referencia es solo de dos meses de verano).
 
+Paros y elecciones se clasifican por quién paró y por si hubo gratuidad (diccionarios PARO_DE y GRATUIDAD), a partir
+de la descripción y las fuentes de data/hitos/hitos_paros_elecciones.csv. Con eso se compara, para cada paro, lo que
+pasó en el modo que paró y en los modos que no pararon (sustitución o complementariedad entre modos).
+
 Entradas: data/procesado/usos_diarios_amba.csv, data/hitos/hitos_paros_elecciones.csv
-Salidas:  resultados/tablas/tabla_hitos_cociente_dias.csv, tabla_hitos_resumen.csv, tabla_covid_descriptivo.csv
-          resultados/figuras/fig16_covid_descriptivo.png, fig17_hitos_cociente.png
+Salidas:  resultados/tablas/tabla_hitos_cociente_dias.csv, tabla_hitos_resumen.csv, tabla_covid_descriptivo.csv,
+          tabla_hitos_resumen_subtipo.csv, tabla_paros_modo_propio_vs_otros.csv
+          resultados/figuras/fig16_covid_descriptivo.png, fig17_hitos_cociente.png, fig26_paros_por_tipo.png
 """
 
 import os
@@ -25,6 +30,7 @@ import numpy as np
 import pandas as pd
 import holidays
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 plt.style.use('seaborn-v0_8-whitegrid')
 
@@ -36,6 +42,23 @@ FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
 
 MODOS = ['colectivo', 'tren', 'subte']
 INICIO, FIN = '2022-03-01', '2026-09-30'
+
+# quién paró en cada paro (según las fuentes y el dato) y si hubo gratuidad en cada elección
+PARO_DE = {
+    '2023-07-07': ('colectivo (UTA)', ['colectivo']),
+    '2024-01-24': ('general (CGT)', ['colectivo', 'tren', 'subte']),
+    '2024-02-21': ('tren (La Fraternidad)', ['tren']),
+    '2024-04-11': ('colectivo (UTA)', ['colectivo']),
+    '2024-05-09': ('general (CGT)', ['colectivo', 'tren', 'subte']),
+    '2024-10-30': ('tren y subte', ['tren', 'subte']),
+    '2025-04-10': ('general (CGT)', ['tren', 'subte']),
+    '2025-05-06': ('colectivo (UTA)', ['colectivo']),
+    '2026-02-19': ('general (CGT)', ['colectivo', 'tren', 'subte']),
+}
+GRATUIDAD = {
+    '2023-08-13': 'con gratuidad', '2023-10-22': 'con gratuidad', '2023-11-19': 'con gratuidad (inferida del dato)',
+    '2025-05-18': 'sin gratuidad aparente', '2025-09-07': 'sin gratuidad aparente', '2025-10-26': 'sin gratuidad aparente',
+}
 
 
 def cociente_dia(serie, f, excluidos):
@@ -68,7 +91,10 @@ def main():
                       'detalle': nombre[:70], 'dia_semana': f.day_name()[:3],
                       **{m: cociente_dia(usos[m], f, excluidos) for m in MODOS}})
     t = pd.DataFrame(filas)
+    t['subtipo'] = [PARO_DE.get(str(f), ('', []))[0] if tp == 'paro' else GRATUIDAD.get(str(f), '') if tp == 'eleccion' else ''
+                    for f, tp in zip(t['fecha'], t['tipo'])]
     t[MODOS] = t[MODOS].round(2)
+    t = t[['fecha', 'tipo', 'subtipo', 'detalle', 'dia_semana'] + MODOS]
     t.to_csv(os.path.join(TABLA_DIR, 'tabla_hitos_cociente_dias.csv'), index=False)
 
     # --- banda de ruido: días laborables ordinarios --------------------------------------------------------------
@@ -91,6 +117,24 @@ def main():
                         'pct_fuera_de_banda': round(100 * fuera)})
     r = pd.DataFrame(res)
     r.to_csv(os.path.join(TABLA_DIR, 'tabla_hitos_resumen.csv'), index=False)
+    sub = t[t.subtipo != '']
+    rs = []
+    for (tipo, st), g in sub.groupby(['tipo', 'subtipo']):
+        for m in MODOS:
+            v = g[m].dropna()
+            rs.append({'tipo': tipo, 'subtipo': st, 'modo': m, 'dias': len(v), 'mediana_cociente': round(v.median(), 2), 'minimo': round(v.min(), 2),
+                       'maximo': round(v.max(), 2), 'banda_ruido_inf': round(lim[m][0], 2), 'banda_ruido_sup': round(lim[m][1], 2)})
+    pd.DataFrame(rs).to_csv(os.path.join(TABLA_DIR, 'tabla_hitos_resumen_subtipo.csv'), index=False)
+    pp = []
+    for _, r in t[t.tipo == 'paro'].iterrows():
+        paran = PARO_DE[str(r['fecha'])][1]
+        for m in MODOS:
+            pp.append({'fecha': r['fecha'], 'paro': r['subtipo'], 'modo': m, 'rol': 'paró' if m in paran else 'no paró', 'cociente': r[m],
+                       'banda_ruido_inf': round(lim[m][0], 2), 'banda_ruido_sup': round(lim[m][1], 2),
+                       'posicion': 'sobre la banda' if r[m] > lim[m][1] else ('bajo la banda' if r[m] < lim[m][0] else 'dentro de la banda')})
+    tp_ = pd.DataFrame(pp)
+    tp_.to_csv(os.path.join(TABLA_DIR, 'tabla_paros_modo_propio_vs_otros.csv'), index=False)
+    print('\nParos: modo que paró contra modos que no pararon'); print(tp_.groupby(['rol', 'modo']).cociente.describe().round(2).to_string())
     print('Banda de ruido (días laborables ordinarios, percentiles 2,5 y 97,5):')
     for m in MODOS:
         print(f'  {m}: {lim[m][0]:.2f} a {lim[m][1]:.2f}  ({len(banda[m])} días)')
@@ -125,16 +169,37 @@ def main():
     ax.set_title('Pandemia: demanda semanal de días hábiles contra el verano de 2020 (descripción)', fontweight='bold')
     ax.legend(); plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig16_covid_descriptivo.png'), dpi=200); plt.close()
 
-    fig, axs = plt.subplots(1, 3, figsize=(14, 4.5), sharey=True)
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
     for ax, m in zip(axs, MODOS):
         ax.axhspan(*lim[m], color='#bdc3c7', alpha=0.5, label='banda de días ordinarios')
-        for tipo, c in [('paro', '#c0392b'), ('eleccion', '#8e44ad'), ('feriado', '#16a085')]:
+        for tipo, c, nom in [('feriado', '#16a085', 'feriado laborable'), ('eleccion', '#8e44ad', 'elección'), ('paro', '#c0392b', 'paro')]:
             g = t[t.tipo == tipo]
-            ax.scatter(pd.to_datetime(g['fecha']), g[m], s=22, color=c, label=tipo)
+            ax.scatter(pd.to_datetime(g['fecha']), g[m], s=26, color=c, label=nom, zorder=3)
         ax.set_title(m); ax.axhline(1, color='k', lw=0.6)
+        ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
+        ax.tick_params(axis='x', rotation=60, labelsize=8)
     axs[0].set_ylabel('Cociente contra un día habitual'); axs[0].legend(fontsize=8)
-    plt.suptitle('Demanda en días de paro, elección y feriado', fontweight='bold')
+    plt.suptitle('Demanda en días de feriado, elección y paro (cada punto es un día)', fontweight='bold')
     plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig17_hitos_cociente.png'), dpi=200); plt.close()
+
+    # cada paro con su fecha y quién paró; el modo que paró se marca con borde negro
+    pr = t[t.tipo == 'paro'].reset_index(drop=True)
+    etiquetas = [f"{pd.Timestamp(f):%d/%m/%y}\n{st}" for f, st in zip(pr['fecha'], pr['subtipo'])]
+    x = np.arange(len(pr)); w = 0.27
+    col = {'colectivo': '#2980b9', 'tren': '#27ae60', 'subte': '#e67e22'}
+    fig, ax = plt.subplots(figsize=(14, 5.5))
+    for k, m in enumerate(MODOS):
+        paro_m = [m in PARO_DE[str(f)][1] for f in pr['fecha']]
+        ax.bar(x + (k - 1) * w, pr[m], w, color=col[m], label=m, edgecolor=['black' if p else col[m] for p in paro_m], linewidth=1.6, zorder=3)
+    ax.axhspan(0.78, 1.13, color='#bdc3c7', alpha=0.4, label='banda de días ordinarios (aprox.)', zorder=0); ax.axhline(1, color='k', lw=0.6)
+    ax.set_xticks(x); ax.set_xticklabels(etiquetas, fontsize=8); ax.set_ylabel('Cociente contra un día habitual')
+    ax.set_ylim(0, 1.45)
+    ax.set_title('Paros: demanda de cada modo según quién paró (borde negro = ese modo paró)', fontweight='bold')
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(color=col[m], label=m) for m in MODOS] + [Patch(facecolor='white', edgecolor='black', linewidth=1.6, label='modo que paró'),
+              Patch(color='#bdc3c7', alpha=0.5, label='banda de días ordinarios (aprox.)')], fontsize=8, ncol=5, loc='upper center'); plt.tight_layout()
+    plt.savefig(os.path.join(FIG_DIR, 'fig26_paros_por_tipo.png'), dpi=200); plt.close()
 
 
 if __name__ == '__main__':

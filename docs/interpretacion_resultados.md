@@ -284,7 +284,7 @@ Esta es la lectura conjunta de los bloques 1 a 9. Se redacta antes de armar la p
 | ¿Las líneas de más ingreso reaccionan menos? | No hay respaldo: signo contrario o nulo según la especificación; la prueba solo compara D con el resto. | Baja (poder bajo) |
 | ¿Cómo se comporta la demanda en los hitos del calendario? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta |
 
-**Mensaje para la presentación:** el precio importa para el subte y casi nada para el colectivo y el tren en los saltos observados, pero eso no es un efecto causal limpio: queda sin controlar el ingreso y el período es de inflación alta. Los hitos de calendario son los efectos más claros y estables. Para el video se muestra primero lo que se sostiene (calendario, subte) y después lo inestable (saltos del colectivo), con los límites a la vista.
+**Mensaje para la presentación:** el precio importa para el subte y casi nada para el colectivo y el tren en los saltos observados, pero ningún diseño es un experimento y todos dependen de supuestos (en el bloque 17 se agregó el salario real como control y no cambia el resultado cualitativo). Los hitos de calendario son los efectos más claros y estables. Para el video se muestra primero lo que se sostiene (calendario, subte) y después lo inestable (saltos del colectivo), con los límites a la vista.
 
 ## 11. P-2: qué método pronostica mejor la demanda diaria y por qué — 1-nov-2026
 
@@ -461,3 +461,54 @@ MAPE del Gradient Boosting: 7,2% (7 días), 7,4% (28) y 8,1% (90).
 ### Límites
 
 Solo total AMBA (no por modo ni el híbrido). El horizonte de 90 días tiene 13 cortes: la comparación entre modelos se apoya en 1.155 días, pero con pocas realizaciones independientes de tendencia, así que sus intervalos son más inciertos. Los bloques de 7 días consecutivos tienen errores correlacionados; el Diebold-Mariano usa errores HAC con 27 rezagos.
+
+---
+
+## 16. P-1: tarifa real y tarifa en salarios — 3-nov-2026
+
+**Qué es.** Dos correcciones de la serie de tarifas: la tarifa real (nominal dividida por el IPC, en pesos constantes de enero de 2022) y el costo de 40 viajes mensuales como porcentaje del RIPTE (supuesto ilustrativo de 20 días hábiles de ida y vuelta). `scripts/tarifas_reales.py`, `fig25_tarifas_reales.png`, `tabla_tarifas_reales_resumen.csv`.
+
+**Lectura.**
+- La mayor parte del aumento nominal es inflación: el colectivo nacional pasó de $18 a $743 (×41) pero, en pesos de enero de 2022, de $18 a $37 (×2,0). La tarifa real del colectivo nacional cayó a $7,5 en enero de 2024 y el salto de febrero la llevó a $33,9.
+- En términos del salario, 40 viajes mensuales de subte pasaron de 1,1% a 3,3% del RIPTE (enero de 2022 a julio de 2026); colectivo nacional de 0,7% a 1,5%; tren de 0,5% a 0,8%. Colectivo nacional y tren alcanzaron su máximo en 2024 y desde entonces el salario recuperó terreno; el subte, no.
+
+**Límites.** El RIPTE es un salario formal, nacional y mensual. El último mes publicado repite el anterior (valor provisorio) y se descarta; los meses sin dato repiten el último salario real.
+
+## 17. P-1: control por salario real — 3-nov-2026
+
+**Qué se hizo.** Se repitieron la regresión en niveles (con tendencia) y la de diferencias interanuales agregando el salario real (RIPTE / IPC) como regresora, y con la tarifa medida en salarios (tarifa / RIPTE). `scripts/modelo_precio_demanda.py`, `tabla_elasticidad_control_salario.csv`.
+
+**Resultado (interanual; niveles con tendencia entre paréntesis).**
+
+| Modo | Tarifa real | + salario real | Tarifa en salarios |
+|---|---|---|---|
+| Subte | −0,22 (−0,26) | −0,15 (−0,16) | −0,21 (−0,25) |
+| Colectivo nacional | −0,01 (−0,02) | −0,02 (−0,02) | +0,03 (+0,05) |
+| Tren | −0,04 (−0,04) | −0,03 (−0,03) | −0,02 (0,00) |
+| Colectivo provincial | −0,27 (−0,26) | −0,06 (−0,10) | −0,21 (−0,20) |
+
+**Lectura.** El control por salario real no cambia las conclusiones cualitativas: el subte sigue siendo el único modo con elasticidad negativa robusta (de −0,15 a −0,25 con control), y colectivo nacional y tren siguen cerca de cero. El tamaño del subte baja un tercio al controlar por el salario real, y el colectivo provincial pierde significancia (depende de cómo se controle el ingreso).
+
+**Límites.** Con tres saltos grandes, todos de 2024, el salario real y la tarifa se mueven en parte juntos y controlar por el salario le quita parte de la variación que identifica el efecto. No convierte el análisis en un experimento.
+
+## 18. P-1: paros según quién paró y elecciones según gratuidad — 3-nov-2026
+
+**Qué se hizo.** Los nueve paros se clasificaron por quién paró (colectivo-UTA, tren-La Fraternidad, tren y subte, general-CGT; el 10-abr-2025 pararon subte y trenes, no el colectivo) y las seis elecciones por gratuidad (3 con, 3 sin). Para cada paro se separa el modo que paró de los que no. `scripts/hitos_efectos.py`, `tabla_hitos_resumen_subtipo.csv`, `tabla_paros_modo_propio_vs_otros.csv`, `fig26_paros_por_tipo.png`; `fig17_hitos_cociente.png` se rehízo con las fechas legibles.
+
+**Lectura.**
+- El modo que para cae a casi cero (mediana de 0,14 en colectivo, 0,00 en tren y subte); la excepción es el paro general del 24-ene-2024 (0,53 a 0,73, adhesión parcial; día reconstruido).
+- **No hay sustitución hacia otros modos.** En los tres paros de colectivo el subte queda en 1,00 a 1,01 (dentro de la banda de 0,83–1,14) y el tren cae a 0,66–0,79. Cuando paran tren y subte, el colectivo cae a 0,75 (30-oct-2024) y 0,62 (10-abr-2025). Una explicación posible, no probada, es la complementariedad (los usuarios del tren llegan a las estaciones en colectivo).
+- Elecciones: con gratuidad, 0,00 a 0,13; sin gratuidad (2025), 0,59 (colectivo), 0,71 (tren) y 1,00 (subte). La mediana conjunta de 0,34 del colectivo mezcla dos situaciones distintas.
+
+**Límites.** Nueve paros, con adhesión distinta; no se controla clima ni aviso previo. La clasificación de quién paró sale de la descripción y de las fuentes de `hitos_paros_elecciones.csv`.
+
+## 19. P-2 aplicada a los hitos de P-1 — 3-nov-2026
+
+**Qué se hizo.** Los pronósticos del origen móvil (que incluyen paros y elecciones) se evaluaron en días de hito, con tres análisis: (A) error por tipo de día; (B) pronóstico condicional, con el cociente típico de P-1 de los demás eventos del mismo grupo; (C) pronósticos hechos el día anterior a cada salto tarifario (`scripts/pronosticos_antes_del_salto_p2.py`), con y sin el precio. `scripts/pronostico_hitos_p2.py`; `tabla_p2_hitos_errores.csv`, `tabla_p2_hitos_escenario.csv`, `tabla_p2_hitos_tarifas.csv`, `tabla_p2_hitos_tarifas_resumen.csv`, `fig27_p2_hitos.png`.
+
+**Lectura.**
+- **A.** Feriados laborables: el Gradient Boosting tiene un MAE de 0,30 millones contra 2,0 del Naive de 7 días (−85%). Paros: 2,06 a 2,09 millones con los cinco métodos, ninguno los anticipa. Elecciones con gratuidad: 1,3 a 1,5 millones.
+- **B.** Con el cociente de P-1, el error baja 81% a 82% en el modo que para y 91% a 94% en elecciones con gratuidad, con cualquier método (todos quedan en un MAE de 0,23–0,24 por modo). En elecciones sin gratuidad ayuda poco. La elección del método es secundaria frente a conocer el evento y su efecto.
+- **C.** Tras los saltos moderados el error no se distingue del habitual. El subte de mayo de 2024 (tarifa ×4) es el único caso con sobreestimación clara del modelo sin precio (+14% contra +5% habitual). Incorporar el precio con la elasticidad de P-1 mejora levemente los saltos moderados (MAPE del Gradient Boosting de 6,3% a 5,8%) y empeora los grandes (de 8,6% a 11,8%), porque sobrecorrige.
+
+**Límites.** Pocos eventos por grupo (3 a 6; 3 saltos grandes). La elasticidad se estimó con toda la muestra, así que el pronóstico con precio es optimista. Es una ilustración, no una prueba.

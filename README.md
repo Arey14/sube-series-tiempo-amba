@@ -46,15 +46,17 @@ Son preguntas distintas y piden herramientas distintas: atribuir una causa exige
 
 Hitos estudiados: pandemia (descriptivo), saltos tarifarios, feriados, paros y elecciones.
 
+**Terminología.** *Salto tarifario*: aumento de la tarifa mínima de al menos 10% en un solo cambio (29 en 2022–2026); un cambio menor es un *ajuste* (en general, mensuales de ~5%). *Salto tarifario grande*: la tarifa se duplica o más; son tres, todos en 2024 (colectivo nacional +251% y tren +169% el 6-feb; subte +359% el 17-may). *Elasticidad precio*: variación porcentual de la demanda dividida por la variación porcentual de la tarifa; −0,2 significa que un aumento de 10% se asocia con una caída de 2%. La literatura internacional reporta valores de corto plazo del orden de −0,3 a −0,4 (Balcombe et al., 2004).
+
 | Pregunta | Resultado | Confianza | Por qué esa confianza |
 |---|---|---|---|
-| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC), respaldada por Granger (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero. | Subte: media. Colectivo y tren: baja | Subte: dos métodos independientes coinciden y el test predictivo lo respalda, pero son pocos saltos y no es un experimento. Colectivo y tren: pocos saltos que además se mueven juntos en el tiempo, así que el precio no se puede separar de otros cambios. |
-| ¿Cuánto cayó con los saltos grandes? | Colectivo nacional ene–feb 2024: −13% (estudio de eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente. | Baja a media | Los dos métodos discrepan para el colectivo y el control sintético tiene donantes sin verificar. El subte tiene un solo evento grande limpio. |
-| ¿Hay sustitución entre modos? | No se observa. | Media | Los casos limpios quedan dentro del ruido, pero hay pocos casos limpios. |
+| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC) y de −0,15 a −0,25 al controlar por salario real (RIPTE); Granger lo respalda (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero, con o sin control salarial. **Colectivo provincial:** −0,27, pero desaparece al controlar por salario real. | Subte: media. Colectivo y tren: baja | Subte: dos métodos independientes coinciden y el test predictivo lo respalda, pero son pocos saltos y no es un experimento. Colectivo y tren: pocos saltos que además se mueven juntos en el tiempo, así que el precio no se puede separar de otros cambios. |
+| ¿Cuánto cayó con los saltos tarifarios grandes? | Colectivo nacional ene–feb 2024: −13% (estudio de eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente. | Baja a media | Los dos métodos discrepan para el colectivo y el control sintético tiene donantes sin verificar. El subte tiene un solo evento grande limpio. |
+| ¿Hay sustitución entre modos? | No se observa, ni ante saltos tarifarios ni ante paros: cuando para el colectivo el subte no sube (1,00 a 1,01 de un día normal) y el tren cae (0,66 a 0,79). | Media | Los coeficientes cruzados no se pueden separar por colinealidad entre tarifas. En los paros hay solo tres casos de cada tipo y no se controla clima ni aviso previo. |
 | ¿Las líneas de subte de mayor ingreso reaccionan menos? | Sin respaldo. | Baja | Solo 6 líneas: la prueba no tiene poder para detectar un efecto. Es un resultado nulo, no una refutación. |
-| ¿Cómo se comporta la demanda en feriados, paros, elecciones y pandemia? | Feriados laborables: ~0,3 de un día normal. Paros propios del modo: 0,0 a 0,2. Elecciones con gratuidad: ~0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta | Muchos eventos, efectos mucho mayores que el ruido normal (banda de días ordinarios) y resultados consistentes entre modos y años. |
+| ¿Cómo se comporta la demanda en feriados, paros, elecciones y pandemia? | Feriados laborables: ~0,3 de un día normal. Paro del propio modo: 0,0 a 0,2 (el cociente depende de quién paró: colectivo, tren, tren y subte o general). Elecciones con gratuidad: ~0; sin gratuidad (2025): 0,6 a 1,0. Pandemia: mínimo de 2% a 12% del verano de 2020; a fines de 2021, 97% (colectivo), 75% (tren) y 65% (subte). | Alta | Muchos eventos, efectos mucho mayores que el ruido normal (banda de días ordinarios) y resultados consistentes entre modos y años. |
 
-**Sobre la causalidad.** En la materia se distinguen dos ideas: Granger (si el pasado del precio mejora la predicción de la demanda, lo que no demuestra una causa) y el efecto de una intervención contra un contrafactual estimado con series de control. Acá se usan las dos: el estudio de eventos con el año anterior como control y el control sintético con ciudades del interior (que absorben los shocks nacionales comunes, como inflación e ingreso), más Granger como evidencia predictiva. Ningún diseño es un experimento: todos dependen de supuestos (controles comparables, sin otros eventos simultáneos propios del AMBA), y por eso las confianzas de la tabla son medias o bajas. Los hitos de calendario son los efectos más claros.
+**Sobre la causalidad.** En la materia se distinguen dos ideas: Granger (si el pasado del precio mejora la predicción de la demanda, lo que no demuestra una causa) y el efecto de una intervención contra un contrafactual estimado con series de control. Acá se usan las dos: el estudio de eventos con el año anterior como control, el control sintético con ciudades del interior (que absorben los shocks nacionales comunes) y, como robustez, el salario real (RIPTE) como covariable, más Granger como evidencia predictiva. Ningún diseño es un experimento: todos dependen de supuestos (controles comparables, sin otros eventos simultáneos propios del AMBA), y por eso las confianzas de la tabla son medias o bajas. Los hitos de calendario son los efectos más claros.
 
 ### P-2. ¿Qué métodos pronostican mejor la demanda diaria, y por qué?
 
@@ -73,7 +75,8 @@ MASE menor a 1 significa mejor que repetir la última semana. Lo que se encontr�
 - **Por qué gana el Gradient Boosting:** los feriados explican el grueso de la diferencia con los Naive; la estacionalidad anual y el patrón semanal multiplicativo importan; y los rezagos aportan además del calendario.
 - **No hay un método único:** en colectivo gana el Gradient Boosting, pero en tren y subte empata con el SARIMAX. Un **híbrido por tipo de día** (modelo aditivo en días hábiles, Gradient Boosting en el resto, con la regla elegida solo con cortes anteriores) mejora a ambos en tren (MASE 0,62 a 0,54) y subte (0,71 a 0,61), pero no en total ni colectivo. Es un hallazgo a confirmar en otro período.
 - **Robusto** al tratamiento de los 62 días sin dato en la fuente (la reconstrucción desde transacciones mejora el error del Gradient Boosting: MASE 0,56 contra 0,63 con interpolación) y al horizonte (mismo ranking a 7, 28 y 90 días).
-- **Límites:** configuración estándar sin ajuste fino de hiperparámetros, y los paros y elecciones no se pronostican.
+- **Hitos de P-1:** los feriados se anticipan con el calendario (el Gradient Boosting reduce 85% el error del Naive de 7 días); los paros y las elecciones con gratuidad **no se anticipan con ningún método**, pero si se conoce el evento y se aplica el cociente típico medido en P-1, el error baja de 81% a 94% con cualquier método. Tras un salto tarifario, el error de los modelos sin precio no se distingue del habitual, salvo en el subte de mayo de 2024 (+14% de sobreestimación); incorporar el precio ayuda poco en saltos moderados y empeora en los grandes.
+- **Límites:** configuración estándar sin ajuste fino de hiperparámetros; los paros y elecciones no se pronostican sin información externa.
 
 ---
 
@@ -100,7 +103,7 @@ Resumen de las decisiones respecto del trabajo original; el detalle con evidenci
 ├── data/
 │   ├── total-usuarios-por-dia-AMBA.csv    # Dataset oficial de usuarios (2020–2026)
 │   ├── hitos/                             # Paros, elecciones y series de tarifas con fuentes
-│   ├── externos/                          # IPC (INDEC), ingreso por comuna (EAH) y geografía del subte
+│   ├── externos/                          # IPC (INDEC), RIPTE, ingreso por comuna (EAH) y geografía del subte
 │   ├── procesado/                         # Series reconstruidas, usos por línea y pronósticos de cada corte
 │   └── raw_usos/                          # (no versionado) CSV de transacciones, los baja usos_transacciones.py
 ├── notebooks/
@@ -112,7 +115,8 @@ Resumen de las decisiones respecto del trabajo original; el detalle con evidenci
 │   ├── usos_por_linea.py                  # Datos: transacciones por línea de subte
 │   ├── tarifas_serie.py                   # P-1: serie de tarifas con fuentes
 │   ├── tarifas_descriptivo.py             # P-1: descripción de los saltos tarifarios
-│   ├── modelo_precio_demanda.py           # P-1: elasticidad (niveles, interanual, estudio de eventos)
+│   ├── modelo_precio_demanda.py           # P-1: elasticidad (niveles, interanual, estudio de eventos, control por salario real)
+│   ├── tarifas_reales.py                  # P-1: tarifa real y tarifa en salarios
 │   ├── clasificacion_lineas_subte.py      # P-1: ingreso por línea de subte
 │   ├── panel_subte_lineas.py              # P-1: hipótesis de ingreso (panel línea x semana)
 │   ├── efectos_cruzados_granger.py        # P-1: efecto cruzado entre modos y Granger
@@ -123,6 +127,8 @@ Resumen de las decisiones respecto del trabajo original; el detalle con evidenci
 │   ├── evaluacion_pronosticos.py          # P-2: origen móvil (args: ablaciones, col=<modo>, h=<días>)
 │   ├── analisis_pronosticos_p2.py         # P-2: métricas, Diebold-Mariano, intervalos
 │   ├── analisis_pronosticos_por_modo.py   # P-2: colectivo, tren y subte
+│   ├── pronosticos_antes_del_salto_p2.py  # P-2: pronósticos hechos el día anterior a cada salto tarifario
+│   ├── pronostico_hitos_p2.py             # P-2: error en feriados, paros, elecciones y saltos tarifarios
 │   ├── modelo_hibrido_p2.py               # P-2: híbrido por tipo de día
 │   ├── sensibilidad_huecos_p2.py          # P-2: tratamiento de los días sin dato
 │   ├── analisis_horizontes_p2.py          # P-2: horizontes de 7 y 90 días
@@ -151,13 +157,13 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 * **Calidad**: faltan **62 días**, dos meses completos (**agosto de 2022** y **enero de 2024**). Se reconstruyen a partir de las transacciones diarias y se marcan con la columna `imputado` (ver `scripts/usos_transacciones.py`).
 * **Unidad de medida**: cantidad de **tarjetas diferentes** usadas por día, no viajes. El total nunca supera la suma de los modos, lo que sugiere que deduplica tarjetas que usan más de un modo (inferencia: el portal no lo documenta).
 * **Variables**: `total_amba`, `colectivo_amba`, `subte_amba`, `tren_amba` (tarjetas distintas por día en cada caso).
-* **Datos complementarios**: transacciones por día y línea (portal de transporte), tarifas oficiales (Boletín Oficial, resoluciones y fuentes indicadas en `data/hitos/`), IPC nacional (INDEC), ingreso por comuna (Encuesta Anual de Hogares de CABA) y geografía del subte (BA Data).
+* **Datos complementarios**: transacciones por día y línea (portal de transporte), tarifas oficiales (Boletín Oficial, resoluciones y fuentes indicadas en `data/hitos/`), IPC nacional (INDEC), RIPTE (Secretaría de Trabajo, vía datos.gob.ar), ingreso por comuna (Encuesta Anual de Hogares de CABA) y geografía del subte (BA Data).
 
 ---
 
 ## 🛠️ Metodología
 
-**P-1 (demanda y hitos).** Elasticidad con tarifa real: regresión en niveles (con y sin tendencia), diferencias interanuales de 52 semanas y estudio de eventos con doble diferencia estacional y bandas placebo. Panel línea × semana con efectos fijos por semana para la hipótesis de ingreso. Granger (con ADF y KPSS previos y corrección de Holm) y efectos cruzados entre modos. Cociente contra el mismo día de la semana de las semanas vecinas para los hitos de calendario. Control sintético con ciudades del interior para los saltos del colectivo.
+**P-1 (demanda y hitos).** Elasticidad con tarifa real: regresión en niveles (con y sin tendencia), diferencias interanuales de 52 semanas y estudio de eventos con doble diferencia estacional y bandas placebo. Panel línea × semana con efectos fijos por semana para la hipótesis de ingreso. Granger (con ADF y KPSS previos y corrección de Holm) y efectos cruzados entre modos. Cociente contra el mismo día de la semana de las semanas vecinas para los hitos de calendario. Control sintético con ciudades del interior para los saltos tarifarios del colectivo. Robustez con el salario real (RIPTE / IPC) como regresora y con la tarifa medida en salarios.
 
 **P-2 (pronóstico).** Origen móvil con ventana creciente; modelos que solo usan el pasado y el calendario; métricas MAE, RMSE, MAPE y MASE; Diebold-Mariano con errores HAC; intervalos de predicción por método conforme; variantes de cada modelo para explicar las diferencias (ablaciones); prueba de fuga (`scripts/verificar_sin_fuga_p2.py`: el futuro real se reemplaza por basura y los pronósticos no deben cambiar). El orden del SARIMAX se identifica con ADF y KPSS, ACF y PACF y una grilla por BIC con residuos sin autocorrelación (Ljung-Box).
 
@@ -173,20 +179,26 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 
 ### P-1. Demanda ante los hitos
 
-**Saltos tarifarios y respuesta de la demanda.** Cada punto es un salto; cambio de la demanda (neto de lo ocurrido un año antes) contra el cambio de la tarifa, en logaritmos. Los saltos grandes del colectivo nacional y del subte caen más.
+**Tarifas reales.** A la izquierda, la tarifa de cada modo en pesos constantes de enero de 2022 (deflactada por IPC); a la derecha, el costo de 40 viajes mensuales como porcentaje del salario (RIPTE). La mayor parte del aumento nominal es inflación; el subte es el único cuyo peso en el salario sigue subiendo.
+![Tarifas reales](resultados/figuras/fig25_tarifas_reales.png)
+
+**Saltos tarifarios y respuesta de la demanda.** Cada punto es un salto tarifario; cambio de la demanda (neto de lo ocurrido un año antes) contra el cambio de la tarifa, en logaritmos. Caen los dos saltos grandes del colectivo nacional (ene–feb 2024) y del subte (may-2024); el tren, con un salto grande, no cae.
 ![Estudio de eventos](resultados/figuras/fig14_estudio_eventos.png)
 
 **Transacciones en días hábiles contra el mismo día del año anterior** (mediana móvil de 7 días hábiles), por modo, alrededor de los saltos tarifarios de 2024 (líneas verticales). El subte se despega de los demás con sus saltos.
 ![Usos interanual y tarifas 2024](resultados/figuras/fig13_usos_yoy_tarifas_2024.png)
 
-**Control sintético para los saltos del colectivo nacional.** La línea azul es el AMBA real; la punteada, el AMBA que habría resultado sin el salto (combinación de ciudades del interior). La línea vertical marca el salto.
+**Control sintético para los saltos tarifarios del colectivo nacional.** La línea azul es el AMBA real; la punteada, el AMBA que habría resultado sin el salto (combinación de ciudades del interior). La línea vertical marca el salto.
 ![Control sintético](resultados/figuras/fig18_control_sintetico.png)
 
 **Subte por línea.** Cambio neto de la demanda de cada línea en cuatro saltos tarifarios, con las líneas ordenadas por ingreso de la zona (de menor a mayor); la línea D, en rojo, es la de mayor ingreso. No se ve que la D reaccione menos (hipótesis de ingreso).
 ![Eventos del subte por línea](resultados/figuras/fig15_eventos_subte_por_linea.png)
 
-**Demanda en días de paro, elección y feriado**, como cociente contra un día normal del mismo día de la semana. La banda gris es el ruido de los días ordinarios.
+**Demanda en días de feriado, elección y paro**, como cociente contra un día normal del mismo día de la semana (cada punto es un día). La banda gris es el ruido de los días ordinarios.
 ![Hitos de calendario](resultados/figuras/fig17_hitos_cociente.png)
+
+**Paros según quién paró.** Cociente de cada modo en cada paro; el borde negro marca el modo que paró. Cuando para el colectivo, el subte no sube y el tren cae; cuando paran tren y subte, el colectivo tampoco absorbe la demanda.
+![Paros por tipo](resultados/figuras/fig26_paros_por_tipo.png)
 
 **Pandemia (descriptivo).** Demanda semanal de días hábiles de cada modo, como porcentaje del promedio de enero–marzo de 2020.
 ![COVID descriptivo](resultados/figuras/fig16_covid_descriptivo.png)
@@ -210,6 +222,9 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 
 **Horizontes de 7, 28 y 90 días.** El ranking de métodos no cambia.
 ![Horizontes](resultados/figuras/fig24_p2_horizontes.png)
+
+**Pronóstico de los hitos de P-1.** A la izquierda, error de cada método según el tipo de día (total AMBA): los feriados se anticipan con el calendario; paros y elecciones gratuitas no. A la derecha, el error del Gradient Boosting en días de paro y elección sin y con el cociente típico medido en P-1.
+![Hitos en P-2](resultados/figuras/fig27_p2_hitos.png)
 
 ### Herramientas de la materia
 **Espectro de la serie (FFT):** los picos en 1/7, 2/7 y 3/7 ciclos por día son el ciclo semanal. **Correlación cruzada tren–colectivo y ACF del total:** los modos se mueven juntos (pico en rezago 0, sin adelantos) y la autocorrelación tiene picos en múltiplos de 7 días.

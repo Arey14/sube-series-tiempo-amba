@@ -16,13 +16,18 @@ Tres estimaciones por modo, con supuestos distintos:
      elasticidad de arco es el cociente entre el cambio en log de la demanda y el cambio en log de la tarifa.
      Como prueba de placebo, se calcula el mismo cociente en fechas donde no cambió el precio.
 
-Es una estimación de asociación con controles, no un efecto causal limpio: la inflación, el ingreso, la
-devaluación y las tarifas de otros modos se movieron al mismo tiempo (ver docs/registro_de_cambios.md).
+  D. Control por salario real: se repite A y B agregando el salario real (RIPTE deflactado por IPC) como
+     regresora, y se estima la elasticidad con la tarifa medida en salarios (tarifa / RIPTE). Responde si la
+     elasticidad cambia cuando se tiene en cuenta que el poder de compra del salario se movió al mismo tiempo.
+
+Son estimaciones de asociación con controles, no un experimento: dependen de que los controles absorban lo que se
+movió al mismo tiempo que la tarifa (inflación, ingreso, devaluación, tarifas de otros modos).
 
 Entradas: data/procesado/usos_diarios_amba.csv, data/hitos/serie_tarifas_diaria.csv,
-          data/hitos/hitos_tarifas.csv, data/hitos/hitos_paros_elecciones.csv
+          data/hitos/hitos_tarifas.csv, data/hitos/hitos_paros_elecciones.csv,
+          data/externos/ipc_nacional_indec.csv, data/externos/ripte_mensual.csv
 Salidas:  resultados/tablas/tabla_elasticidad_niveles.csv, tabla_elasticidad_interanual.csv,
-          tabla_estudio_eventos.csv, tabla_placebo_eventos.csv
+          tabla_elasticidad_control_salario.csv, tabla_estudio_eventos.csv, tabla_placebo_eventos.csv
           resultados/figuras/fig14_estudio_eventos.png
 """
 
@@ -41,6 +46,7 @@ TAR_D = os.path.join(BASE_DIR, "data", "hitos", "serie_tarifas_diaria.csv")
 TAR_H = os.path.join(BASE_DIR, "data", "hitos", "hitos_tarifas.csv")
 EVT = os.path.join(BASE_DIR, "data", "hitos", "hitos_paros_elecciones.csv")
 IPC = os.path.join(BASE_DIR, "data", "externos", "ipc_nacional_indec.csv")
+RIPTE = os.path.join(BASE_DIR, "data", "externos", "ripte_mensual.csv")
 SUBTE_LINEAS = os.path.join(BASE_DIR, "data", "procesado", "usos_diarios_subte_por_linea.csv")
 TABLA_DIR = os.path.join(BASE_DIR, "resultados", "tablas")
 FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
@@ -69,6 +75,18 @@ def deflactor_diario(indice):
         ipc.loc[ipc.index[-1] + pd.offsets.MonthBegin(1)] = ipc.iloc[-1] * ipc.iloc[-1] / ipc.iloc[-2]
     d = ipc.reindex(ipc.index.union(indice)).ffill().reindex(indice)
     return d / d.iloc[0]
+
+
+def ripte_diario(indice):
+    """RIPTE mensual (Secretaría de Trabajo) asignado a cada día de su mes; los meses sin dato repiten el último salario real."""
+    ipc = pd.read_csv(IPC, parse_dates=['indice_tiempo']).set_index('indice_tiempo').iloc[:, 0]
+    rip = pd.read_csv(RIPTE, parse_dates=['indice_tiempo']).set_index('indice_tiempo')['ripte']
+    # el último mes publicado repite el anterior (valor provisorio): se descarta
+    rip = rip.iloc[:-1] if rip.iloc[-1] == rip.iloc[-3] else rip
+    real = (rip / ipc).dropna()
+    nominal = rip.reindex(rip.index.union(indice)).ffill().reindex(indice)
+    real_d = real.reindex(real.index.union(indice)).ffill().reindex(indice)
+    return nominal / nominal.iloc[0], real_d / real_d.iloc[0]
 
 
 def semanal(usos, tar, evt):
@@ -103,7 +121,7 @@ def _hac(res_modelo, lags=8):
     return res_modelo.get_robustcov_results(cov_type='HAC', maxlags=lags)
 
 
-def niveles(y, p, ctrl, precio='nominal'):
+def niveles(y, p, ctrl, precio='nominal', sal=None):
     filas = []
     meses = pd.get_dummies(ctrl['mes'], prefix='m', drop_first=True).astype(float)
     for m in MODOS:
@@ -114,17 +132,19 @@ def niveles(y, p, ctrl, precio='nominal'):
                            ctrl.loc[idx, ['feriados_habiles', 'paro', 'eleccion']], meses.loc[idx]], axis=1)
             if con_tendencia:
                 X['tendencia_anios'] = (idx - idx[0]).days / 365.25
+            if sal is not None:
+                X['log_salario_real'] = sal.loc[idx]
             X = sm.add_constant(X)
             res = _hac(sm.OLS(y.loc[idx, m], X).fit())
             i = list(X.columns).index('log_tarifa')
-            filas.append({'precio': precio, 'modo': m, 'con_tendencia': con_tendencia, 'semanas': len(idx),
+            filas.append({'precio': precio, 'control_salario': sal is not None, 'modo': m, 'con_tendencia': con_tendencia, 'semanas': len(idx),
                           'elasticidad': round(res.params[i], 3), 'error_std_HAC': round(res.bse[i], 3),
                           'ic95_inf': round(res.params[i] - 1.96 * res.bse[i], 3),
                           'ic95_sup': round(res.params[i] + 1.96 * res.bse[i], 3), 'R2': round(res.rsquared, 3)})
     return pd.DataFrame(filas)
 
 
-def interanual(y, p, ctrl, precio='nominal'):
+def interanual(y, p, ctrl, precio='nominal', sal=None):
     filas = []
     for m in MODOS:
         dy = y[m] - y[m].shift(SEMANAS_ANIO)
@@ -132,13 +152,15 @@ def interanual(y, p, ctrl, precio='nominal'):
         X = pd.DataFrame({'dlog_tarifa': dp, 'dferiados': ctrl['feriados_habiles'] - ctrl['feriados_habiles'].shift(SEMANAS_ANIO),
                           'dparo': ctrl['paro'] - ctrl['paro'].shift(SEMANAS_ANIO),
                           'deleccion': ctrl['eleccion'] - ctrl['eleccion'].shift(SEMANAS_ANIO)})
+        if sal is not None:
+            X['dlog_salario_real'] = sal - sal.shift(SEMANAS_ANIO)
         ini = pd.Timestamp(INICIO_PROV) + pd.Timedelta(weeks=SEMANAS_ANIO) if m == 'colectivo_provincial' else None
         datos = pd.concat([dy.rename('dy'), X], axis=1).dropna()
         if ini is not None:
             datos = datos[datos.index >= ini]
         res = _hac(sm.OLS(datos['dy'], sm.add_constant(datos.drop(columns='dy'))).fit())
         i = 1
-        filas.append({'precio': precio, 'modo': m, 'semanas': len(datos), 'elasticidad': round(res.params[i], 3),
+        filas.append({'precio': precio, 'control_salario': sal is not None, 'modo': m, 'semanas': len(datos), 'elasticidad': round(res.params[i], 3),
                       'error_std_HAC': round(res.bse[i], 3), 'ic95_inf': round(res.params[i] - 1.96 * res.bse[i], 3),
                       'ic95_sup': round(res.params[i] + 1.96 * res.bse[i], 3), 'R2': round(res.rsquared, 3)})
     return pd.DataFrame(filas)
@@ -234,6 +256,18 @@ def main():
     t_ia = pd.concat([interanual(y, p, ctrl, 'nominal'), interanual(y, pr, ctrl, 'real')], ignore_index=True); t_ia.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_interanual.csv'), index=False)
     print('A. Niveles (con y sin tendencia)'); print(t_niv.to_string(index=False))
     print('\nB. Diferencias interanuales'); print(t_ia.to_string(index=False))
+
+    # D. control por salario real y tarifa medida en salarios
+    d_idx = usos.loc[INICIO:FIN].index
+    semana = d_idx.to_period('W-SUN').start_time
+    rip_nom, rip_real = ripte_diario(d_idx)
+    sal = np.log(rip_real.groupby(semana).mean())
+    p_sal = np.log((tar.loc[INICIO:FIN, MODOS].div(rip_nom, axis=0)).groupby(semana).mean())
+    t_sal = pd.concat([niveles(y, pr, ctrl, 'real', sal), interanual(y, pr, ctrl, 'real', sal),
+                       niveles(y, p_sal, ctrl, 'en salarios (RIPTE)'), interanual(y, p_sal, ctrl, 'en salarios (RIPTE)')], ignore_index=True)
+    t_sal.insert(0, 'metodo', np.where(t_sal['con_tendencia'].isna(), 'interanual', 'niveles'))
+    t_sal.to_csv(os.path.join(TABLA_DIR, 'tabla_elasticidad_control_salario.csv'), index=False)
+    print('\nD. Control por salario real (RIPTE / IPC) y tarifa en salarios'); print(t_sal.to_string(index=False))
 
     saltos = eventos_salto()
     filas = []

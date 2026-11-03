@@ -1,0 +1,61 @@
+modo,grupo,modelo,dias,MAE_base,MAE_escenario,multiplicador_medio,reduccion_pct
+colectivo,elección con gratuidad,gradient_boosting,3,1.229,0.123,0.1,90.009
+colectivo,elección con gratuidad,naive_364,3,1.165,0.13,0.1,88.838
+colectivo,elección con gratuidad,naive_7,3,1.274,0.118,0.1,90.72
+colectivo,elección con gratuidad,prophet,3,1.41,0.104,0.1,92.633
+colectivo,elección con gratuidad,sarimax,3,1.196,0.126,0.1,89.489
+colectivo,elección sin gratuidad,gradient_boosting,3,0.318,0.258,0.697,18.957
+colectivo,elección sin gratuidad,naive_364,3,0.404,0.317,0.697,21.492
+colectivo,elección sin gratuidad,naive_7,3,0.197,0.213,0.697,-8.348
+colectivo,elección sin gratuidad,prophet,3,0.441,0.269,0.697,39.023
+colectivo,elección sin gratuidad,sarimax,3,0.531,0.353,0.697,33.478
+colectivo,"paro, modo que no paró",gradient_boosting,3,0.725,0.65,0.797,10.363
+colectivo,"paro, modo que no paró",naive_364,3,0.926,0.845,0.797,8.747
+colectivo,"paro, modo que no paró",naive_7,3,0.865,0.781,0.797,9.689
+colectivo,"paro, modo que no paró",prophet,3,0.834,0.516,0.797,38.15
+colectivo,"paro, modo que no paró",sarimax,3,0.872,0.652,0.797,25.25
+colectivo,"paro, modo que paró",gradient_boosting,6,2.732,0.569,0.135,79.163
+colectivo,"paro, modo que paró",naive_364,6,2.708,0.579,0.135,78.608
+colectivo,"paro, modo que paró",naive_7,6,2.63,0.567,0.135,78.46
+colectivo,"paro, modo que paró",prophet,6,2.606,0.566,0.135,78.288
+colectivo,"paro, modo que paró",sarimax,6,2.612,0.557,0.135,78.686
+subte,elección con gratuidad,gradient_boosting,3,0.16,0.001,0.003,99.32
+subte,elección con gratuidad,naive_364,3,0.158,0.001,0.003,99.298
+subte,elección con gratuidad,naive_7,3,0.158,0.001,0.003,99.349
+subte,elección con gratuidad,prophet,3,0.174,0.001,0.003,99.375
+subte,elección con gratuidad,sarimax,3,0.154,0.001,0.003,99.274
+subte,elección sin gratuidad,gradient_boosting,3,0.007,0.009,0.98,-20.782
+subte,elección sin gratuidad,naive_364,3,0.026,0.024,0.98,7.749
+subte,elección sin gratuidad,naive_7,3,0.004,0.008,0.98,-96.341
+subte,elección sin gratuidad,prophet,3,0.049,0.05,0.98,-1.705
+subte,elección sin gratuidad,sarimax,3,0.043,0.044,0.98,-1.704
+subte,"paro, modo que no paró",gradient_boosting,4,0.044,0.046,1.005,-4.252
+subte,"paro, modo que no paró",naive_364,4,0.103,0.106,1.005,-2.363
+subte,"paro, modo que no paró",naive_7,4,0.035,0.037,1.005,-4.969
+subte,"paro, modo que no paró",prophet,4,0.056,0.058,1.005,-3.503
+subte,"paro, modo que no paró",sarimax,4,0.035,0.036,1.005,-5.149
+subte,"paro, modo que paró",gradient_boosting,5,0.355,0.048,0.0,86.556
+subte,"paro, modo que paró",naive_364,5,0.412,0.048,0.0,88.435
+subte,"paro, modo que paró",naive_7,5,0.334,0.048,0.0,85.736
+subte,"paro, modo que paró",prophet,5,0.351,0.048,0.0,86.415
+subte,"paro, modo que paró",sarimax,5,0.361,0.048,0.0,86.784
+tren,elección con gratuidad,gradient_boosting,3,0.171,0.006,0.04,96.203
+tren,elección con gratuidad,naive_364,3,0.177,0.007,0.04,96.189
+tren,elección con gratuidad,naive_7,3,0.18,0.008,0.04,95.726
+tren,elección con gratuidad,prophet,3,0.202,0.009,0.04,95.782
+tren,elección con gratuidad,sarimax,3,0.172,0.007,0.04,95.923
+tren,elección sin gratuidad,gradient_boosting,3,0.037,0.028,0.737,23.36
+tren,elección sin gratuidad,naive_364,3,0.058,0.037,0.737,35.922
+tren,elección sin gratuidad,naive_7,3,0.025,0.02,0.737,20.468
+tren,elección sin gratuidad,prophet,3,0.039,0.025,0.737,34.661
+tren,elección sin gratuidad,sarimax,3,0.082,0.047,0.737,43.18
+tren,"paro, modo que no paró",gradient_boosting,3,0.255,0.053,0.707,79.328
+tren,"paro, modo que no paró",naive_364,3,0.232,0.08,0.707,65.558
+tren,"paro, modo que no paró",naive_7,3,0.24,0.058,0.707,75.884
+tren,"paro, modo que no paró",prophet,3,0.19,0.041,0.707,78.471
+tren,"paro, modo que no paró",sarimax,3,0.202,0.038,0.707,81.169
+tren,"paro, modo que paró",gradient_boosting,6,0.616,0.059,0.0,90.42
+tren,"paro, modo que paró",naive_364,6,0.603,0.059,0.0,90.222
+tren,"paro, modo que paró",naive_7,6,0.602,0.059,0.0,90.196
+tren,"paro, modo que paró",prophet,6,0.598,0.059,0.0,90.146
+tren,"paro, modo que paró",sarimax,6,0.604,0.059,0.0,90.243

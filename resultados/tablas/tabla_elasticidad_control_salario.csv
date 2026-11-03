@@ -1,0 +1,25 @@
+metodo,precio,control_salario,modo,con_tendencia,semanas,elasticidad,error_std_HAC,ic95_inf,ic95_sup,R2
+niveles,real,True,colectivo_nacional,False,238,-0.294,0.053,-0.397,-0.191,0.672
+niveles,real,True,colectivo_nacional,True,238,-0.022,0.05,-0.12,0.077,0.801
+niveles,real,True,colectivo_provincial,False,138,-0.351,0.028,-0.406,-0.296,0.787
+niveles,real,True,colectivo_provincial,True,138,-0.102,0.088,-0.274,0.07,0.797
+niveles,real,True,tren,False,238,-0.188,0.031,-0.248,-0.128,0.658
+niveles,real,True,tren,True,238,-0.03,0.022,-0.073,0.013,0.795
+niveles,real,True,subte,False,238,-0.371,0.022,-0.413,-0.328,0.863
+niveles,real,True,subte,True,238,-0.164,0.034,-0.23,-0.097,0.913
+interanual,real,True,colectivo_nacional,,186,-0.018,0.042,-0.1,0.064,0.443
+interanual,real,True,colectivo_provincial,,86,-0.063,0.047,-0.155,0.028,0.691
+interanual,real,True,tren,,186,-0.032,0.021,-0.073,0.009,0.557
+interanual,real,True,subte,,186,-0.145,0.025,-0.193,-0.097,0.77
+niveles,en salarios (RIPTE),False,colectivo_nacional,False,238,-0.232,0.043,-0.316,-0.149,0.591
+niveles,en salarios (RIPTE),False,colectivo_nacional,True,238,0.051,0.065,-0.077,0.18,0.746
+niveles,en salarios (RIPTE),False,colectivo_provincial,False,138,-0.36,0.033,-0.425,-0.295,0.756
+niveles,en salarios (RIPTE),False,colectivo_provincial,True,138,-0.202,0.039,-0.279,-0.126,0.796
+niveles,en salarios (RIPTE),False,tren,False,238,-0.16,0.027,-0.213,-0.106,0.625
+niveles,en salarios (RIPTE),False,tren,True,238,-0.004,0.035,-0.072,0.063,0.753
+niveles,en salarios (RIPTE),False,subte,False,238,-0.365,0.023,-0.41,-0.32,0.848
+niveles,en salarios (RIPTE),False,subte,True,238,-0.249,0.055,-0.357,-0.141,0.868
+interanual,en salarios (RIPTE),False,colectivo_nacional,,186,0.03,0.043,-0.054,0.114,0.301
+interanual,en salarios (RIPTE),False,colectivo_provincial,,86,-0.206,0.042,-0.288,-0.123,0.675
+interanual,en salarios (RIPTE),False,tren,,186,-0.021,0.032,-0.083,0.041,0.461
+interanual,en salarios (RIPTE),False,subte,,186,-0.214,0.045,-0.302,-0.127,0.529

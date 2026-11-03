@@ -142,6 +142,7 @@ def main():
         ax.plot(serie.index, sintetica, color='#7f8c8d', ls='--', label='AMBA sintético')
         ax.axvline(f_ini.to_period('W-SUN').start_time, color='k', ls=':')
         ax.set_title(nombre, fontsize=9); ax.set_ylabel('log de usos (relativo al promedio previo)')
+        ax.tick_params(axis='x', rotation=45, labelsize=8)
     axs[0].legend(); plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig18_control_sintetico.png'), dpi=200); plt.close()
     t = pd.DataFrame(filas); t.to_csv(os.path.join(TABLA_DIR, 'tabla_control_sintetico.csv'), index=False)
     print(t.to_string(index=False))

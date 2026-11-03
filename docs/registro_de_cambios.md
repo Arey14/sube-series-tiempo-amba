@@ -396,3 +396,20 @@ Esta sección junta en un solo lugar las decisiones que cambiaron el rumbo del t
 | 11 | Se **reescriben el README y el notebook** | Para que el repositorio sea coherente con el nuevo enfoque y no muestre resultados que ya no se sostienen (el notebook original mostraba las métricas con fuga y las hipótesis "corroboradas"). El notebook lee los resultados guardados por los scripts. | 0 |
 
 **Qué se conserva del trabajo original:** los cuatro modelos (Seasonal Naïve, SARIMAX, Prophet y Gradient Boosting) y el pipeline inicial (`analisis_series_tiempo_sube.py`, `modelos_pronostico.py`). Las figuras `fig4`, `fig5` y `fig6` salen de ese pipeline y quedan como referencia: ya no sustentan ninguna conclusión.
+
+---
+
+## 13. Correcciones de la revisión del notebook (3-nov-2026)
+
+Cambios hechos después de revisar el notebook, con su motivo. Evidencia en `docs/interpretacion_resultados.md`, bloques 16 a 19.
+
+| # | Qué se cambió | Por qué | Dónde |
+|---|---|---|---|
+| 12 | **ADF y KPSS** se calculan en tres tramos: serie completa desde 2020, 2022–2026 y entrenamiento inicial (2022 a jun-2023) | Mostrar que la no estacionariedad del nivel de la serie completa viene de la pandemia: sin ella (2022–2026) el nivel es estacionario. La decisión del SARIMAX (d = 0, D = 1 con período 7) no cambia. | Notebook, sección 4 |
+| 13 | **Tarifa real y tarifa en salarios** (`tarifas_reales.py`, `fig25`) | La serie nominal confunde inflación con aumento real. Se muestra la tarifa deflactada por IPC y el costo de 40 viajes mensuales como porcentaje del RIPTE. | 16 |
+| 14 | **Control por salario real** (RIPTE / IPC) en la elasticidad; se incorpora el **RIPTE** como dato externo | Se había dejado como trabajo futuro y es fácil de obtener (datos.gob.ar). No cambia las conclusiones cualitativas; baja la elasticidad del subte de −0,22 a −0,15 y el colectivo provincial pierde significancia. Antes se decía que el efecto "no es limpio por falta de control de ingreso"; la formulación se reemplazó por una más precisa sobre los supuestos de cada diseño. | 17 |
+| 15 | **Paros clasificados por quién paró** y **elecciones por gratuidad**; `fig17` rehecha con fechas legibles y nueva `fig26` | "Paro" mezclaba paros de colectivo, de tren, de tren y subte y generales. La demanda de cada modo depende de quién paró; separarlos muestra que no hay sustitución hacia otros modos. La mediana de las elecciones (0,34) mezclaba dos situaciones. | 18 |
+| 16 | **Terminología precisa**: "salto tarifario" (≥ 10% en un cambio), "salto tarifario grande" (la tarifa se duplica o más) y "ajuste" (< 10%); definición de **elasticidad** con valores de referencia | En el notebook y el README "saltos" y "saltos grandes" no decían a qué se referían. | Notebook, sección 5; README |
+| 17 | **Explicación metodológica ampliada** del notebook: con y sin tendencia, bandas placebo, columnas de cada tabla, lectura de gráficos, control sintético, efecto cruzado y Granger, contraste de ingreso | La versión anterior resumía de más y no permitía leer las tablas. | Notebook, sección 5 |
+| 18 | **Fuentes de datos externas** definidas (transacciones del interior, EAH de CABA, RIPTE, IPC, tarifas, BA Data) con su alcance | Condicionan cómo se leen los resultados (la EAH cubre solo la Ciudad; las tarifas del interior no se verificaron). | Notebook, sección 3 |
+| 19 | **P-2 aplicada a los hitos de P-1** (`pronostico_hitos_p2.py`, `pronosticos_antes_del_salto_p2.py`, `fig27`): error en feriados, paros, elecciones y saltos tarifarios; pronóstico condicional con el cociente de P-1; pronóstico con precio | Para planificar importa qué pasa con la demanda ante un paro, una elección o un aumento. Resultado: los feriados se anticipan, los paros y elecciones gratuitas no con ningún método, y el escenario con el efecto de P-1 reduce el error de 81% a 94%; el precio ayuda poco en saltos moderados y empeora en los grandes. | 19; notebook, sección 6.9 |
