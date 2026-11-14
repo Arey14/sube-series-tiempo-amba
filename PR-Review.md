@@ -51,8 +51,50 @@ En `docs/interpretacion_resultados.md` (bloque 2) y en las limitaciones del Note
   - Esto demuestra que **la sensibilidad al precio del Subte ya existía antes del cambio en los medios de pago**, si bien en la muestra completa 2022–2026 la estimación puntual sin control salarial ($-0,224$) está parcialmente amplificada por la sustitución de medio de pago.
 - También se explicitó en la Sección 3 del Notebook el criterio de modelar `subte_sin_D` en toda la serie agregada de `modelo_precio_demanda.py` (para evitar que el cierre por obras de la Línea D del 8-ene al 6-mar de 2024 contamine el salto de ene–feb 2024) y de conservar la Línea D en el panel por línea de la Sección 5.5 excluyendo únicamente las semanas del cierre.
 
-### 2.3 Limpieza de formato final y re-ejecución completa del Notebook
+### 2.3 Limpieza de formato inicial y re-ejecución del Notebook
 - Se quitó el cartel provisorio de estado de la rama (`Estado (2-nov-2026, rama trabajo/herramientas-materia)`) del encabezado de `README.md`, dejando la referencia limpia a `docs/registro_de_cambios.md` y `docs/interpretacion_resultados.md`.
 - Se actualizó el árbol de archivos del `README.md` (`fig1` a `fig28`, bloques 1 a 20) aclarando que los scripts y figuras de la Fase 1 (`analisis_series_tiempo_sube.py`, `modelos_pronostico.py`, `verificar_sin_fuga.py`, `fig1`–`fig7`) quedan preservados por trazabilidad.
-- Se re-ejecutó `notebooks/TP_Final_Series_de_Tiempo.ipynb` de punta a punta con `jupyter nbconvert --to notebook --execute --inplace` (88 celdas ejecutadas sin errores).
+
+---
+
+## 3. Novedades incorporadas post-PR: Cobertura 100% del Avance (19-Oct) y Modelos Estado del Arte (SOTA)
+
+Para asegurar que **todos los puntos comprometidos en la presentación de Avance del 19 de Octubre de 2026** estén cubiertos en el Notebook y en el `README.md`, y para extender la evaluación predictiva de P-2 al **Estado del Arte (SOTA) actual en series de tiempo**, incorporamos las siguientes novedades:
+
+### 3.1 Comparación explícita de Interpolación Lineal vs. Spline Cúbico vs. Día de Semana vs. Reconstrucción (Sección 3)
+- En el Avance del 19 de Octubre figuraba explícitamente *"Interpolación lineal o Splines — Reconstrucción de la ST para integridad de muestreo"*.
+- El script `scripts/calidad_datos.py` ya generaba `resultados/tablas/tabla_simulacion_interpolacion.csv` y `resultados/figuras/fig7_interpolacion_huecos.png` (evaluación sobre 89 bloques reales de 31 días completos), pero esa comparación no estaba incluida en el Notebook ni en el `README.md`.
+- **Novedad en Sección 3 del Notebook y `README.md`:** se integraron `tabla_simulacion_interpolacion.csv` y `fig7_interpolacion_huecos.png` junto con `fig12_reconstruccion_huecos.png`, mostrando cuantitativamente por qué el **Spline cúbico diverge en huecos de 31 días** (`MAPE = 76,3%`, `MAE = 3,34 M/día`), la **Interpolación lineal directa** aplana el ciclo semanal (`MAPE = 51,3%`, `MAE = 2,17 M/día`), la **Interpolación lineal por día de semana** preserva la forma semanal (`MAPE = 17,4%`, `MAE = 0,88 M/día`) y la **Reconstrucción desde transacciones crudas** alcanza el estándar de oro en meses de vacaciones (`MAPE = 1,6%–3,2%`).
+
+### 3.2 Incorporación de dos familias Estado del Arte (SOTA) en P-2 (`chronos2` y `patchtst`)
+Extendimos la familia de modelos evaluados en P-2 de 5 a **7 modelos principales** (+ ablaciones e híbridos) sumando un representante de cada una de las dos corrientes SOTA modernas en *Time Series Forecasting*:
+
+1. **`chronos2` — Time Series Foundation Model (`amazon/chronos-2`, 120M parámetros):**
+   - Modelo fundacional pre-entrenado sobre millones de series temporales multi-dominio que realiza inferencia **en contexto (*zero-shot*)**, sin ajustar un solo peso sobre los datos de SUBE.
+   - Se evalúa en dos variantes dentro de `scripts/pronosticos_p2.py`:
+     - **`chronos2` (`usar_covariables=True`):** recibe como `future_df` las mismas variables futuras conocidas de calendario (`es_feriado`, `es_puente`, `es_receso_escolar`, `vispera_feriado`, `dia_despues_feriado`).
+     - **`chronos2_zeroshot` (`usar_covariables=False`):** ablación univariada pura que solo observa los valores pasados de la serie.
+2. **`patchtst` — Specialized Transformer por Parches con RevIN (`PatchTST`, Nie et al., ICLR 2023 + Kim et al., ICLR 2022):**
+   - Arquitectura Transformer especializada para series de tiempo que divide la ventana de contexto de $L = 56$ días (8 semanas) en $N = 8$ **parches semanales no solapados** de $P = 7$ días.
+   - Incorpora **Reversible Instance Normalization (RevIN)**: normaliza cada ventana de entrada por su media y desvío local antes de proyectar los parches y des-normaliza la salida al final, dotando al modelo de **invarianza ante quiebres estructurales de nivel** (como los saltos tarifarios de 2024–2025).
+   - Se entrena en cada corte estrictamente con ventanas contenidas hasta `fin_train` y combina la representación de auto-atención multi-cabezal con las covariables futuras de calendario.
+
+### 3.3 Verificación anti-fuga y regeneración completa del pipeline P-2
+- **Auditoría de no-fuga (`scripts/verificar_sin_fuga_p2.py`):** se actualizó para auditar los 7 modelos (`naive_7`, `naive_364`, `sarimax`, `prophet`, `gradient_boosting`, `chronos2`, `patchtst`) en los 3 cortes de control perturbando el futuro con $+10\,\sigma$. Los 7 modelos pasan con **diferencia máxima `0.00e+00`** (`OK: ningún modelo usa el futuro`).
+- **Archivos de pronóstico y scripts actualizados:**
+  - `scripts/pronosticos_p2.py`, `scripts/evaluacion_pronosticos.py`, `scripts/analisis_pronosticos_p2.py`, `scripts/analisis_pronosticos_por_modo.py`, `scripts/analisis_horizontes_p2.py`, `scripts/sensibilidad_huecos_p2.py`, `scripts/sensibilidad_hitos_p2.py` y `scripts/pronosticos_antes_del_salto_p2.py`.
+  - Se recalcularon los 12 archivos `data/procesado/pronosticos_p2_*.csv`, todas las tablas `resultados/tablas/tabla_p2_*.csv` y las figuras `fig20` a `fig28`.
+  - Se actualizaron `requirements.txt` (`torch>=2.0.0`, `chronos-forecasting>=2.3.0`), `README.md` y `notebooks/TP_Final_Series_de_Tiempo.ipynb` (Secciones 3, 6, 7 y 8), re-ejecutando las 88 celdas de punta a punta sin errores.
+
+### 3.4 Resumen de resultados de los nuevos modelos SOTA en los 42 cortes walk-forward
+
+| Serie / Experimento | Resultado principal de `patchtst` y `chronos2` |
+| :--- | :--- |
+| **Total AMBA (`h = 28 d`, 1.161 días sin atípicos)** | **1.° `patchtst`** (`MAE = 0,180 M`, `RMSE = 0,267 M`, `MAPE = 7,17%`, `MASE = 0,547`) y **2.° `gradient_boosting`** (`MAE = 0,187 M`, `MAPE = 7,43%`, `MASE = 0,568`) **empatan estadísticamente en la cima** (Diebold-Mariano $p = 0,3922$). **3.° `chronos2`** (`MAE = 0,199 M`, `MASE = 0,605`) supera sin entrenamiento local a `prophet` (`0,769`) y `sarimax` (`0,819`). |
+| **Desglose por tipo de día (`Total AMBA`)** | **`chronos2` logra el menor error de todos los modelos en días hábiles ordinarios** (`MAE = 0,177 M`, `MAPE = 5,3%`), seguido por `patchtst` (`0,178 M`, `5,4%`) y `gradient_boosting` (`0,190 M`, `5,7%`). En **feriados**, `gradient_boosting` sigue primero (`0,342 M`), seguido por `patchtst` (`0,379 M`). |
+| **Ablación de covariables en `chronos2`** | Sin calendario (`chronos2_zeroshot`), el modelo fundacional obtiene `MAE = 0,268 M` (`MASE = 0,817`, empatando a `sarimax` sin conocer los feriados argentinos). Al inyectarle las covariables de calendario (`chronos2`), **su MAE cae un 26%** (a `0,199 M`). |
+| **Por modo: Colectivo** | Empate técnico en el 1.er puesto entre **`patchtst`** (`MASE = 0,558`) y **`gradient_boosting`** (`MASE = 0,588`, $p = 0,219$), seguidos por **`chronos2`** (`MASE = 0,619`). |
+| **Por modo: Tren** | **`patchtst` gana en solitario** (`MASE = 0,478`, `MAPE = 8,6%`, $p < 0,0001$ frente a todos los demás), superando incluso al híbrido `SARIMAX + GB` (`0,536`), con **`chronos2`** en 2.° lugar (`MASE = 0,576`). |
+| **Por modo: Subte** | **`patchtst` (`MASE = 0,566`) y `chronos2` (`MASE = 0,571`) empatan en el 1.er puesto** ($p = 0,983$), superando por amplio margen a `gradient_boosting` (`0,713`), `sarimax` (`0,749`) y al propio híbrido (`0,612`). **Por qué:** la normalización local por ventana (**RevIN** en PatchTST y el re-escalado por contexto en Chronos-2) adapta instantáneamente la escala tras los saltos tarifarios y la migración a multipago de 2024–2025, mientras que los árboles de Gradient Boosting quedan anclados a los niveles históricos de sus retardos. |
+| **Sensibilidad al horizonte ($h = 7, 28, 90$ días)** | En horizonte corto ($h = 7\text{ d}$) gana `gradient_boosting` (`MASE = 0,504`); en mediano ($h = 28\text{ d}$) lidera `patchtst` (`0,547`) empatado con `gradient_boosting` (`0,568`); y en largo plazo ($h = 90\text{ d}$) lideran `gradient_boosting` (`0,549`), `patchtst` (`0,577`) y `chronos2` (`0,623`). |
 

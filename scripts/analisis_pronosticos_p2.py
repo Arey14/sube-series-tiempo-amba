@@ -33,7 +33,7 @@ SERIE = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_reconstru
 EVT = os.path.join(BASE_DIR, "data", "hitos", "hitos_paros_elecciones.csv")
 TABLA_DIR = os.path.join(BASE_DIR, "resultados", "tablas")
 FIG_DIR = os.path.join(BASE_DIR, "resultados", "figuras")
-PRINCIPALES = ['naive_7', 'naive_364', 'sarimax', 'prophet', 'gradient_boosting']
+PRINCIPALES = ['naive_7', 'naive_364', 'sarimax', 'prophet', 'gradient_boosting', 'chronos2', 'patchtst']
 VARIANTES = ['sarimax_sin_anual', 'sarimax_orden_original']
 
 

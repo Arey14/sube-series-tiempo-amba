@@ -11,3 +11,5 @@ holidays>=0.30
 jupyter>=1.0.0
 ipykernel>=6.0.0
 openpyxl>=3.1
+torch>=2.0.0
+chronos-forecasting>=2.3.0

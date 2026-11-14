@@ -28,7 +28,7 @@ plt.style.use('seaborn-v0_8-whitegrid')
 
 PROC = os.path.join(A.BASE_DIR, "data", "procesado")
 ARCHIVOS = {7: 'pronosticos_p2_h7.csv', 28: 'pronosticos_p2_folds.csv', 90: 'pronosticos_p2_h90.csv'}
-MODELOS = ['naive_7', 'naive_364', 'sarimax', 'prophet', 'gradient_boosting']
+MODELOS = ['naive_7', 'naive_364', 'sarimax', 'prophet', 'gradient_boosting', 'chronos2', 'patchtst']
 
 
 def preparar(h, serie, evt):

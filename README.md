@@ -62,22 +62,26 @@ Hitos estudiados: pandemia (descriptivo), saltos tarifarios, feriados, paros y e
 
 Evaluación con **origen móvil**: 42 cortes (el primero el 30-jun-2023, uno cada 28 días), cada uno con 28 días de prueba que no se solapan (1.161 días sin paros ni elecciones). Los modelos solo usan el pasado y el calendario. Diferencias contrastadas con Diebold-Mariano.
 
-| Modelo (total AMBA, 28 días) | MAE (millones) | MAPE | MASE |
-| :--- | :---: | :---: | :---: |
-| 🥇 **Gradient Boosting recursivo** | **0,187** | **7,4%** | **0,57** |
-| 🥈 Prophet | 0,254 | 11,9% | 0,77 |
-| 🥉 SARIMAX (2,0,1)x(0,1,1,7) | 0,270 | 11,8% | 0,82 |
-| Naive 364 días | 0,395 | 17,4% | 1,20 |
-| Naive 7 días | 0,472 | 19,5% | 1,43 |
+| Modelo (total AMBA, 28 días) | Familia | MAE (millones) | MAPE | MASE |
+| :--- | :--- | :---: | :---: | :---: |
+| 🥇 **PatchTST (RevIN + parches de 7 días)** | Specialized Transformer (ICLR 2023) | **0,180** | **7,2%** | **0,55** |
+| 🥇 **Gradient Boosting recursivo** | Machine Learning tabular con rezagos | **0,187** | **7,4%** | **0,57** |
+| 🥉 **Chronos-2 (con calendario)** | Foundation Model *zero-shot* (Amazon) | **0,199** | **9,3%** | **0,61** |
+| Prophet | Descomposición aditiva + feriados | 0,254 | 11,9% | 0,77 |
+| Chronos-2 (*zero-shot* puro sin calendario) | Foundation Model univariado | 0,268 | 13,6% | 0,82 |
+| SARIMAX (2,0,1)x(0,1,1,7) | Econometría clásica + calendario | 0,270 | 11,8% | 0,82 |
+| Naive 364 días | Línea base anual | 0,395 | 17,4% | 1,20 |
+| Naive 7 días | Línea base semanal | 0,472 | 19,5% | 1,43 |
 
 MASE menor a 1 significa mejor que repetir la última semana. Lo que se encontró:
 
-- **Por qué gana el Gradient Boosting:** los feriados explican el grueso de la diferencia con los Naive; la estacionalidad anual y el patrón semanal multiplicativo importan; y los rezagos aportan además del calendario.
-- **No hay un método único:** en colectivo gana el Gradient Boosting, pero en tren y subte empata con el SARIMAX. Un **híbrido por tipo de día** (modelo aditivo en días hábiles, Gradient Boosting en el resto, con la regla elegida solo con cortes anteriores) mejora a ambos en tren (MASE 0,62 a 0,54) y subte (0,71 a 0,61), pero no en total ni colectivo. Es un hallazgo a confirmar en otro período.
-- **Robusto** al tratamiento de los 62 días sin dato en la fuente (la reconstrucción desde transacciones mejora el error del Gradient Boosting: MASE 0,56 contra 0,63 con interpolación) y al horizonte (mismo ranking a 7, 28 y 90 días).
-- **Hitos de P-1:** los feriados se anticipan con el calendario (el Gradient Boosting reduce 85% el error del Naive de 7 días); los paros y las elecciones con gratuidad **no se anticipan con ningún método**, pero si se conoce el evento y se aplica el cociente típico medido en P-1, el error baja de 81% a 94% con cualquier método. Tras un salto tarifario, el error de los modelos sin precio no se distingue del habitual, salvo en el subte de mayo de 2024 (+14% de sobreestimación); incorporar el precio ayuda poco en saltos moderados y empeora en los grandes.
-- **Entrenar sin los días de paro y de elección** (vacíos o imputados con el valor habitual) no cambia al Gradient Boosting ni a Prophet; al SARIMAX lo empeora si los días quedan vacíos y lo mejora 4% si se imputan. El ranking no cambia.
-- **Límites:** configuración estándar sin ajuste fino de hiperparámetros; los paros y elecciones no se pronostican sin información externa.
+- **Liderazgo compartido en el total AMBA:** **PatchTST** (MASE 0,55) y **Gradient Boosting** (MASE 0,57) empatan estadísticamente en el primer lugar (Diebold-Mariano: $p = 0,392$) y superan con $p < 0,01$ al resto.
+- **Estado del arte pre-entrenado (*Foundation Model*):** **Chronos-2** (`amazon/chronos-2`), sin entrenar ni un solo parámetro sobre datos de SUBE (*zero-shot* con covariables de calendario en contexto), supera con claridad a **Prophet** y **SARIMAX** (MASE 0,61 contra 0,77 y 0,82) y logra el **menor error en días hábiles ordinarios** (MAE 0,177 M, MAPE 5,3%). Incluso sin calendario (*zero-shot* univariado puro), Chronos-2 iguala a SARIMAX (MASE 0,82).
+- **Por modo (colectivo, tren y subte):** en **colectivo** empatan en la punta PatchTST (MASE 0,56) y Gradient Boosting (0,59); en **tren** gana **PatchTST en solitario** (MASE **0,48**, $p < 0,0001$); y en **subte** **PatchTST** (MASE **0,57**) y **Chronos-2** (**0,57**) empatan en el primer lugar, superando ampliamente a Gradient Boosting (0,71) y SARIMAX (0,75) gracias a su normalización local por ventana (**RevIN** / escalado en contexto) ante los cambios de nivel del subte. Entre los modelos clásicos, un **híbrido por tipo de día** (SARIMAX/Prophet en hábiles + Gradient Boosting en feriados y fines de semana) mejora a ambos en tren (0,62 a 0,54) y subte (0,71 a 0,61).
+- **Robusto** al tratamiento de los 62 días sin dato en la fuente (la reconstrucción desde transacciones reduce el error de PatchTST, Gradient Boosting y Chronos-2 frente a la interpolación o a dejar huecos vacíos) y al horizonte (7, 28 y 90 días: a 90 días empatan en la punta Gradient Boosting con MASE 0,61, Chronos-2 con 0,66 y PatchTST con 0,67).
+- **Hitos de P-1:** los feriados se anticipan con el calendario (PatchTST y Gradient Boosting reducen 85%–86% el error del Naive de 7 días); los paros y las elecciones con gratuidad **no se anticipan con ningún método**, pero si se conoce el evento y se aplica el cociente típico medido en P-1, el error baja de 81% a 94% en cualquiera de los siete métodos.
+- **Entrenar sin los días de paro y de elección** (vacíos o imputados con el valor habitual) no cambia a PatchTST, Gradient Boosting ni Prophet; e imputarlos mejora significativamente a **Chronos-2** ($p = 0,0013$) y a **SARIMAX** (4% menos de MAE, $p = 0,0004$).
+- **Límites:** los paros y elecciones no se pronostican sin información externa; Chronos-2 se evaluó *zero-shot* sin ajuste fino (*fine-tuning*) sobre feriados argentinos.
 
 ---
 
@@ -176,7 +180,10 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 ## 🖼️ Resultados y Visualizaciones
 
 ### Datos
-**Reconstrucción de los días sin dato.** Se ocultaron bloques de 31 días de la propia serie y se comparó la reconstrucción desde transacciones con la interpolación simple.
+**Interpolación lineal vs. spline cúbico vs. lineal por día de la semana.** Simulación sobre 89 bloques reales de 31 días ocultos (`scripts/calidad_datos.py`): la interpolación lineal destruye el ciclo semanal (MAPE 51,3%) y el spline cúbico oscila fuera de rango (MAPE 76,3%).
+![Interpolación de huecos](resultados/figuras/fig7_interpolacion_huecos.png)
+
+**Reconstrucción de los días sin dato desde transacciones.** Comparación frente a la mejor interpolación en meses de vacaciones (`scripts/usos_transacciones.py`): la reconstrucción baja el MAPE a 1,6%–3,2%.
 ![Reconstrucción de huecos](resultados/figuras/fig12_reconstruccion_huecos.png)
 
 ### P-1. Demanda ante los hitos

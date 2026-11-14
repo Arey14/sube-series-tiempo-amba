@@ -33,7 +33,7 @@ warnings.filterwarnings('ignore')
 
 BASE_DIR = A.BASE_DIR
 IMPUTADA = os.path.join(BASE_DIR, "data", "procesado", "serie_sube_diaria_imputada.csv")
-MODELOS = ['sarimax', 'prophet', 'gradient_boosting']
+MODELOS = ['sarimax', 'prophet', 'gradient_boosting', 'chronos2', 'patchtst']
 
 
 def series():
@@ -53,6 +53,8 @@ def correr(nombre, serie, ref):
         'sarimax': lambda s, c: P.sarimax(s, c, E.HORIZONTE, **E.ORDEN_SARIMAX)[0],
         'prophet': lambda s, c: P.prophet(s, c, E.HORIZONTE),
         'gradient_boosting': lambda s, c: P.gradient_boosting(s, c, E.HORIZONTE),
+        'chronos2': lambda s, c: P.chronos2(s, c, E.HORIZONTE),
+        'patchtst': lambda s, c: P.patchtst(s, c, E.HORIZONTE),
     }
     for k, c in enumerate(E.cortes(serie), 1):
         if c in hechos:

@@ -34,6 +34,8 @@ def main():
         'sarimax': lambda x, c: P.sarimax(x, c, H, **ORDEN)[0],
         'prophet': lambda x, c: P.prophet(x, c, H),
         'gradient_boosting': lambda x, c: P.gradient_boosting(x, c, H),
+        'chronos2': lambda x, c: P.chronos2(x, c, H),
+        'patchtst': lambda x, c: P.patchtst(x, c, H),
     }
     peor = 0.0
     for c in CORTES:

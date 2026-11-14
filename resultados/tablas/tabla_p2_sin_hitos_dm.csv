@@ -11,6 +11,10 @@ sin_hitos,prophet,sarimax,-0.048,0.0361,0.1839,1133
 sin_hitos - con_hitos,sarimax,sarimax,0.0315,0.0374,0.4,1133
 sin_hitos - con_hitos,prophet,prophet,-0.0011,0.0012,0.3411,1133
 sin_hitos - con_hitos,gradient_boosting,gradient_boosting,0.0015,0.0038,0.7039,1133
+sin_hitos - con_hitos,chronos2,chronos2,-0.0026,0.0016,0.1013,1133
+sin_hitos - con_hitos,patchtst,patchtst,0.0055,0.0025,0.0278,1133
 hitos_imputados - con_hitos,sarimax,sarimax,-0.011,0.0031,0.0004,1133
 hitos_imputados - con_hitos,prophet,prophet,-0.0015,0.0012,0.1956,1133
 hitos_imputados - con_hitos,gradient_boosting,gradient_boosting,0.0001,0.0035,0.9867,1133
+hitos_imputados - con_hitos,chronos2,chronos2,-0.004,0.0012,0.0013,1133
+hitos_imputados - con_hitos,patchtst,patchtst,0.0003,0.0017,0.8662,1133

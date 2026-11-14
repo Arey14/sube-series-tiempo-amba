@@ -28,7 +28,7 @@ plt.style.use('seaborn-v0_8-whitegrid')
 
 BASE_DIR = A.BASE_DIR
 MODOS = ['colectivo_amba', 'tren_amba', 'subte_amba']
-ORDEN = ['naive_7', 'naive_364', 'sarimax', 'sarimax_en_logs', 'prophet', 'gradient_boosting']
+ORDEN = ['naive_7', 'naive_364', 'sarimax', 'sarimax_en_logs', 'prophet', 'gradient_boosting', 'chronos2', 'patchtst']
 
 
 def preparar(col, serie_total, evt):

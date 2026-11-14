@@ -80,6 +80,8 @@ def main():
         'sarimax_orden_original': lambda s, c: P.sarimax(s, c, HORIZONTE, order=(1, 1, 1), seasonal_order=(1, 1, 1, 7))[0],
         'prophet': lambda s, c: P.prophet(s, c, HORIZONTE),
         'gradient_boosting': lambda s, c: P.gradient_boosting(s, c, HORIZONTE),
+        'chronos2': lambda s, c: P.chronos2(s, c, HORIZONTE),
+        'patchtst': lambda s, c: P.patchtst(s, c, HORIZONTE),
     }
     if COL != 'total_amba':
         ord_ = orden_identificado(COL)
@@ -89,11 +91,13 @@ def main():
             'sarimax': lambda s, c: P.sarimax(s, c, HORIZONTE, **ord_)[0],
             'sarimax_en_logs': lambda s, c: P.sarimax(s, c, HORIZONTE, en_logs=True, **ord_)[0],
             'prophet': modelos['prophet'], 'gradient_boosting': modelos['gradient_boosting'],
+            'chronos2': modelos['chronos2'], 'patchtst': modelos['patchtst'],
         }
     elif ABLACIONES:
         modelos = {
             'sarimax_en_logs': lambda s, c: P.sarimax(s, c, HORIZONTE, en_logs=True, **ORDEN_SARIMAX)[0],
             'gb_solo_calendario': lambda s, c: P.gradient_boosting(s, c, HORIZONTE, con_rezagos=False),
+            'chronos2_zeroshot': lambda s, c: P.chronos2(s, c, HORIZONTE, usar_covariables=False),
         }
     cs = cortes(serie)
     print(f"{len(cs)} cortes, de {cs[0].date()} a {cs[-1].date()}; ya hechos: {len(hechos)}", flush=True)

@@ -61,7 +61,8 @@ def main():
         modelos = {
             'naive_7': lambda s, c: P.naive_semanal(s, c, h), 'naive_364': lambda s, c: P.naive_anual(s, c, h),
             'sarimax': lambda s, c: P.sarimax(s, c, h, **ord_)[0], 'prophet': lambda s, c: P.prophet(s, c, h),
-            'gradient_boosting': lambda s, c: P.gradient_boosting(s, c, h)}
+            'gradient_boosting': lambda s, c: P.gradient_boosting(s, c, h),
+            'chronos2': lambda s, c: P.chronos2(s, c, h), 'patchtst': lambda s, c: P.patchtst(s, c, h)}
         t0 = time.time(); filas = []
         for nombre, f in modelos.items():
             try:
