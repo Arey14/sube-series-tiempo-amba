@@ -6,7 +6,7 @@
 [![Prophet](https://img.shields.io/badge/Facebook-Prophet-blueviolet.svg)](https://facebook.github.io/prophet/)
 [![Open Data](https://img.shields.io/badge/Datos%20Abiertos-SUBE%20Argentina-yellow.svg)](https://datos.transporte.gob.ar/)
 
-> **Estado (2-nov-2026, rama `trabajo/herramientas-materia`).** Las hipótesis y veredictos de la versión inicial se reemplazaron por dos preguntas de trabajo (P-1 y P-2). Las métricas de la versión inicial tenían fuga de información y se rehicieron con una evaluación con origen móvil. Qué cambió y por qué: [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md). Lectura de cada resultado, con sus límites: [`docs/interpretacion_resultados.md`](docs/interpretacion_resultados.md). El notebook se reescribió con el mismo enfoque.
+> **Documentación metodológica y trazabilidad:** El registro detallado de mejoras respecto de la versión inicial se encuentra en [`docs/registro_de_cambios.md`](docs/registro_de_cambios.md) y la bitácora completa de resultados, supuestos y límites en [`docs/interpretacion_resultados.md`](docs/interpretacion_resultados.md).
 
 Este repositorio contiene el análisis de la **demanda de transporte público del Área Metropolitana de Buenos Aires (AMBA)** con datos del **Sistema Único de Boleto Electrónico (SUBE)**, 2020–2026, para la materia Series Temporales de la Maestría en Ciencia de Datos.
 
@@ -50,7 +50,7 @@ Hitos estudiados: pandemia (descriptivo), saltos tarifarios, feriados, paros y e
 
 | Pregunta | Resultado | Confianza | Por qué esa confianza |
 |---|---|---|---|
-| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC) y de −0,15 a −0,25 al controlar por salario real (RIPTE); Granger lo respalda (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero, con o sin control salarial. **Colectivo provincial:** −0,27, pero desaparece al controlar por salario real. | Subte: media. Colectivo y tren: baja | Subte: dos métodos independientes coinciden y el test predictivo lo respalda, pero son pocos saltos y no es un experimento. Colectivo y tren: pocos saltos que además se mueven juntos en el tiempo, así que el precio no se puede separar de otros cambios. |
+| ¿Reacciona la demanda al precio? | **Subte:** sí, elasticidad de −0,22 a −0,26 con tarifa real (deflactada por IPC) y de −0,15 a −0,25 al controlar por salario real (RIPTE); restringiendo hasta nov-2024 (antes del sistema multipago contactless) se sostiene en −0,18 (IC 95% [−0,22; −0,14]); Granger lo respalda (p de Holm 0,019). **Colectivo nacional y tren:** no se distinguen de cero, con o sin control salarial. **Colectivo provincial:** −0,27, pero desaparece al controlar por salario real. | Subte: media. Colectivo y tren: baja | Subte: dos métodos independientes, el recorte pre-multipago y el test predictivo coinciden, pero son pocos saltos, desde dic-2024 el multipago saca viajes de SUBE (brecha de 18%–30% con CEPA) y no es un experimento. Colectivo y tren: pocos saltos que además se mueven juntos en el tiempo, así que el precio no se puede separar de otros cambios. |
 | ¿Cuánto cayó con los saltos tarifarios grandes? | Colectivo nacional ene–feb 2024: −13% (estudio de eventos) contra −3% sin significancia (control sintético). Subte may-2024 (tarifa ×4): −19%. Tren: inconsistente. | Baja a media | Los dos métodos discrepan para el colectivo y el control sintético tiene donantes sin verificar. El subte tiene un solo evento grande limpio. |
 | ¿Hay sustitución entre modos? | No se observa, ni ante saltos tarifarios ni ante paros: cuando para el colectivo el subte no sube (1,00 a 1,01 de un día normal) y el tren cae (0,66 a 0,79). | Media | Los coeficientes cruzados no se pueden separar por colinealidad entre tarifas. En los paros hay solo tres casos de cada tipo y no se controla clima ni aviso previo. |
 | ¿Las líneas de subte de mayor ingreso reaccionan menos? | Sin respaldo. | Baja | Solo 6 líneas: la prueba no tiene poder para detectar un efecto. Es un resultado nulo, no una refutación. |
@@ -136,13 +136,13 @@ Resumen de las decisiones respecto del trabajo original; el detalle con evidenci
 │   ├── analisis_horizontes_p2.py          # P-2: horizontes de 7 y 90 días
 │   ├── verificar_sin_fuga_p2.py           # P-2: prueba de que los modelos no usan el futuro
 │   ├── herramientas_clase.py              # Herramientas vistas en clase (filtros, FFT, CCF)
-│   └── analisis_series_tiempo_sube.py, modelos_pronostico.py, verificar_sin_fuga.py   # Versión inicial
+│   └── analisis_series_tiempo_sube.py, modelos_pronostico.py, verificar_sin_fuga.py   # Pipeline de transición (Fase 1, corte único 90 días)
 ├── resultados/
-│   ├── figuras/                           # fig1 a fig24 (PNG)
+│   ├── figuras/                           # fig1 a fig28 (PNG)
 │   └── tablas/                            # Tablas en CSV
 ├── docs/
 │   ├── registro_de_cambios.md             # Qué se cambió respecto del repo original y por qué
-│   └── interpretacion_resultados.md       # Lectura de cada resultado, con límites (bloques 1 a 15)
+│   └── interpretacion_resultados.md       # Lectura de cada resultado, con límites (bloques 1 a 20)
 ├── .gitignore
 ├── LICENSE
 ├── requirements.txt
@@ -232,11 +232,19 @@ Los datos de usuarios provienen de los registros de validadoras de la red SUBE p
 ![Hitos en P-2](resultados/figuras/fig27_p2_hitos.png)
 
 ### Herramientas de la materia
-**Espectro de la serie (FFT):** los picos en 1/7, 2/7 y 3/7 ciclos por día son el ciclo semanal. **Correlación cruzada tren–colectivo y ACF del total:** los modos se mueven juntos (pico en rezago 0, sin adelantos) y la autocorrelación tiene picos en múltiplos de 7 días.
+**Espectro de la serie (FFT y teorema de Parseval):** los picos nítidos en 1/7, 2/7 y 3/7 ciclos por día capturan el ciclo semanal y sus armónicos (más el ciclo anual en ~351 días).
 ![Espectro semanal](resultados/figuras/fig8_fft_espectro_semanal.png)
+
+**Descomposición por media móvil (MA28) frente a STL y retraso de la MA causal:** una ventana múltiplo de 7 (28 días) anula exactamente el ciclo semanal; la versión centrada no tiene desfasaje, mientras que la causal presenta el retraso teórico de \((28-1)/2 \approx 14\) días.
+![Descomposición MA vs STL](resultados/figuras/fig9_descomposicion_ma_vs_stl.png)
+
+**Filtros en el dominio de la frecuencia (elimina-banda y pasa-bajos ideal) frente a medias móviles:** el filtro elimina-banda (notch en múltiplos de 1/7) anula el ciclo semanal pero produce oscilaciones y valores negativos en feriados; el pasa-bajos ideal exhibe rizado tipo Gibbs y mayor error en los bordes respecto de la MA28.
+![Filtros en frecuencia vs MA](resultados/figuras/fig10_filtros_df_vs_ma.png)
+
+**Correlación cruzada (CCF) tren–colectivo y ACF del total:** ambos modos se mueven en simultáneo en el rezago 0 (sin rezagos líderes) y la ACF exhibe picos en múltiplos de 7 días.
 ![CCF tren y colectivo](resultados/figuras/fig11_ccf_tren_colectivo_y_acf.png)
 
-> Las figuras `fig4`, `fig5` y `fig6` (recuperación post-COVID, comparativa de pronósticos de 90 días y residuos del SARIMAX original) pertenecen al análisis de la versión inicial. Se conservan como referencia, pero ya no sustentan ninguna conclusión del trabajo.
+> Las figuras `fig1` a `fig7` y los scripts `analisis_series_tiempo_sube.py`, `modelos_pronostico.py` y `verificar_sin_fuga.py` corresponden a la versión inicial y a la Fase 1 de transición (corte único de 90 días). Se conservan en el repositorio por trazabilidad con `docs/registro_de_cambios.md`, mientras que el pipeline principal del trabajo es el de P-1 y P-2.
 
 ---
 
