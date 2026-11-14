@@ -55,3 +55,4 @@ En `docs/interpretacion_resultados.md` (bloque 2) y en las limitaciones del Note
 - Se quitó el cartel provisorio de estado de la rama (`Estado (2-nov-2026, rama trabajo/herramientas-materia)`) del encabezado de `README.md`, dejando la referencia limpia a `docs/registro_de_cambios.md` y `docs/interpretacion_resultados.md`.
 - Se actualizó el árbol de archivos del `README.md` (`fig1` a `fig28`, bloques 1 a 20) aclarando que los scripts y figuras de la Fase 1 (`analisis_series_tiempo_sube.py`, `modelos_pronostico.py`, `verificar_sin_fuga.py`, `fig1`–`fig7`) quedan preservados por trazabilidad.
 - Se re-ejecutó `notebooks/TP_Final_Series_de_Tiempo.ipynb` de punta a punta con `jupyter nbconvert --to notebook --execute --inplace` (88 celdas ejecutadas sin errores).
+
