@@ -90,32 +90,46 @@ Ambos conjuntos los publica el mismo organismo en el mismo portal, y es razonabl
 
 **Problema.** La serie de usuarios no tiene datos para 62 días: agosto de 2022 y enero de 2024. Un modelo de series temporales necesita una observación por día, sin huecos. Completar los huecos es **interpolar** (calcular valores intermedios dentro de la serie): según la **Clase Interpolación**, es un método de imputación de muestras perdidas, el cuarto de los cuatro casos que se presentan ("muestrear uniformemente una serie temporal con muestras perdidas").
 
-**Qué se comparó.** Se ocultaron 89 bloques reales de 31 días consecutivos (de datos que sí se conocían), se estimaron con cada método y se compararon con el valor real. El indicador es el **MAPE** (*error porcentual absoluto medio*): para cada día se calcula |estimado − real| / real, y se promedia. Un MAPE de 17% significa que, en promedio, el estimado se aparta 17% del valor real. Se informa la **mediana** de los 89 bloques y el **percentil 90** (el error que solo superan el 10% de los bloques más difíciles). Además se mide cuánto del **ciclo semanal** conserva el estimado (1 = todo; 0 = ninguno).
+**Qué se comparó.** Se evaluaron dos familias de interpolación vistas en la Clase Interpolación (`approx`, que traza rectas, y `spline`, que traza curvas cúbicas) y, para cada una, varias formas de aplicarla. Se ocultaron 89 bloques reales de 31 días consecutivos (de datos que sí se conocían), se estimaron con cada método y se compararon con el valor real. El indicador es el **MAPE** (*error porcentual absoluto medio*): para cada día se calcula |estimado − real| / real y se promedia. Un MAPE de 17% significa que, en promedio, el estimado se aparta 17% del valor real. Se informa la **mediana** de los 89 bloques y el **percentil 90** (el error que solo superan el 10% de los bloques más difíciles). Además se mide cuánto del **ciclo semanal** conserva el estimado (1 = todo; 0 = ninguno; más de 1 = lo exagera).
 
-| Método | Qué hace | MAPE mediano | MAPE p. 90 | Ciclo semanal conservado |
+**Cómo se aplica cada método.**
+
+- **Aplicado directamente a la serie diaria:** la *recta* une el último día conocido antes del hueco con el primero después; el *spline cúbico original* une los puntos conocidos con tramos de polinomios de grado 3 que empalman sin quiebres.
+- **Por día de la semana:** se interpola cada día de la semana por separado (lunes con lunes, etc.), de modo que cada sub-serie no tiene ciclo semanal. Se probó con rectas, con spline cúbico y con PCHIP (una curva cúbica por tramos que no oscila: nunca se sale del rango de los puntos que une).
+- **Tendencia × perfil semanal:** se combinan dos componentes, como en una descomposición. (1) La *tendencia* se estima interpolando la media móvil de 7 días (que no tiene ciclo semanal) con recta, spline cúbico o PCHIP. (2) El *perfil semanal* es el cociente medio de cada día de la semana respecto de esa tendencia en las 4 semanas vecinas al hueco. El estimado de cada día es tendencia × perfil de ese día.
+
+**Resultados** (`tabla_simulacion_interpolacion`; ordenados de menor a mayor error mediano):
+
+| Método | Familia | MAPE mediano | MAPE p. 90 | Ciclo semanal conservado |
 |---|---|---|---|---|
-| **Lineal** (`approx`, Clase Interpolación) | Una recta entre el último día conocido antes del hueco y el primero después. | 51,3% | 70,7% | 1% |
-| **Spline cúbico** (`spline`, Clase Interpolación) | Una curva suave formada por tramos de polinomios de grado 3 que pasa por todos los puntos conocidos. | 76,3% | 323,4% | 15% |
-| **Lineal por día de la semana** | Interpola por separado los lunes entre sí, los martes entre sí, etc. | 17,4% | 32,3% | 95% |
-| **Reconstrucción desde transacciones** | Ver abajo. | **1,6%–3,2%** (meses de vacaciones) | — | — |
+| PCHIP × perfil semanal | curva sin oscilación | **17,2%** | 29,0% | 0,89 |
+| Recta × perfil semanal | recta | 17,3% | 28,9% | 0,89 |
+| Lineal por día de la semana | recta | 17,4% | 32,3% | 0,95 |
+| PCHIP por día de la semana | curva sin oscilación | 17,7% | 33,2% | 0,96 |
+| **Spline cúbico × perfil semanal** | **spline** | **25,9%** | 56,3% | 0,87 |
+| Spline cúbico por día de la semana | spline | 28,9% | 44,8% | 1,31 |
+| Lineal (directa sobre la serie) | recta | 51,3% | 70,7% | 0,01 |
+| Spline cúbico original (directo sobre la serie) | spline | 76,3% | 323,4% | 0,15 |
 
-**Por qué el spline cúbico da tan mal.** Un spline cúbico fuerza que la curva sea suave y pase por los puntos de los bordes. Con una serie que sube y baja cada semana (días hábiles contra fin de semana), la pendiente con la que la curva sale de cada borde del hueco depende de si el último día conocido fue, por ejemplo, un domingo bajo o un martes alto. Esa pendiente arbitraria se arrastra por 31 días y la curva se aleja de la serie real; además suaviza el ciclo semanal (conserva solo el 15%). Es una explicación consistente con lo medido (sesgo medio de +26%), no una demostración. La lección es que **un método pensado para suavizar no sirve cuando la señal tiene un ciclo fuerte**.
+![Todos los métodos de interpolación probados](../resultados/figuras/fig7b_interpolacion_variantes.png)
 
-**¿Existe una forma mejor de aplicarlo?** Se probó (`scripts/variantes_spline.py`, `resultados/tablas/tabla_variantes_spline.csv`), sobre los mismos 89 bloques, aplicar el spline de otras maneras:
+*Figura 7b. A la izquierda, el hueco real de enero de 2024 completado por cada método. A la derecha, la distribución del error (MAPE) al ocultar 89 bloques de 31 días reales; los métodos están ordenados de menor a mayor error mediano.*
 
-| Variante | Qué hace | MAPE mediano | MAPE p. 90 |
-|---|---|---|---|
-| PCHIP × perfil semanal | Interpola con PCHIP (una curva que no oscila) la media móvil de 7 días, que no tiene ciclo semanal, y la multiplica por el perfil semanal de las 4 semanas vecinas. | 17,2% | 30,7% |
-| Recta × perfil semanal | Igual, con una recta como tendencia. | 17,3% | 30,1% |
-| *Lineal por día de la semana (referencia)* | | *17,4%* | *32,3%* |
-| PCHIP por día de la semana | Un PCHIP por cada día de la semana. | 17,7% | 33,2% |
-| Spline cúbico × perfil semanal | Igual que el primero, con spline cúbico. | 25,9% | 56,3% |
-| Spline cúbico por día de la semana | Un spline cúbico por cada día de la semana (7 splines). | 28,9% | 44,8% |
-| *Spline cúbico sobre la serie diaria (original)* | | *76,3%* | *323,4%* |
+**El mejor spline y el mejor método de cada familia.** Entre las variantes del spline, la de menor error es el **spline cúbico sobre la tendencia × perfil semanal (25,9%)**; es la que se muestra en la Figura 7. Reduce a un tercio el error del spline original (76,3%). Entre las rectas, la mejor es la lineal por día de la semana o la recta × perfil semanal (17,3%–17,4%), y el mejor método de todos es el PCHIP × perfil semanal (17,2%), aunque su diferencia con las rectas por día de la semana es muy pequeña (17,2% contra 17,4%) y no se evaluó su significancia. La elección del mejor spline se hizo sobre los mismos 89 bloques con los que se mide el error, lo que podría favorecerla levemente; como las diferencias entre variantes del spline son de varios puntos, no cambia la conclusión.
 
-**Qué se aprende.** (1) Combinar dos componentes (tendencia y perfil semanal) o separar por día de la semana **mejora mucho al spline** (de 76% a 26%–29% de error), porque deja de intentar ajustar el ciclo semanal con un solo polinomio. (2) Aun así, **ninguna variante baja del 17%**: lo que falta en un hueco de un mes no es una cuestión de la curva usada, sino de información. En enero, por ejemplo, hay receso de verano, y ninguna curva trazada entre diciembre y febrero puede saberlo. (3) El spline cúbico queda peor que las opciones sin oscilación (PCHIP o recta). Por eso el spline no se usó para completar la serie.
+![Lineal, mejor spline y lineal por día de la semana](../resultados/figuras/fig7_interpolacion_huecos.png)
 
-**Reconstrucción desde transacciones (el método elegido).** El portal publica también las transacciones diarias, que no tienen huecos y sí traen el nivel y el ciclo semanal de los días faltantes. El método se aplica a las **cuatro series** (total, colectivo, tren y subte) en tres pasos:
+*Figura 7. El hueco de enero de 2024 con la recta, el mejor spline y la lineal por día de la semana, y el error de los tres.*
+
+**Por qué el spline cúbico original da tan mal.** Un spline cúbico fuerza que la curva sea suave y pase por los puntos de los bordes. Con una serie que sube y baja cada semana (días hábiles contra fin de semana), la pendiente con la que la curva sale de cada borde del hueco depende de si el último día conocido fue, por ejemplo, un domingo bajo o un martes alto. Esa pendiente arbitraria se arrastra por 31 días: en el gráfico, la curva llega a valores negativos de usuarios. Es una explicación consistente con lo medido (sesgo medio de +26%), no una demostración.
+
+**Qué se aprende de la comparación.**
+
+1. **La forma de aplicar el método importa más que el método.** Separar el ciclo semanal antes de interpolar (por día de la semana o con tendencia × perfil) mejora al spline de 76% a 26%–29% y a la recta de 51% a 17%. El spline original y la recta directa fallan por lo mismo: intentan ajustar con una sola curva una serie con un ciclo fuerte.
+2. **Una vez separado el ciclo, el spline cúbico es peor que las opciones sin oscilación** (recta o PCHIP): con solo 7 puntos por mes en cada día de la semana, o con una tendencia que solo cambia lentamente, la flexibilidad del polinomio de grado 3 no aporta y agrega oscilaciones.
+3. **Ninguna variante baja del 17%.** Lo que falta en un hueco de un mes no es un problema de la curva sino de información: en enero, por ejemplo, hay receso de verano y ninguna curva trazada entre diciembre y febrero puede saberlo. Si no hubiera ninguna fuente adicional, el método recomendado sería PCHIP o recta × perfil semanal.
+
+**Reconstrucción desde transacciones (el método elegido para completar la serie).** No es un método de interpolación pura sino el uso de una **fuente adicional del mismo organismo**: el portal publica también las transacciones diarias, que no tienen huecos y sí traen el nivel y el ciclo semanal de los días faltantes. Se eligió para completar la serie porque, cuando existe una fuente así, es muy superior a cualquier interpolación; pero en la mayoría de las series reales no se dispone de ella, y por eso la comparación de interpolaciones de arriba se evalúa por separado. El método se aplica a las **cuatro series** (total, colectivo, tren y subte) en tres pasos:
 
 1. En cada serie se calcula el **cociente usuarios / transacciones** de los 28 días anteriores y de los 28 posteriores al hueco, por separado para días hábiles, sábados y domingos.
 2. Ese cociente se **interpola** entre los dos bordes del hueco.
@@ -159,6 +173,15 @@ Una serie es **estacionaria** (en el sentido débil, el que se usa en la prácti
 | Diferencia estacional + simple del lunes 14 | (3,722 − 3,641) − (1,208 − 1,182) = 0,081 − 0,026 | +0,055 | Cómo cambió la diferencia semanal de un día al siguiente. |
 
 **Para qué se diferencia.** Para que la serie transformada sea estacionaria y el modelo pueda aprender de ella. La notación del modelo SARIMAX, $(p, d, q)(P, D, Q)_s$, indica cuántas diferencias aplica: **$d$** es la cantidad de diferencias simples, **$D$** la cantidad de diferencias estacionales y **$s$** el largo del ciclo (7 días acá).
+
+**En síntesis.** Diferenciar es restar a cada valor otro valor anterior de la misma serie. Con datos reales:
+
+| Cálculo | Resultado | Qué dice |
+|---|---|---|
+| Lunes 14-sep-2026 menos el domingo 13 (diferencia simple) | +2,514 | Casi todo es el salto de domingo a lunes: el ciclo semanal. |
+| Lunes 14 menos el lunes 7 (diferencia estacional) | +0,081 | Ese lunes fue casi igual al anterior: se quitó el ciclo semanal. |
+
+Cada una de las tres versiones de la serie responde una pregunta: si hace falta diferenciar (nivel), si alcanza con restar el mismo día de la semana anterior (diferencia estacional), o si hace falta además restar el día anterior (diferencia estacional más simple). Se busca la menor diferenciación porque diferenciar de más agrega autocorrelación negativa artificial.
 
 #### Las dos pruebas
 
@@ -252,10 +275,24 @@ La **amplitud** es la altura de la onda, en millones de usuarios. Una amplitud d
 
 #### Por qué la tabla tiene 8 filas y el gráfico muestra 3 picos
 
-La tabla `tabla_fft_picos_total` lista los **8 picos más altos** del espectro, y el gráfico muestra con claridad solo los **3 más altos**. No hay contradicción:
+La tabla `tabla_fft_picos_total` lista los **8 picos más altos** del espectro, numerados de 1 a 8 en la columna `fila`; el gráfico muestra con claridad solo los **3 más altos**. En la Figura 8 cada fila está marcada con una línea punteada y un círculo con su número, y se agregaron dos ampliaciones (A y B) para ver los picos que quedan pegados al borde o a otro pico.
 
-- Los **tres picos visibles**, marcados con líneas rojas, son las frecuencias **1/7, 2/7 y 3/7** (los tres primeros renglones de la tabla).
-- Las **otras cinco filas** son picos más bajos: cuatro están **pegados al borde izquierdo del gráfico** (períodos de 1.757, 351, 176 y 92 días, con frecuencias entre 0,0006 y 0,011, donde se ven como pequeñas elevaciones de 0,09 a 0,24 de altura), y una (7,14 días, frecuencia 0,140) está **al lado del pico semanal** y queda tapada por él.
+| Fila | Frecuencia (ciclos/día) | Período (días) | Amplitud (M) | Dónde se ve en la figura | Qué es |
+|---|---|---|---|---|---|
+| 1 | 0,14286 (= 1/7) | 7,00 | 0,944 | Panel superior y ampliación B | Ciclo **semanal** |
+| 2 | 0,28571 (= 2/7) | 3,50 | 0,610 | Panel superior | Segundo armónico del semanal |
+| 3 | 0,42857 (= 3/7) | 2,33 | 0,303 | Panel superior | Tercer armónico del semanal |
+| 4 | 0,00285 | 351,4 | 0,241 | Ampliación A | Ciclo **anual** |
+| 5 | 0,00569 | 175,7 | 0,217 | Ampliación A | Ciclo **semestral** (verano e invierno) |
+| 6 | 0,00057 (= 1/1.757) | 1.757 | 0,193 | Ampliación A | Variación lenta a lo largo de todo el período (cambios de nivel) |
+| 7 | 0,14001 | 7,14 | 0,100 | Ampliación B (pegado a la fila 1) | Probablemente la intensidad del ciclo semanal cambia con el tiempo; interpretación no probada |
+| 8 | 0,01081 | 92,5 | 0,086 | Ampliación A | Ciclo de unos tres meses; no se investigó su origen |
+
+![Espectro de amplitud con las filas de la tabla marcadas](../resultados/figuras/fig8_fft_espectro_semanal.png)
+
+*Figura 8. Arriba, espectro del total AMBA con las filas 1 a 3 marcadas. En el medio, ampliación A (0 a 0,02 ciclos/día: filas 4, 5, 6 y 8) y ampliación B (alrededor de 1/7: filas 1 y 7). Abajo, espectro por modo en escala logarítmica.*
+
+Los **tres picos visibles** del panel superior son las filas 1, 2 y 3. Las otras cinco filas son más bajas: las filas 4, 5, 6 y 8 están pegadas al borde izquierdo (frecuencias entre 0,0006 y 0,011) y la fila 7 está tapada por el pico de la fila 1.
 
 **Armónicos.** Las frecuencias 2/7 y 3/7 son múltiplos de la semanal y se llaman **armónicos**. Aparecen porque el patrón semanal no es una onda suave (cinco días altos, dos bajos y cambios bruscos): una sola onda no reproduce esas esquinas, y hay que sumar ondas de frecuencia doble y triple, igual que una onda cuadrada se arma con armónicos (Clase Frecuencia, "FFT de pulsos").
 
@@ -284,6 +321,13 @@ La amplitud muestra qué ondas existen, pero **no dice qué parte de la variaci�
 
 1. **Como verificación**: comprobar que ambos lados coinciden es un control de que el código y la escala de la FFT están bien hechos. **No es un resultado sobre el transporte.**
 2. **Como fundamento del reparto de energía**: como la energía se conserva, las energías por frecuencia **suman exactamente el total**, y por eso tiene sentido expresar cada ciclo como "porcentaje de la variación". Sin Parseval, los porcentajes de la tabla anterior no tendrían interpretación.
+
+**En síntesis.**
+
+- **Filas y picos:** la tabla tiene 8 filas. El gráfico muestra 3 picos con claridad porque los otros 5 son más bajos: cuatro están pegados al borde izquierdo y uno queda tapado por el pico semanal.
+- **Eje x:** son ciclos por día. 0,1429 es un ciclo cada 7 días. El eje termina en 0,5 porque con un dato por día no se ve nada más rápido.
+- **Las "tres frecuencias semanales":** son las tres primeras filas de la tabla (1/7, 2/7 y 3/7) y los tres picos de la Figura 8 marcados con 1, 2 y 3. Juntas explican el 62,8% de la variación (41,3% + 17,2% + 4,3%).
+- **Parseval:** verificarlo es un control del código. Su aporte real es garantizar que las energías por frecuencia sumen el total, que es lo que permite hablar de porcentajes. No es un resultado sobre el transporte.
 
 ### 4.5 Medias móviles y filtros frente a STL
 
