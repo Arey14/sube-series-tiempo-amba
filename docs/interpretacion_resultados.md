@@ -779,3 +779,8 @@ El informe sigue ahora la lógica de la exposición: datos (3), exploración (4)
 - **Sin cambios.** Las conclusiones de las secciones de exploración, P-1 y P-2 no cambian; el residuo de STL en los hitos ya usaba el corte al 30-sep.
 - **Orden.** Informe y notebook comparten ahora el orden: datos (3), exploración (4), interpolación (5), CCF (6), P-1 (7), P-2 (8), discusión (9), extensión (10); el notebook agrega la sección 11 de reproducibilidad.
 
+## 26. Lectura de la ACF y la PACF y figuras de hitos — 16-nov-2026
+
+- **ACF/PACF de la figura 2 (total AMBA con diferencia simple y estacional).** Rezago 1 de −0,36 y rezago 7 de −0,49 en la ACF; PACF negativa en los rezagos 1 a 4 y de −0,40 en el 7. El rezago 7 es la huella de una media móvil estacional; el rezago 1 negativo es la huella de la sobrediferenciación medida en 4.2, por lo que el modelo de P-2 usa solo la diferencia estacional y el orden se identifica en 8.2 con esa serie.
+- **Hitos por tipo (figura 17).** Con símbolos por tipo: las elecciones con gratuidad quedan en cerca de 0 en los tres modos y las sin gratuidad entre 0,5 y 1,1; el modo que paró cae a cerca de 0 y los que no pararon quedan más arriba (subte en 1,0 con paro del colectivo; tren entre 0,66 y 0,79). En el paro general del 10-abr-2025 el colectivo cayó a 0,62 aunque la UTA no adhirió; no se comprobó la causa.
+
