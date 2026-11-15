@@ -4,7 +4,7 @@
 
 Trabajo final de Series Temporales, Maestría en Ciencia de Datos.
 
-> **Estado de este documento (15-nov-2026).** Está reescrito con el criterio acordado (definir cada término, explicar cada método, indicar de qué clase del curso proviene o de qué fuente externa, leer cada resultado) en **todas sus secciones**. Contiene todos los gráficos del notebook y gráficos de detalle nuevos. El orden sigue la lógica de la exposición: primero conocer la serie (secciones 3 y 4), luego completar los días faltantes con ese conocimiento (sección 5), después las dos preguntas del trabajo (6 y 7), la discusión (8) y una extensión final (9). El notebook (`notebooks/TP_Final_Series_de_Tiempo.ipynb`) es el soporte computacional y conserva su propio orden de ejecución (la interpolación está en su sección 3); este informe es el texto de referencia para el guion y la presentación.
+> **Estado de este documento (15-nov-2026).** Está reescrito con el criterio acordado (definir cada término, explicar cada método, indicar de qué clase del curso proviene o de qué fuente externa, leer cada resultado) en **todas sus secciones**. Contiene todos los gráficos del notebook y gráficos de detalle nuevos. El orden sigue la lógica de la exposición: primero conocer la serie (secciones 3 y 4), luego completar los días faltantes con ese conocimiento (sección 5), estudiar la relación entre modos (sección 6), responder las dos preguntas del trabajo (secciones 7 y 8), discutir (sección 9) y cerrar con una extensión (sección 10). El notebook (`notebooks/TP_Final_Series_de_Tiempo.ipynb`) es el soporte computacional y tiene el mismo orden que este informe; el informe es el texto de referencia para el guion y la presentación.
 
 **Cómo se explica cada método.** Cada vez que se aplica una técnica se responde, en este orden: (1) **qué es**, en palabras simples y con su definición; (2) **por qué se aplica acá** y de qué clase del curso proviene; (3) **cómo se lee** el resultado (qué significan los ejes, las columnas y los números); (4) **qué se obtuvo**; (5) **qué se concluye y qué no**.
 
@@ -22,7 +22,7 @@ Trabajo final de Series Temporales, Maestría en Ciencia de Datos.
 | **Filtrado en frecuencia** | `Filtrado_Dominio_Frecuencia_R_Python.pdf` | Filtros que operan sobre el espectro. |
 | **Convolución y correlación** | `Convolucion_Correlacion_R_Python.pdf` | Convolución, correlación cruzada (`ccf`) y autocorrelación. |
 
-**Lo que no se vio en clase.** Los PDF de la cátedra no cubren varias técnicas de este trabajo: PCHIP (sección 5), elasticidad, estudio de eventos, control sintético y prueba de Granger (sección 6), y Prophet, Gradient Boosting, PatchTST, Chronos-2, la prueba de Diebold-Mariano, el MASE y los intervalos conformes (sección 7). Cuando se usan, el texto lo dice y cita la fuente original (lista al final).
+**Lo que no se vio en clase.** Los PDF de la cátedra no cubren varias técnicas de este trabajo: PCHIP (sección 5), elasticidad, estudio de eventos, control sintético y prueba de Granger (sección 7), y Prophet, Gradient Boosting, PatchTST, Chronos-2, la prueba de Diebold-Mariano, el MASE y los intervalos conformes (sección 8). Cuando se usan, el texto lo dice y cita la fuente original (lista al final).
 
 ---
 
@@ -52,7 +52,7 @@ Dos preguntas prácticas ordenan el trabajo:
 - **Entender.** Cuando algo cambia (el precio, el calendario, un paro), ¿cuánto se mueve la demanda y es posible atribuir ese movimiento a la causa, o solo se lo observa al mismo tiempo que ocurre?
 - **Anticipar.** Para planificar el servicio, ¿qué método de pronóstico funciona mejor con la demanda diaria y por qué?
 
-Son preguntas distintas y requieren herramientas distintas. Entender una causa exige aislar su efecto del de todo lo demás, es decir, construir un **contrafactual** (qué habría pasado sin el cambio). Pronosticar exige un modelo que acierte, aunque no explique. El trabajo trata las dos por separado y muestra cuándo conviene cada enfoque (la sección 8 explica cómo se complementan).
+Son preguntas distintas y requieren herramientas distintas. Entender una causa exige aislar su efecto del de todo lo demás, es decir, construir un **contrafactual** (qué habría pasado sin el cambio). Pronosticar exige un modelo que acierte, aunque no explique. El trabajo trata las dos por separado y muestra cuándo conviene cada enfoque (la sección 9 explica cómo se complementan).
 
 ## 2. Preguntas de trabajo
 
@@ -84,13 +84,13 @@ Ambos conjuntos los publica el mismo organismo en el mismo portal, y es razonabl
 - **Usuarios** (tarjetas distintas por día) se usan en la exploración (sección 4) y en el pronóstico (P-2).
 - **Transacciones** (usos) se usan en P-1 y para reconstruir los días faltantes.
 
-**Ninguna de las dos medidas es una cantidad de personas ni de viajes completos.** Una persona con dos tarjetas cuenta dos veces como usuario; una tarjeta compartida por varias personas cuenta una; una combinación entre dos colectivos son dos transacciones; y el conjunto de datos no trae origen, destino ni distancia. Tampoco se registran los viajes que no se pagan con SUBE, como los del multipago del subte desde diciembre de 2024 (ver 6.2). En consecuencia, cuando el texto dice que "sube" o "baja la demanda", significa más o menos **tarjetas distintas por día** (P-2) o más o menos **transacciones** (P-1). Leerlo como "pasajeros" es una simplificación razonable, porque las dos medidas se mueven casi igual, pero no es una igualdad.
+**Ninguna de las dos medidas es una cantidad de personas ni de viajes completos.** Una persona con dos tarjetas cuenta dos veces como usuario; una tarjeta compartida por varias personas cuenta una; una combinación entre dos colectivos son dos transacciones; y el conjunto de datos no trae origen, destino ni distancia. Tampoco se registran los viajes que no se pagan con SUBE, como los del multipago del subte desde diciembre de 2024 (ver 7.2). En consecuencia, cuando el texto dice que "sube" o "baja la demanda", significa más o menos **tarjetas distintas por día** (P-2) o más o menos **transacciones** (P-1). Leerlo como "pasajeros" es una simplificación razonable, porque las dos medidas se mueven casi igual, pero no es una igualdad.
 
-> **Supuesto sin verificar.** En 7.9 los cocientes de P-1, medidos con transacciones, se aplican a pronósticos de usuarios. Se supone que ambas medidas reaccionan igual ante un evento; no se comprobó.
+> **Supuesto sin verificar.** En 8.9 los cocientes de P-1, medidos con transacciones, se aplican a pronósticos de usuarios. Se supone que ambas medidas reaccionan igual ante un evento; no se comprobó.
 
 ### 3.3 Los días faltantes (adelanto)
 
-La serie de usuarios no tiene datos para **62 días**: agosto de 2022 y enero de 2024 (dos meses completos). Un modelo de series temporales necesita una observación por día, así que esos días hay que completarlos. **Cómo se completaron y por qué ese método se explica en la sección 5**, después de la exploración, porque para elegir bien cómo completar un hueco hace falta conocer la serie (su ciclo semanal, su estacionalidad anual, el efecto de los feriados). Mientras tanto, la exploración de la sección 4 usa la serie ya completada con la reconstrucción desde las transacciones (los días reconstruidos están marcados). Como control, el script de la sección 4 repite la FFT y la prueba de estacionariedad con el tramo posterior a febrero de 2024, que no tiene ningún día reconstruido, y las conclusiones se mantienen (amplitud del ciclo semanal de 0,927 M contra 0,944 M; el nivel sigue siendo estacionario).
+La serie de usuarios no tiene datos para **62 días**: agosto de 2022 y enero de 2024 (dos meses completos). Un modelo de series temporales necesita una observación por día, así que esos días hay que completarlos. **Cómo se completaron y por qué ese método se explica en la sección 5**, después de la exploración, porque para elegir bien cómo completar un hueco hace falta conocer la serie (su ciclo semanal, su estacionalidad anual, el efecto de los feriados). Mientras tanto, la exploración de la sección 4 usa la serie ya completada con la reconstrucción desde las transacciones (los días reconstruidos están marcados). Como control, el script de la sección 4 repite la FFT y la prueba de estacionariedad con el tramo posterior a febrero de 2024, que no tiene ningún día reconstruido, y las conclusiones se mantienen (amplitud del ciclo semanal de 0,923 M contra 0,941 M; el nivel del total sigue siendo estacionario).
 
 ---
 
@@ -100,7 +100,7 @@ El objetivo de esta sección es **conocer la serie antes de modelarla**: qué pa
 
 ### 4.1 Nivel y ciclos: gráficos
 
-La serie del total AMBA (media móvil de 7 días en los gráficos, para que no se vea el ciclo semanal) cae casi a cero en el aislamiento estricto de 2020, se recupera y se estabiliza desde 2022. Por eso **el análisis y los modelos usan datos desde enero de 2022**; la pandemia se estudia solo de forma descriptiva (6.6). Dos patrones se repiten: el **ciclo semanal** (los días hábiles muy por encima de sábados y domingos) y el **ciclo anual** (valles en las vacaciones de verano e invierno). Ambos explican gran parte del error de los modelos de pronóstico.
+La serie del total AMBA (media móvil de 7 días en los gráficos, para que no se vea el ciclo semanal) cae casi a cero en el aislamiento estricto de 2020, se recupera y se estabiliza desde 2022. Por eso **el análisis y los modelos usan datos desde enero de 2022**; la pandemia se estudia solo de forma descriptiva (7.6). Dos patrones se repiten: el **ciclo semanal** (los días hábiles muy por encima de sábados y domingos) y el **ciclo anual** (valles en las vacaciones de verano e invierno). Ambos explican gran parte del error de los modelos de pronóstico.
 
 ![Series históricas por modo](../resultados/figuras/fig1_series_historicas_modos.png)
 
@@ -110,7 +110,7 @@ La serie del total AMBA (media móvil de 7 días en los gráficos, para que no s
 
 ![Estacionalidad semanal y anual](../resultados/figuras/fig2_estacionalidad_y_correlacion.png)
 
-*Figura 2. Arriba, distribución de los usuarios por día de la semana (izquierda) y por mes del año (derecha) para cada modo, 2022–2026; la caja va del cuartil 25 al 75 y la línea interior es la mediana. Abajo, ACF y PACF de la serie con diferencia simple y estacional (se explican en 7.2).*
+*Figura 2. Arriba, distribución de los usuarios por día de la semana (izquierda) y por mes del año (derecha) para cada modo, 2022–2026; la caja va del cuartil 25 al 75 y la línea interior es la mediana. Abajo, ACF y PACF de la serie con diferencia simple y estacional (se explican en 8.2).*
 
 **Qué muestra.** En el total AMBA, la mediana de un día hábil es de unos 3,7 a 3,9 millones de usuarios, la de un sábado 2,4 y la de un domingo 1,4: el fin de semana es un tercio a la mitad de un día hábil. Por mes, el promedio va de 2,4 millones en enero a 3,3 o 3,4 en septiembre y octubre; julio (3,0) y diciembre (2,9) muestran las vacaciones de invierno y de verano.
 
@@ -213,7 +213,7 @@ Las figuras siguientes muestran las tres versiones con las que se trabaja y su a
 **Qué se observa.**
 
 - **Nivel:** autocorrelación alta y positiva en todos los múltiplos de 7 (0,73 en el rezago 7 y 0,71 en el 14): el ciclo semanal se repite y la serie "recuerda" la semana anterior.
-- **Diferencia estacional:** el desvío baja de 1,04 a 0,76 millones y la autocorrelación del rezago 14 cae a −0,01: se eliminó el ciclo. Queda un valor de −0,47 en el rezago 7, que es el rastro típico de restar la semana anterior y que el modelo absorbe con el término de media móvil estacional (7.2).
+- **Diferencia estacional:** el desvío baja de 1,04 a 0,76 millones y la autocorrelación del rezago 14 cae a −0,01: se eliminó el ciclo. Queda un valor de −0,47 en el rezago 7, que es el rastro típico de restar la semana anterior y que el modelo absorbe con el término de media móvil estacional (8.2).
 - **Diferencia estacional + simple:** el desvío **sube** a 0,95 y la autocorrelación del rezago 1 pasa de +0,23 a **−0,36**. Es la **sobrediferenciación**: restar una segunda vez no aportó información, aumentó la dispersión y creó una autocorrelación negativa que no existía en los datos. Es la evidencia directa de por qué se elige la mínima diferenciación.
 
 #### Qué se concluye y por qué se busca "la menor diferenciación"
@@ -240,7 +240,7 @@ Las figuras siguientes muestran las tres versiones con las que se trabaja y su a
 
 #### ¿El residuo detecta efectivamente los hitos?
 
-**Qué se hizo.** Para comprobar la afirmación anterior se expresó el residuo como porcentaje del valor esperado (tendencia + patrón semanal) y se marcaron como atípicos los días con un residuo mayor a ±20% (es un umbral práctico, del orden de la banda de días ordinarios de P-1; usar 3 desvíos robustos marcaba como atípico el 18% de los días ordinarios, porque el residuo típico es muy chico y de cola pesada). Se clasificó cada día según el calendario de feriados (paquete `holidays` de Python), la lista de paros y elecciones de P-1 y, aparte, Nochebuena y fin de año. Es la misma lógica que el cociente de P-1 (6.6), medida con otro método.
+**Qué se hizo.** Para comprobar la afirmación anterior se expresó el residuo como porcentaje del valor esperado (tendencia + patrón semanal) y se marcaron como atípicos los días con un residuo mayor a ±20% (es un umbral práctico, del orden de la banda de días ordinarios de P-1; usar 3 desvíos robustos marcaba como atípico el 18% de los días ordinarios, porque el residuo típico es muy chico y de cola pesada). Se clasificó cada día según el calendario de feriados (paquete `holidays` de Python), la lista de paros y elecciones de P-1 y, aparte, Nochebuena y fin de año. Es la misma lógica que el cociente de P-1 (7.6), medida con otro método.
 
 ![Residuo de STL en los hitos](../resultados/figuras/fig31_stl_residuo_en_hitos.png)
 
@@ -260,7 +260,7 @@ Las figuras siguientes muestran las tres versiones con las que se trabaja y su a
 **Qué se observa.**
 
 - **Los hitos se detectan.** Superan el umbral **74 de 77 feriados laborables (96%), 7 de 9 paros y 5 de 6 elecciones**; la mediana del residuo en esos días es de −54% a −61%, contra −0,1% en los días ordinarios. En los cuatro recuadros de detalle el valor observado se separa claramente del esperado el día del hito (residuos de −61% el Viernes Santo de 2024, −85% en la elección con gratuidad de octubre de 2023 y −92% en el paro general de mayo de 2024).
-- **Los que no se detectan tienen explicación.** Los dos paros que quedan dentro del umbral (el de trenes del 21 de febrero de 2024, −16%, y el general del 10 de abril de 2025, −18%) son paros en los que **el colectivo no paró** o adhirió poco, y el colectivo es la gran mayoría de los usuarios del total; la caída aparece en tren y subte (6.6), no en el total. La elección de mayo de 2025 (−1,6%) es una de las que no tuvo gratuidad. Los tres feriados laborables que no se detectan (28-mar-2024, 17-abr-2025 y 2-may-2025) son, hasta donde se pudo ver, días no laborables optativos (como el Jueves Santo) que figuran como feriado en el paquete de calendario pero en los que la demanda no cayó; no se verificó contra el calendario oficial.
+- **Los que no se detectan tienen explicación.** Los dos paros que quedan dentro del umbral (el de trenes del 21 de febrero de 2024, −16%, y el general del 10 de abril de 2025, −18%) son paros en los que **el colectivo no paró** o adhirió poco, y el colectivo es la gran mayoría de los usuarios del total; la caída aparece en tren y subte (7.6), no en el total. La elección de mayo de 2025 (−1,6%) es una de las que no tuvo gratuidad. Los tres feriados laborables que no se detectan (28-mar-2024, 17-abr-2025 y 2-may-2025) son, hasta donde se pudo ver, días no laborables optativos (como el Jueves Santo) que figuran como feriado en el paquete de calendario pero en los que la demanda no cayó; no se verificó contra el calendario oficial.
 - **También detecta eventos que no estaban en la lista.** El umbral marca 140 días y 93 son hitos conocidos (66%). Los otros 47 son el 2,9% de los días ordinarios; muchos son viernes o lunes cercanos a feriados (por ejemplo el viernes 10-oct-2025 y el viernes 2-sep-2022), compatibles con fines de semana largos o feriados trasladados, y hay también caídas en fines de semana puntuales. No se verificó cada fecha; la lista está en `tabla_stl_residuo_dias_sin_hito.csv`.
 - **Nochebuena y fin de año** (24 y 31 de diciembre) superan el umbral en 4 de 8 casos: el efecto depende de si caen en día hábil.
 - Los **feriados que caen en fin de semana** casi no se distinguen (3 de 19): igual que en P-1, un feriado en sábado o domingo casi no cambia la demanda.
@@ -277,8 +277,8 @@ La serie se puede ver de dos maneras equivalentes. En el **dominio del tiempo** 
 
 #### Cómo se calculó
 
-- Se usó el total AMBA de enero de 2022 a octubre de 2026, recortado a **251 semanas exactas (N = 1.757 días)**. El recorte importa porque la FFT supone que la serie se repite indefinidamente: con semanas completas, el ciclo de 7 días encaja exacto en una de las frecuencias que calcula la FFT y su energía no se desparrama sobre las vecinas (fenómeno de *leakage*, o fuga espectral).
-- Se le **restó el promedio** de la serie (3,06 millones de usuarios). Ese promedio es la frecuencia 0, llamada componente continua o **DC**, y es tan grande que, si se dejara, taparía el resto del gráfico. Al restarlo, lo que se analiza es la **variación alrededor del promedio**.
+- Se usó el total AMBA del 6 de enero de 2022 al 30 de septiembre de 2026 (el mismo corte que P-2: octubre de 2026 es preliminar), recortado a **247 semanas exactas (N = 1.729 días)**. El recorte importa porque la FFT supone que la serie se repite indefinidamente: con semanas completas, el ciclo de 7 días encaja exacto en una de las frecuencias que calcula la FFT y su energía no se desparrama sobre las vecinas (fenómeno de *leakage*, o fuga espectral).
+- Se le **restó el promedio** de la serie (3,07 millones de usuarios). Ese promedio es la frecuencia 0, llamada componente continua o **DC**, y es tan grande que, si se dejara, taparía el resto del gráfico. Al restarlo, lo que se analiza es la **variación alrededor del promedio**.
 
 #### Cómo se lee el eje horizontal (frecuencia)
 
@@ -286,9 +286,10 @@ El eje horizontal del gráfico es la **frecuencia en ciclos por día**. Un valor
 
 | Frecuencia (ciclos/día) | Período | Qué ciclo es |
 |---|---|---|
-| 0,00057 (= 1/1.757) | 1.757 días | Variación lenta a lo largo de todo el período (cambios de nivel). |
-| 0,00285 | ≈ 351 días | Ciclo **anual**. |
-| 0,00569 | ≈ 176 días | Ciclo **semestral** (verano e invierno). |
+| 0,00058 (= 1/1.729) | 1.729 días | Variación lenta a lo largo de todo el período (cambios de nivel). |
+| 0,00289 | ≈ 346 días | Ciclo **anual** (la frecuencia que permite la FFT con esta duración más cercana a un año). |
+| 0,00521 | ≈ 192 días | Ciclo **semestral** aproximado (verano e invierno). |
+| 0,01099 | 91 días | Ciclo de unos **tres meses** (origen no investigado). |
 | 0,1429 (= 1/7) | 7 días | Ciclo **semanal**. |
 | 0,2857 (= 2/7) | 3,5 días | Segundo armónico del semanal. |
 | 0,4286 (= 3/7) | 2,33 días | Tercer armónico del semanal. |
@@ -297,7 +298,7 @@ Por qué el eje termina en **0,5**: con un dato por día no se puede distinguir 
 
 #### Cómo se lee el eje vertical (amplitud)
 
-La **amplitud** es la altura de la onda, en millones de usuarios. Una amplitud de 0,944 en 1/7 significa que la onda semanal sube y baja 0,944 millones alrededor del promedio (de punta a punta, unos 1,9 millones).
+La **amplitud** es la altura de la onda, en millones de usuarios. Una amplitud de 0,941 en 1/7 significa que la onda semanal sube y baja 0,941 millones alrededor del promedio (de punta a punta, unos 1,9 millones).
 
 #### Por qué la tabla tiene 8 filas y el gráfico muestra 3 picos
 
@@ -305,20 +306,20 @@ La tabla `tabla_fft_picos_total` lista los **8 picos más altos** del espectro, 
 
 | Fila | Frecuencia (ciclos/día) | Período (días) | Amplitud (M) | Dónde se ve en la figura | Qué es |
 |---|---|---|---|---|---|
-| 1 | 0,14286 (= 1/7) | 7,00 | 0,944 | Panel superior y ampliación B | Ciclo **semanal** |
-| 2 | 0,28571 (= 2/7) | 3,50 | 0,610 | Panel superior | Segundo armónico del semanal |
-| 3 | 0,42857 (= 3/7) | 2,33 | 0,303 | Panel superior | Tercer armónico del semanal |
-| 4 | 0,00285 | 351,4 | 0,241 | Ampliación A | Ciclo **anual** |
-| 5 | 0,00569 | 175,7 | 0,217 | Ampliación A | Ciclo **semestral** (verano e invierno) |
-| 6 | 0,00057 (= 1/1.757) | 1.757 | 0,193 | Ampliación A | Variación lenta a lo largo de todo el período (cambios de nivel) |
-| 7 | 0,14001 | 7,14 | 0,100 | Ampliación B (pegado a la fila 1) | Probablemente la intensidad del ciclo semanal cambia con el tiempo; interpretación no probada |
-| 8 | 0,01081 | 92,5 | 0,086 | Ampliación A | Ciclo de unos tres meses; no se investigó su origen |
+| 1 | 0,14286 (= 1/7) | 7,00 | 0,941 | Panel superior y ampliación B | Ciclo **semanal** |
+| 2 | 0,28571 (= 2/7) | 3,50 | 0,608 | Panel superior | Segundo armónico del semanal |
+| 3 | 0,42857 (= 3/7) | 2,33 | 0,306 | Panel superior | Tercer armónico del semanal |
+| 4 | 0,00289 | 345,8 | 0,226 | Ampliación A | Ciclo **anual** (aproximado) |
+| 5 | 0,00058 (= 1/1.729) | 1.729 | 0,192 | Ampliación A | Variación lenta a lo largo de todo el período (cambios de nivel) |
+| 6 | 0,00521 | 192,1 | 0,178 | Ampliación A | Ciclo **semestral** aproximado (verano e invierno) |
+| 7 | 0,01099 | 91,0 | 0,107 | Ampliación A | Ciclo de unos tres meses; no se investigó su origen |
+| 8 | 0,13997 | 7,14 | 0,096 | Ampliación B (pegado a la fila 1) | Probablemente la intensidad del ciclo semanal cambia con el tiempo; interpretación no probada |
 
 ![Espectro de amplitud con las filas de la tabla marcadas](../resultados/figuras/fig8_fft_espectro_semanal.png)
 
-*Figura 7. Arriba, espectro del total AMBA con las filas 1 a 3 marcadas. En el medio, ampliación A (0 a 0,02 ciclos/día: filas 4, 5, 6 y 8) y ampliación B (alrededor de 1/7: filas 1 y 7). Abajo, espectro por modo en escala logarítmica.*
+*Figura 7. Arriba, espectro del total AMBA con las filas 1 a 3 marcadas. En el medio, ampliación A (0 a 0,02 ciclos/día: filas 4, 5, 6 y 7) y ampliación B (alrededor de 1/7: filas 1 y 8). Abajo, espectro por modo en escala logarítmica.*
 
-Los **tres picos visibles** del panel superior son las filas 1, 2 y 3. Las otras cinco filas son más bajas: las filas 4, 5, 6 y 8 están pegadas al borde izquierdo (frecuencias entre 0,0006 y 0,011) y la fila 7 está tapada por el pico de la fila 1.
+Los **tres picos visibles** del panel superior son las filas 1, 2 y 3. Las otras cinco filas son más bajas: las filas 4, 5, 6 y 7 están pegadas al borde izquierdo (frecuencias entre 0,0006 y 0,011) y la fila 8 está tapada por el pico de la fila 1.
 
 **Armónicos.** Las frecuencias 2/7 y 3/7 son múltiplos de la semanal y se llaman **armónicos**. Aparecen porque el patrón semanal no es una onda suave (cinco días altos, dos bajos y cambios bruscos): una sola onda no reproduce esas esquinas, y hay que sumar ondas de frecuencia doble y triple, igual que una onda cuadrada se arma con armónicos (Clase Frecuencia, "FFT de pulsos").
 
@@ -328,20 +329,20 @@ La amplitud muestra qué ondas existen, pero **no dice qué parte de la variaci�
 
 | Componente | % de la variación de la serie |
 |---|---|
-| Ciclo de 7 días (frecuencia 1/7) | 41,3% |
-| Ciclo de 3,5 días (frecuencia 2/7) | 17,2% |
+| Ciclo de 7 días (frecuencia 1/7) | 41,0% |
+| Ciclo de 3,5 días (frecuencia 2/7) | 17,1% |
 | Ciclo de 2,33 días (frecuencia 3/7) | 4,3% |
-| **Las tres frecuencias semanales juntas** (1/7 + 2/7 + 3/7) | **62,8%** |
-| Ciclos de más de 60 días (tendencia y ciclo anual) | 9,9% |
+| **Las tres frecuencias semanales juntas** (1/7 + 2/7 + 3/7) | **62,5%** |
+| Ciclos de más de 60 días (tendencia y ciclo anual) | 10,2% |
 | Resto (feriados, paros, elecciones y ruido) | 27,3% |
 
-**Cómo se interpreta.** **Casi dos tercios (62,8%) de toda la variación de la serie corresponde al ciclo semanal**; la frase "las tres frecuencias semanales" se refiere a esas tres filas de la tabla (1/7, 2/7 y 3/7: el ciclo de 7 días y sus dos armónicos), que son los tres picos rojos del gráfico. Los ciclos lentos (tendencia y estacionalidad anual) explican solo el 9,9%. El 27,3% restante no tiene una frecuencia propia porque corresponde a eventos puntuales (feriados, paros, elecciones), cuya energía se reparte por todo el espectro, y a ruido.
+**Cómo se interpreta.** **Casi dos tercios (62,5%) de toda la variación de la serie corresponde al ciclo semanal**; la frase "las tres frecuencias semanales" se refiere a esas tres filas de la tabla (1/7, 2/7 y 3/7: el ciclo de 7 días y sus dos armónicos), que son los tres picos rojos del gráfico. Los ciclos lentos (tendencia y estacionalidad anual) explican solo el 10,2%. (Los porcentajes de cada fila están redondeados: 41,0 + 17,1 + 4,3 da 62,4, y el valor exacto de las tres juntas es 62,5.) El 27,3% restante no tiene una frecuencia propia porque corresponde a eventos puntuales (feriados, paros, elecciones), cuya energía se reparte por todo el espectro, y a ruido.
 
-**Qué se usó después.** Los modelos de P-2 incluyen el día de la semana, términos anuales de Fourier y feriados, y con el término anual el error del SARIMAX baja 15% (de 0,318 a 0,270, apartado 7.4). La decisión $D = 1$ con período 7 (4.2) se apoya en que el ciclo semanal explica casi dos tercios de la variación.
+**Qué se usó después.** Los modelos de P-2 incluyen el día de la semana, términos anuales de Fourier y feriados, y con el término anual el error del SARIMAX baja 15% (de 0,318 a 0,270, apartado 8.4). La decisión $D = 1$ con período 7 (4.2) se apoya en que el ciclo semanal explica casi dos tercios de la variación.
 
 #### Teorema de Parseval: qué dice y qué aporta
 
-**Qué dice** (Clase Frecuencia): la **energía de una serie se conserva** al pasar del dominio del tiempo al de la frecuencia, si no se procesa la señal. En fórmula, $\sum_n x(n)^2 = \frac{1}{N}\sum_k |X(k)|^2$: la suma de los cuadrados de los valores diarios es igual a la suma de los cuadrados de los coeficientes de la FFT, dividida por N. En esta serie, ambos lados dan **18.385,3**.
+**Qué dice** (Clase Frecuencia): la **energía de una serie se conserva** al pasar del dominio del tiempo al de la frecuencia, si no se procesa la señal. En fórmula, $\sum_n x(n)^2 = \frac{1}{N}\sum_k |X(k)|^2$: la suma de los cuadrados de los valores diarios es igual a la suma de los cuadrados de los coeficientes de la FFT, dividida por N. En esta serie, ambos lados dan **18.114,6**.
 
 **Qué aporta, con honestidad.** Hay dos usos y conviene no confundirlos:
 
@@ -352,7 +353,7 @@ La amplitud muestra qué ondas existen, pero **no dice qué parte de la variaci�
 
 - **Filas y picos:** la tabla tiene 8 filas. El gráfico muestra 3 picos con claridad porque los otros 5 son más bajos: cuatro están pegados al borde izquierdo y uno queda tapado por el pico semanal.
 - **Eje x:** son ciclos por día. 0,1429 es un ciclo cada 7 días. El eje termina en 0,5 porque con un dato por día no se ve nada más rápido.
-- **Las "tres frecuencias semanales":** son las tres primeras filas de la tabla (1/7, 2/7 y 3/7) y los tres picos de la Figura 7 marcados con 1, 2 y 3. Juntas explican el 62,8% de la variación (41,3% + 17,2% + 4,3%).
+- **Las "tres frecuencias semanales":** son las tres primeras filas de la tabla (1/7, 2/7 y 3/7) y los tres picos de la Figura 7 marcados con 1, 2 y 3. Juntas explican el 62,5% de la variación (41,0% + 17,1% + 4,3%, redondeados).
 - **Parseval:** verificarlo es un control del código. Su aporte real es garantizar que las energías por frecuencia sumen el total, que es lo que permite hablar de porcentajes. No es un resultado sobre el transporte.
 
 ### 4.5 Medias móviles y filtros frente a STL
@@ -384,7 +385,7 @@ La Figura 10 muestra seis situaciones concretas.
 *Figura 10. A. Caída de enero de 2024 con los cuatro estimadores de tendencia. B y C. Bordes inicial y final de la serie. D. Retraso de la media causal ante el salto tarifario del subte (17-may-2024). E. Serie desestacionalizada alrededor de las elecciones con gratuidad de 2023 por tres métodos. F. Patrón semanal promedio que resta cada método (las curvas de "serie − MA7" y "serie − elimina-banda" casi coinciden).*
 
 - **A. Cambios bruscos.** Ante la caída de enero, la MA28 y STL bajan de forma gradual; el pasa-bajos ondula (fenómeno de Gibbs: un filtro que corta frecuencias de golpe produce rizado alrededor de los saltos); la MA28 causal reacciona más tarde.
-- **B y C. Bordes.** La MA28 centrada **no tiene valor en los primeros ni los últimos 14 días** (pierde 27 en total); STL y el pasa-bajos sí, pero con más error: el RMSE del pasa-bajos contra STL pasa de 0,20 M en el interior a 0,25 M en los bordes.
+- **B y C. Bordes.** La MA28 centrada **no tiene valor en los primeros ni los últimos 14 días** (pierde 27 en total); STL y el pasa-bajos sí, pero con más error: el RMSE del pasa-bajos contra STL pasa de 0,20 M en el interior a 0,22 M en los bordes.
 - **D. Retraso.** Después del salto de mayo de 2024 la MA28 centrada refleja el nuevo nivel de inmediato (porque mira hacia adelante), mientras que la causal tarda unas dos semanas (retraso teórico de (28 − 1)/2 ≈ 13,5 días).
 - **E. Desestacionalizar en días de colapso.** En las elecciones con gratuidad, la serie sin componente semanal de STL y la del elimina-banda dejan el día de la elección con valores bajos (en promedio 2,3 y 2,1 M, contra 3,3 M de la MA7, que reparte el valle en 7 días y contamina la semana entera).
 - **F. Qué patrón se resta.** Los tres métodos restan un patrón parecido (más alto de lunes a viernes, muy negativo en sábado y domingo); STL difiere en que el patrón puede evolucionar y los otros dos restan uno fijo.
@@ -397,17 +398,17 @@ La Figura 10 muestra seis situaciones concretas.
 
 | metodo | dias_con_valor | dias_sin_valor | RMSE_vs_STL_interior_M | RMSE_vs_STL_bordes_M | correlacion_con_STL |
 |---|---|---|---|---|---|
-| MA28 centrada | 1.730 | 27 | 0,178 | 0,161 | 0,957 |
-| MA28 causal | 1.730 | 27 | 0,220 | 0,133 | 0,883 |
-| Pasa-bajos ideal (FFT) | 1.757 | 0 | 0,200 | 0,253 | 0,924 |
+| MA28 centrada | 1.702 | 27 | 0,178 | 0,106 | 0,958 |
+| MA28 causal | 1.702 | 27 | 0,222 | 0,062 | 0,883 |
+| Pasa-bajos ideal (FFT) | 1.729 | 0 | 0,200 | 0,218 | 0,927 |
 
 **Serie desestacionalizada: qué pasa en los días de colapso.** Aquí se mira qué valor mínimo toma cada serie sin ciclo semanal y qué valor toma en las tres elecciones con gratuidad de 2023 (demanda cercana a cero).
 
 | metodo | minimo_M | dias_con_valor_menor_o_igual_a_0 | valor_medio_en_elecciones_gratuitas_M |
 |---|---|---|---|
-| Serie - componente semanal STL | -0,080 | 1 | 2,304 |
+| Serie - componente semanal STL | -0,081 | 1 | 2,303 |
 | MA7 centrada | 1,739 | 0 | 3,318 |
-| Elimina-banda (FFT) | -0,237 | 2 | 2,092 |
+| Elimina-banda (FFT) | -0,240 | 2 | 2,095 |
 
 ![Comparación cuantitativa](../resultados/figuras/fig33_comparacion_descomposicion.png)
 
@@ -422,9 +423,9 @@ La Figura 10 muestra seis situaciones concretas.
 | **STL robusto** (período 7) | Tendencia, componente semanal y residuo. | Deja los valores extremos (feriados, paros) en el residuo en lugar de contaminar la tendencia; no pierde datos en los extremos; el patrón semanal puede cambiar de a poco. | Hay que elegir período y suavizado; es menos transparente. También puede dar valores levemente negativos al restar el patrón semanal de un día de colapso (mínimo de −0,08 M, un solo día). |
 | **Media móvil centrada de 28 días (MA28)** | Tendencia. | Simple y transparente; al ser múltiplo de 7 anula el ciclo semanal; no atrasa. | Los feriados la arrastran hacia abajo (correlación 0,96 con la tendencia de STL, RMSE de 0,18 M); pierde unos 14 días en cada extremo. |
 | **MA28 causal** (solo pasado) | Tendencia calculable hoy. | Sirve para monitoreo en tiempo real. | Llega unos 14 días tarde (retraso teórico $(28-1)/2 \approx 13{,}5$). |
-| **Serie − MA7** | Componente rápido. | Deja los feriados como valles (media de −1,23 M contra +0,07 M en el resto). | No separa el ciclo semanal del efecto del feriado. |
+| **Serie − MA7** | Componente rápido. | Deja los feriados como valles (media de −1,22 M contra +0,07 M en el resto). | No separa el ciclo semanal del efecto del feriado. |
 | **Filtro elimina-banda (FFT)** | Serie sin ciclo semanal. | Anula exactamente 1/7, 2/7 y 3/7. | Resta un perfil semanal fijo: en días hábiles de colapso (paros, elecciones) puede dar valores ≤ 0 sin sentido físico (mínimo de −0,24 M, 2 días); supone que la serie se repite en círculo. |
-| **Filtro pasa-bajos ideal (FFT)** | Tendencia. | Sigue de cerca a la MA28. | Rizado alrededor de los cambios bruscos (**fenómeno de Gibbs**) y más error en los bordes (RMSE de 0,25 M contra STL en los bordes y de 0,20 M en el interior). |
+| **Filtro pasa-bajos ideal (FFT)** | Tendencia. | Sigue de cerca a la MA28. | Rizado alrededor de los cambios bruscos (**fenómeno de Gibbs**) y más error en los bordes (RMSE de 0,22 M contra STL en los bordes y de 0,20 M en el interior). |
 
 
 **Qué conviene según la tarea.**
@@ -446,54 +447,6 @@ La Figura 10 muestra seis situaciones concretas.
 5. **Qué conviene descartar.** El elimina-banda para desestacionalizar esta serie (supone periodicidad, resta un perfil fijo y es el que más se aleja de cero en los días de colapso) y el pasa-bajos ideal como estimador de tendencia (Gibbs y bordes). Se conservan solo como ilustración de la teoría de filtros.
 6. **No hay un ganador único: depende de la tarea.** Lo que la comparación dice de la serie importa más que el ranking: el ciclo semanal domina, los feriados son el valor extremo dominante (valles de cerca de 1,2 M) y fuera de la pandemia la tendencia es estable con un valle cada enero.
 
-
-### 4.7 Correlación cruzada (CCF) entre tren y colectivo
-
-*Base teórica: Convolución y correlación ("Correlación cruzada y autocorrelación", "La ccf encuentra el desplazamiento").*
-
-**Qué es.** La correlación entre dos series cuando una se desplaza en el tiempo. Según la clase, el resultado no es un único número sino **una serie de valores, uno por cada desplazamiento (rezago)**. Con rezago $k = 0$ se compara el tren y el colectivo del mismo día; con $k > 0$, el colectivo $k$ días *después* del tren; con $k < 0$, antes. Un valor de 1 indica que se mueven idénticos; 0, sin relación; −1, en sentido opuesto.
-
-**Qué pregunta responde.** Si un modo anticipa a otro o si, cuando uno falla, sus usuarios pasan al otro.
-
-**Por qué se usa sobre residuos y no sobre las series crudas.** Tren y colectivo comparten el ciclo semanal y los feriados, y sus series crudas correlacionan mucho solo por eso (correlación espuria: no dice cómo se relacionan los modos). Por eso primero se quita el efecto del día de la semana, los feriados y una tendencia lineal, y se analiza lo que queda. Una segunda versión usa las series con diferencia simple y estacional (4.2), otra forma de quitar lo común.
-
-![CCF tren-colectivo y ACF del total](../resultados/figuras/fig11_ccf_tren_colectivo_y_acf.png)
-
-*Figura 12. Izquierda y centro: CCF entre tren y colectivo con residuos sin calendario y con diferencia simple + estacional (barras: correlación para cada rezago; rojo: banda ingenua de ±1,96/√n). Derecha: ACF del total AMBA, con picos en los múltiplos de 7.*
-
-**Cómo se lee.** En el eje horizontal está el rezago k (días de desplazamiento) y en el vertical la correlación. La barra central (k = 0) compara el mismo día; las de k > 0, el colectivo posterior al tren.
-
-**Qué se esperaba.**
-
-| Si ocurriera… | Se vería… |
-|---|---|
-| **Sustitución** (se interrumpe el tren y esos usuarios toman el colectivo) | Correlación **negativa** en el rezago 0 o 1. |
-| **Causas comunes** (actividad económica, clima, paros generales) | Correlación **positiva** en el rezago 0. |
-| **Un modo anticipa al otro** | Un pico en un rezago distinto de cero y asimetría entre positivos y negativos. |
-
-**Qué se observó.** Un pico en el rezago 0 (**0,85** con residuos y **0,92** con diferencias), positivo y simétrico (rezago −1: 0,42; rezago +1: 0,41). Queda además un "piso" de 0,3 a 0,4 en todos los rezagos, que corresponde a movimientos lentos comunes que los residuos no eliminaron (por ejemplo la estacionalidad anual) y no a un efecto con retraso. En la versión con diferencias, los valores negativos de los rezagos ±1 (−0,33) y ±7 (−0,45) son un **artefacto del operador de diferencias** (4.2, sobrediferenciación) y no una relación inversa. Las bandas rojas del gráfico (±0,047) suponen observaciones independientes y, como los residuos están autocorrelacionados, casi cualquier valor las supera; por eso la lectura se hace por la forma, y el detalle de abajo usa la banda de Bartlett.
-
-#### Detalle: ¿es robusta esa correlación?
-
-La Figura 13 pone a prueba tres cosas: que la relación sea realmente lineal (A), que la banda de significancia sea la adecuada (B) y que sea estable en el tiempo (C y D).
-
-![Detalle de la CCF](../resultados/figuras/fig34_ccf_detalle.png)
-
-*Figura 13. A. Dispersión de los residuos del tren y del colectivo del mismo día. B. CCF de los residuos con la banda ingenua (±0,047) y la banda de Bartlett (±0,126). C. CCF por subperíodo. D. Correlación del mismo día en ventanas móviles de 90 días.*
-
-| periodo | dias | ccf_lag_0 | ccf_lag_-1 | ccf_lag_1 |
-|---|---|---|---|---|
-| 2022-2023 | 724 | 0,880 | 0,528 | 0,512 |
-| 2024 | 366 | 0,776 | 0,187 | 0,175 |
-| 2025-2026 | 667 | 0,867 | 0,405 | 0,393 |
-
-- **A. Dispersión.** Los residuos de ambos modos se alinean sobre una recta (r = 0,85): cuando el tren está por encima o por debajo de lo esperado, el colectivo también. Hay unos pocos puntos aislados (días con paros o eventos de un solo modo).
-- **B. Banda de significancia.** La banda de ±0,047 supone observaciones independientes. Como los residuos están autocorrelacionados, la **banda de Bartlett** (que incorpora esa autocorrelación; ±0,126) es más honesta. El pico en el rezago 0 (0,85) la supera por mucho; los valores de 0,3 a 0,4 en los demás rezagos **también superan la banda**, es decir, el "piso" no es ruido.
-- **C. Subperíodos.** El rezago 0 es alto en los tres (0,88 en 2022–2023, 0,78 en 2024, 0,87 en 2025–2026), pero el "piso" cambia mucho: 0,45 aproximadamente en 2022–2023, 0,1 en 2024 y 0,3 en 2025–2026. Eso respalda que el piso es un movimiento lento común (cambios de nivel dentro de cada período que los residuos no eliminaron) y no una relación con retraso: si fuera una relación estable, no desaparecería en 2024.
-- **D. Estabilidad.** La correlación del mismo día se mantiene entre 0,59 y 0,97 en ventanas de 90 días; baja hacia fines de 2022, a principios de 2024 y al final de la serie, períodos que incluyen cambios de nivel (por ejemplo, el verano de 2024); no se investigó la causa de cada baja.
-
-**Qué se concluye.** Gana la hipótesis de **causas comunes**: los modos se mueven juntos el mismo día. No hay evidencia de sustitución ni de que un modo anticipe al otro. Aporta tres cosas: (1) los modos comparten el motor de la demanda diaria; (2) lo que pasó ayer en el tren no ayuda a pronosticar el colectivo de hoy, lo que respalda pronosticar cada modo por separado (P-2); (3) es coherente con P-1: en los paros, el modo que no para no absorbe a los usuarios del que sí. **Límite:** es una correlación y no demuestra causalidad; los shocks comunes dominan y podrían tapar una sustitución pequeña.
-
 ---
 
 ## 5. Interpolación de los días faltantes
@@ -504,7 +457,7 @@ La Figura 13 pone a prueba tres cosas: que la relación sea realmente lineal (A)
 
 Esta sección va después de explorar la serie (sección 4) porque lo aprendido allí orienta la elección del método:
 
-1. **El ciclo semanal domina la variación** (explica 62,8% según la FFT, 4.4). Un método que ignora el ciclo semanal va a fallar: una recta o una curva que une el último día antes del hueco con el primero después no sabe si ese día fue domingo o martes.
+1. **El ciclo semanal domina la variación** (explica 62,5% según la FFT, 4.4). Un método que ignora el ciclo semanal va a fallar: una recta o una curva que une el último día antes del hueco con el primero después no sabe si ese día fue domingo o martes.
 2. **La serie se puede separar en tendencia y patrón semanal** (STL, 4.3) y **una media móvil de 7 o 28 días anula el ciclo semanal** (4.5). Eso sugiere interpolar solo la tendencia y volver a poner el patrón semanal.
 3. **Enero es el valle anual** (4.1, 4.4): es el mes más bajo, con 2,4 M de usuarios en promedio contra 3,0 a 3,4 M en la mayoría de los otros meses. Esa información no está en los días vecinos del hueco; ningún método de interpolación pura puede conocerla.
 
@@ -541,13 +494,13 @@ Esta sección va después de explorar la serie (sección 4) porque lo aprendido 
 
 ![Todos los métodos de interpolación probados](../resultados/figuras/fig7b_interpolacion_variantes.png)
 
-*Figura 14. A la izquierda, el hueco real de enero de 2024 completado por cada método. A la derecha, la distribución del error (MAPE) al ocultar 89 bloques de 31 días reales; los métodos están ordenados de menor a mayor error mediano.*
+*Figura 12. A la izquierda, el hueco real de enero de 2024 completado por cada método. A la derecha, la distribución del error (MAPE) al ocultar 89 bloques de 31 días reales; los métodos están ordenados de menor a mayor error mediano.*
 
-**El mejor spline y el mejor método de cada familia.** Entre las variantes del spline, la de menor error es el **spline cúbico sobre la tendencia × perfil semanal (25,9%)**; es la que se muestra en la Figura 15. Reduce a un tercio el error del spline original (76,3%). Entre las rectas, la mejor es la lineal por día de la semana o la recta × perfil semanal (17,3%–17,4%), y el mejor método de todos es el PCHIP × perfil semanal (17,2%), aunque su diferencia con las rectas por día de la semana es muy pequeña (17,2% contra 17,4%) y no se evaluó su significancia. La elección del mejor spline se hizo sobre los mismos 89 bloques con los que se mide el error, lo que podría favorecerla levemente; como las diferencias entre variantes del spline son de varios puntos, no cambia la conclusión.
+**El mejor spline y el mejor método de cada familia.** Entre las variantes del spline, la de menor error es el **spline cúbico sobre la tendencia × perfil semanal (25,9%)**; es la que se muestra en la Figura 13. Reduce a un tercio el error del spline original (76,3%). Entre las rectas, la mejor es la lineal por día de la semana o la recta × perfil semanal (17,3%–17,4%), y el mejor método de todos es el PCHIP × perfil semanal (17,2%), aunque su diferencia con las rectas por día de la semana es muy pequeña (17,2% contra 17,4%) y no se evaluó su significancia. La elección del mejor spline se hizo sobre los mismos 89 bloques con los que se mide el error, lo que podría favorecerla levemente; como las diferencias entre variantes del spline son de varios puntos, no cambia la conclusión.
 
 ![Lineal, mejor spline y lineal por día de la semana](../resultados/figuras/fig7_interpolacion_huecos.png)
 
-*Figura 15. El hueco de enero de 2024 con la recta, el mejor spline y la lineal por día de la semana, y el error de los tres.*
+*Figura 13. El hueco de enero de 2024 con la recta, el mejor spline y la lineal por día de la semana, y el error de los tres.*
 
 **Por qué el spline cúbico original da tan mal.** Un spline cúbico fuerza que la curva sea suave y pase por los puntos de los bordes. Con una serie que sube y baja cada semana (días hábiles contra fin de semana), la pendiente con la que la curva sale de cada borde del hueco depende de si el último día conocido fue, por ejemplo, un domingo bajo o un martes alto. Esa pendiente arbitraria se arrastra por 31 días: en el gráfico, la curva llega a valores negativos de usuarios. Es una explicación consistente con lo medido (sesgo medio de +26%), no una demostración.
 
@@ -582,19 +535,70 @@ Para comprobarlo se comparó la reconstrucción con la mejor interpolación en m
 
 ![Reconstrucción desde transacciones frente a interpolación](../resultados/figuras/fig12_reconstruccion_huecos.png)
 
-*Figura 16. Izquierda y centro: los dos huecos (agosto de 2022 y enero de 2024) completados con la reconstrucción desde transacciones (verde) junto al dato observado (negro). Derecha: error (MAPE) al ocultar bloques de 31 días reales y estimarlos con la interpolación por día de la semana o con la reconstrucción.*
+*Figura 14. Izquierda y centro: los dos huecos (agosto de 2022 y enero de 2024) completados con la reconstrucción desde transacciones (verde) junto al dato observado (negro). Derecha: error (MAPE) al ocultar bloques de 31 días reales y estimarlos con la interpolación por día de la semana o con la reconstrucción.*
 
 **Octubre de 2026** es preliminar (sus transacciones son 100% preliminares) y queda fuera de las evaluaciones.
 
 ---
 
-## 6. P-1. Demanda ante los hitos: precio, calendario y causalidad
+## 6. Correlación cruzada (CCF) entre tren y colectivo
+
+**Por qué esta sección va acá.** Es la última herramienta de exploración de la serie y se ubica después de la interpolación porque usa la serie ya completada. Su conclusión (los modos se mueven juntos el mismo día, sin adelantos ni sustitución) es el puente hacia P-1 y P-2.
+
+*Base teórica: Convolución y correlación ("Correlación cruzada y autocorrelación", "La ccf encuentra el desplazamiento").*
+
+**Qué es.** La correlación entre dos series cuando una se desplaza en el tiempo. Según la clase, el resultado no es un único número sino **una serie de valores, uno por cada desplazamiento (rezago)**. Con rezago $k = 0$ se compara el tren y el colectivo del mismo día; con $k > 0$, el colectivo $k$ días *después* del tren; con $k < 0$, antes. Un valor de 1 indica que se mueven idénticos; 0, sin relación; −1, en sentido opuesto.
+
+**Qué pregunta responde.** Si un modo anticipa a otro o si, cuando uno falla, sus usuarios pasan al otro.
+
+**Por qué se usa sobre residuos y no sobre las series crudas.** Tren y colectivo comparten el ciclo semanal y los feriados, y sus series crudas correlacionan mucho solo por eso (correlación espuria: no dice cómo se relacionan los modos). Por eso primero se quita el efecto del día de la semana, los feriados y una tendencia lineal, y se analiza lo que queda. Una segunda versión usa las series con diferencia simple y estacional (4.2), otra forma de quitar lo común.
+
+![CCF tren-colectivo y ACF del total](../resultados/figuras/fig11_ccf_tren_colectivo_y_acf.png)
+
+*Figura 15. Izquierda y centro: CCF entre tren y colectivo con residuos sin calendario y con diferencia simple + estacional (barras: correlación para cada rezago; rojo: banda ingenua de ±1,96/√n). Derecha: ACF del total AMBA, con picos en los múltiplos de 7.*
+
+**Cómo se lee.** En el eje horizontal está el rezago k (días de desplazamiento) y en el vertical la correlación. La barra central (k = 0) compara el mismo día; las de k > 0, el colectivo posterior al tren.
+
+**Qué se esperaba.**
+
+| Si ocurriera… | Se vería… |
+|---|---|
+| **Sustitución** (se interrumpe el tren y esos usuarios toman el colectivo) | Correlación **negativa** en el rezago 0 o 1. |
+| **Causas comunes** (actividad económica, clima, paros generales) | Correlación **positiva** en el rezago 0. |
+| **Un modo anticipa al otro** | Un pico en un rezago distinto de cero y asimetría entre positivos y negativos. |
+
+**Qué se observó.** Un pico en el rezago 0 (**0,85** con residuos y **0,92** con diferencias), positivo y simétrico (rezago −1: 0,43; rezago +1: 0,41). Queda además un "piso" de 0,3 a 0,4 en todos los rezagos, que corresponde a movimientos lentos comunes que los residuos no eliminaron (por ejemplo la estacionalidad anual) y no a un efecto con retraso. En la versión con diferencias, los valores negativos de los rezagos ±1 (−0,33) y ±7 (−0,45) son un **artefacto del operador de diferencias** (4.2, sobrediferenciación) y no una relación inversa. Las bandas rojas del gráfico (±0,047) suponen observaciones independientes y, como los residuos están autocorrelacionados, casi cualquier valor las supera; por eso la lectura se hace por la forma, y el detalle de abajo usa la banda de Bartlett.
+
+#### Detalle: ¿es robusta esa correlación?
+
+La Figura 16 pone a prueba tres cosas: que la relación sea realmente lineal (A), que la banda de significancia sea la adecuada (B) y que sea estable en el tiempo (C y D).
+
+![Detalle de la CCF](../resultados/figuras/fig34_ccf_detalle.png)
+
+*Figura 16. A. Dispersión de los residuos del tren y del colectivo del mismo día. B. CCF de los residuos con la banda ingenua (±0,047) y la banda de Bartlett (±0,129). C. CCF por subperíodo. D. Correlación del mismo día en ventanas móviles de 90 días.*
+
+| periodo | dias | ccf_lag_0 | ccf_lag_-1 | ccf_lag_1 |
+|---|---|---|---|---|
+| 2022-2023 | 725 | 0,881 | 0,532 | 0,516 |
+| 2024 | 366 | 0,775 | 0,187 | 0,174 |
+| 2025-2026 | 638 | 0,874 | 0,414 | 0,397 |
+
+- **A. Dispersión.** Los residuos de ambos modos se alinean sobre una recta (r = 0,85): cuando el tren está por encima o por debajo de lo esperado, el colectivo también. Hay unos pocos puntos aislados (días con paros o eventos de un solo modo).
+- **B. Banda de significancia.** La banda de ±0,047 supone observaciones independientes. Como los residuos están autocorrelacionados, la **banda de Bartlett** (que incorpora esa autocorrelación; ±0,129) es más honesta. El pico en el rezago 0 (0,85) la supera por mucho; los valores de 0,3 a 0,4 en los demás rezagos **también superan la banda**, es decir, el "piso" no es ruido.
+- **C. Subperíodos.** El rezago 0 es alto en los tres (0,88 en 2022–2023, 0,78 en 2024, 0,87 en 2025–2026), pero el "piso" cambia mucho: 0,45 aproximadamente en 2022–2023, 0,1 en 2024 y 0,3 en 2025–2026. Eso respalda que el piso es un movimiento lento común (cambios de nivel dentro de cada período que los residuos no eliminaron) y no una relación con retraso: si fuera una relación estable, no desaparecería en 2024.
+- **D. Estabilidad.** La correlación del mismo día se mantiene entre 0,60 y 0,97 en ventanas de 90 días; baja hacia fines de 2022, a principios de 2024 y al final de la serie, períodos que incluyen cambios de nivel (por ejemplo, el verano de 2024); no se investigó la causa de cada baja.
+
+**Qué se concluye.** Gana la hipótesis de **causas comunes**: los modos se mueven juntos el mismo día. No hay evidencia de sustitución ni de que un modo anticipe al otro. Aporta tres cosas: (1) los modos comparten el motor de la demanda diaria; (2) lo que pasó ayer en el tren no ayuda a pronosticar el colectivo de hoy, lo que respalda pronosticar cada modo por separado (P-2); (3) es coherente con P-1: en los paros, el modo que no para no absorbe a los usuarios del que sí. **Límite:** es una correlación y no demuestra causalidad; los shocks comunes dominan y podrían tapar una sustitución pequeña.
+
+---
+
+## 7. P-1. Demanda ante los hitos: precio, calendario y causalidad
 
 **Qué se quiere responder.** Cómo se comportó la demanda alrededor de los hitos (aumentos de tarifa, feriados, paros, elecciones y pandemia) y si es posible decir *por qué*, es decir, atribuir el cambio a la causa.
 
-**Qué parte viene de la cátedra y qué se incorpora de afuera.** Las clases del curso cubren la exploración de la serie (sección 4), la interpolación (sección 5), el pronóstico lineal, STL, ARMA y ARIMA (sección 7). **No cubren** las técnicas de esta sección: elasticidad, estudio de eventos, control sintético, prueba de causalidad de Granger y errores estándar robustos. Se incorporan porque la pregunta ("¿por qué cayó la demanda?") exige comparar lo ocurrido con lo que habría ocurrido sin el hito, y eso no se obtiene con las herramientas de la serie sola. De la cátedra se usan la prueba de estacionariedad ADF/KPSS (4.2, previa a Granger) y la regresión lineal (Clase Forecasting, "Forecasting Lineal"). Cada técnica indica su fuente original.
+**Qué parte viene de la cátedra y qué se incorpora de afuera.** Las clases del curso cubren la exploración de la serie (sección 4), la interpolación (sección 5), el pronóstico lineal, STL, ARMA y ARIMA (sección 8). **No cubren** las técnicas de esta sección: elasticidad, estudio de eventos, control sintético, prueba de causalidad de Granger y errores estándar robustos. Se incorporan porque la pregunta ("¿por qué cayó la demanda?") exige comparar lo ocurrido con lo que habría ocurrido sin el hito, y eso no se obtiene con las herramientas de la serie sola. De la cátedra se usan la prueba de estacionariedad ADF/KPSS (4.2, previa a Granger) y la regresión lineal (Clase Forecasting, "Forecasting Lineal"). Cada técnica indica su fuente original.
 
-### 6.0 Cómo se entiende "causalidad" y términos de la sección
+### 7.0 Cómo se entiende "causalidad" y términos de la sección
 
 Dos ideas ordenan la sección:
 
@@ -612,7 +616,7 @@ Ningún diseño de este trabajo es un experimento: todos dependen de supuestos q
 - **Intervalo de confianza de 95%:** rango de valores de la elasticidad compatibles con los datos. Si **incluye el 0**, no se puede descartar que el efecto sea nulo.
 - **Medida de demanda en P-1:** la cantidad de **transacciones** (usos de la SUBE) por día, no la de tarjetas distintas (ver 3.2). "Cae la demanda" significa que se registran menos usos, lo que puede reflejar menos personas viajando, menos viajes por persona o viajes que pasan a pagarse con otros medios.
 
-### 6.1 Tarifas
+### 7.1 Tarifas
 
 **Qué es y por qué.** Para medir una elasticidad hace falta la serie de precios. Se armó la serie de la tarifa mínima por modo y jurisdicción con resoluciones oficiales (Boletín Oficial) y, donde no había norma a mano, inferida del dato (cada fila indica su fuente y su estado de verificación).
 
@@ -635,9 +639,9 @@ Ningún diseño de este trabajo es un experimento: todos dependen de supuestos q
 - **La inflación explica la mayor parte del aumento nominal.** El colectivo nacional pasó de $18 a $743 (×41 nominal), pero en pesos constantes de enero de 2022 pasó de $18 a $37 (×2,0). Entre 2022 y fines de 2023 la tarifa real **cayó** a $7,5 (enero de 2024) porque la tarifa nominal casi no se movió con una inflación muy alta; el salto de febrero de 2024 la llevó a $33,9, casi el doble de su valor de enero de 2022, y desde entonces la inflación la fue erosionando (unos $26 a mediados de 2024). El salto de 2024 fue en parte una recomposición de una tarifa real que se había derrumbado y en parte un aumento real. En el tren, de $4,7 a $16,3; en el subte, de $15,6 a $62 con el salto de mayo; en pesos constantes, el subte pasó de $30 a $86 (×2,9) y el tren de $12 a $22 (×1,8).
 - **El subte es el único modo cuyo peso en el salario sigue subiendo.** Cuarenta viajes mensuales en subte pasaron de 1,1% a 3,3% del RIPTE entre enero de 2022 y julio de 2026; en colectivo nacional, de 0,7% a 1,5%, y en tren, de 0,5% a 0,8%. El colectivo nacional y el tren alcanzaron su máximo relativo en 2024 y desde entonces el salario recuperó terreno; el subte, no.
 
-**Qué se concluye.** Las variaciones de la tarifa real son más pequeñas y graduales que las nominales, salvo en los tres saltos grandes de 2024. Por eso la elasticidad se estima con la tarifa real y, como robustez, con la tarifa en salarios (6.7).
+**Qué se concluye.** Las variaciones de la tarifa real son más pequeñas y graduales que las nominales, salvo en los tres saltos grandes de 2024. Por eso la elasticidad se estima con la tarifa real y, como robustez, con la tarifa en salarios (7.7).
 
-### 6.2 Elasticidad precio de la demanda
+### 7.2 Elasticidad precio de la demanda
 
 **Qué es y por qué.** Mide cuánto cambia la demanda cuando cambia el precio. Se estima con tres métodos, de menos a más exigentes en lo que controlan, porque ninguno es concluyente por sí solo. En todos la demanda es la cantidad de usos (transacciones) del modo, por semana, de días hábiles normales (sin feriados, paros ni elecciones) cuando corresponde. *Fuente de la técnica:* regresión lineal (Clase Forecasting, "Forecasting Lineal"); errores estándar robustos de Newey y West (1987).
 
@@ -652,7 +656,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 **Método C. Estudio de eventos con contrafactual estacional.** Para cada salto tarifario (agrupando los que están a menos de 45 días) se compara la demanda de días hábiles normales de las 6 semanas anteriores con la de las 6 semanas posteriores (dejando una semana de margen), y a ese cambio se le **resta el cambio de las mismas semanas del año anterior**. El año anterior es el contrafactual: lo que habría pasado por estacionalidad y tendencia sin el salto. La **elasticidad de arco** es el cociente entre ese cambio neto (en logaritmos) y el cambio del log de la tarifa.
 
-**Cómo leer las tablas.** `elasticidad` es el coeficiente estimado; `error_std_HAC` es su error estándar robusto a heterocedasticidad y autocorrelación (HAC, Newey-West con 8 rezagos), necesario porque las semanas consecutivas no son independientes (se usa la misma idea que en la prueba de Diebold-Mariano de 7.1); `ic95_inf` e `ic95_sup` delimitan el intervalo de confianza de 95%; `R2` es la proporción de la variación explicada por el modelo completo (con sus controles), no por el precio solo; `semanas` es el tamaño de muestra (el colectivo provincial tiene menos porque su tarifa se conoce desde febrero de 2024).
+**Cómo leer las tablas.** `elasticidad` es el coeficiente estimado; `error_std_HAC` es su error estándar robusto a heterocedasticidad y autocorrelación (HAC, Newey-West con 8 rezagos), necesario porque las semanas consecutivas no son independientes (se usa la misma idea que en la prueba de Diebold-Mariano de 8.1); `ic95_inf` e `ic95_sup` delimitan el intervalo de confianza de 95%; `R2` es la proporción de la variación explicada por el modelo completo (con sus controles), no por el precio solo; `semanas` es el tamaño de muestra (el colectivo provincial tiene menos porque su tarifa se conoce desde febrero de 2024).
 
 *A. Niveles semanales (tarifa real):*
 
@@ -680,7 +684,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 - **Subte:** negativa y estadísticamente distinta de cero en todas las versiones: de **−0,22** (interanual) a **−0,26** (niveles con tendencia) con tarifa real. Sin tendencia da −0,37, pero esa versión no controla la evolución del tiempo y se la considera una cota superior. Desde diciembre de 2024 la apertura del pago *contactless*/QR con promociones bancarias desplazó parte de los viajes fuera de SUBE justo cuando la tarifa real era alta; por eso se verificó la estimación interanual **restringiendo la muestra hasta noviembre de 2024** (90 semanas interanuales, 100% SUBE): la elasticidad real del subte se mantiene negativa y significativa en **−0,175** (IC 95%: [−0,216; −0,134], y **−0,178** controlando por salario real). La sensibilidad al precio del subte ya existía antes del cambio en los medios de pago, aunque en la muestra completa la estimación puntual sin control salarial (−0,224) captura en parte la migración de medio de pago.
 - **Colectivo nacional y tren:** con tendencia o en interanual, la elasticidad es cercana a cero (de −0,04 a −0,01) y su intervalo incluye el 0. Sin tendencia sale de −0,27 y −0,18, y desaparece al agregarla: el signo y el tamaño dependen de la especificación, y por eso se concluye que **no están identificadas**.
-- **Colectivo provincial:** −0,27 en interanual y −0,26 en niveles con tendencia, estadísticamente distinta de cero. La muestra es corta (86 semanas, cuatro saltos moderados) y, como se verá en 6.7, el resultado desaparece al controlar por el salario real.
+- **Colectivo provincial:** −0,27 en interanual y −0,26 en niveles con tendencia, estadísticamente distinta de cero. La muestra es corta (86 semanas, cuatro saltos moderados) y, como se verá en 7.7, el resultado desaparece al controlar por el salario real.
 
 **Método C: gráficos y tablas del estudio de eventos.** La primera figura muestra, para los modos y las ventanas alrededor de los saltos de 2024, la **razón entre las transacciones de días hábiles de 2024 y las del mismo día de 2023** (mediana móvil de 7 días hábiles). Un valor de 1,0 significa la misma demanda que un año antes; las líneas verticales marcan los saltos tarifarios. La segunda es el estudio de eventos propiamente dicho: cada punto es un salto; el eje horizontal es el aumento de la tarifa (cambio en log, neto de lo ocurrido un año antes: 0,3 equivale a +35%, 1,2 a ×3,3 y 1,4 a ×4,1) y el eje vertical es el cambio de la demanda en logaritmos, neto del año anterior (−0,2 equivale a −18%). Si el precio redujera la demanda, los puntos deberían bajar hacia la derecha.
 
@@ -726,7 +730,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 - **Segundo gráfico.** Los dos saltos grandes cuya demanda cae son el del **colectivo nacional de enero–febrero de 2024** (−0,14 en logaritmos, −13%) y el del **subte de mayo de 2024** (−0,22, −19%). El **tren**, ante un salto de tarifa también grande (×3,2), **no cae** (+0,01): ese contraste entre modos impide atribuir sin más la caída a la tarifa. Entre los saltos moderados, el subte baja entre 6% y 10% (los tres moderados), el tren de mayo de 2024 baja 15% y los demás están cerca de cero. El tren de mayo de 2024 queda a una semana del **paro general del 9 de mayo**, un efecto superpuesto que el método no separa. El colectivo nacional de febrero de 2026 **sube** 9%, lo contrario del signo esperado: ahí actuó otro factor.
 - **Con la banda placebo.** Para el colectivo nacional la banda es de −0,043 a +0,026; para el tren, de −0,052 a +0,050; para el subte, de −0,007 a +0,083. *Colectivo nacional:* enero–febrero de 2024 (−0,143) cae por debajo de la banda; agosto de 2024 (−0,013) queda dentro (no se distingue del ruido); febrero de 2026 (+0,086) queda por encima, con signo contrario al esperado. *Subte:* los cuatro saltos (−0,075, −0,063, −0,215 y −0,110) caen fuera de la banda y todos con el signo esperado: es la evidencia más consistente de la sección. *Tren:* solo el de mayo de 2024 (−0,159) cae fuera de la banda, y coincide con el paro general; los otros tres están dentro.
 
-### 6.3 Control sintético para los saltos tarifarios del colectivo nacional
+### 7.3 Control sintético para los saltos tarifarios del colectivo nacional
 
 **Qué es y por qué.** El estudio de eventos usa el año anterior como contrafactual, pero un salto grande puede coincidir con otros cambios (precios en general, ingreso, vacaciones). El **control sintético** (Abadie, Diamond y Hainmueller, 2010) construye un AMBA "sin salto" como combinación ponderada de **ciudades del interior** (también con SUBE, y cuyas tarifas no cambiaron con el aumento nacional del AMBA), de modo que esa combinación replique la demanda del AMBA en las 52 semanas previas al salto. La diferencia entre el AMBA real y el AMBA sintético después del salto es el efecto estimado. Los controles absorben los shocks nacionales comunes (inflación, ingreso, clima); no absorben lo propio del AMBA.
 
@@ -755,7 +759,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 **Qué se obtuvo y se concluye.** El control sintético da −2,8%, −2,5% y −1,5% para los tres saltos del colectivo nacional (enero–febrero de 2024, agosto de 2024 y febrero de 2026), con `p_placebos` de 0,43, 0,27 y 0,27: entre 27% y 43% de las ciudades sin tratamiento muestran una brecha igual o mayor por puro azar, de modo que **ningún efecto es distinguible del ruido**. **No confirma** el −13% del estudio de eventos para enero–febrero de 2024: es una discrepancia entre dos métodos. Las limitaciones son reales: los precios de las ciudades donantes no se pudieron verificar y varias son turísticas, con estacionalidad distinta; los tramos rectos del primer gráfico corresponden a semanas sin datos suficientes de días normales. Conclusión: el colectivo cae poco ante el precio y el −13% queda como cota superior poco confiable.
 
-### 6.4 Sustitución entre modos y causalidad de Granger
+### 7.4 Sustitución entre modos y causalidad de Granger
 
 **Qué se pregunta.** Si sube la tarifa de un modo, ¿se desplaza demanda a los otros? Si fuera así, el **coeficiente cruzado** (efecto de la tarifa de un modo sobre la demanda de otro) sería **positivo**: más caro el modo A, más demanda en el modo B. Se estima de dos maneras.
 
@@ -792,9 +796,9 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 - **Efecto cruzado interanual.** Las elasticidades propias son −0,26 en el subte (distinta de cero), −0,11 en el colectivo nacional (el intervalo incluye 0) y **+0,22 en el tren, con signo positivo**, lo que no tiene una interpretación económica razonable y es síntoma de colinealidad. Aparecen coeficientes cruzados distintos de cero (por ejemplo, la demanda del tren frente a la tarifa del colectivo, −0,21), pero con VIF de 4 a 7 y con signos que en varios casos serían de complementariedad (el modo B cae cuando sube el A), no de sustitución. Como las tres tarifas se movieron juntas, **los coeficientes cruzados no se pueden separar** y no se interpretan como efectos. No hay ningún coeficiente cruzado positivo y estable que sugiera sustitución.
 - **Granger.** Solo hay un par significativo luego de la corrección de Holm: la **tarifa propia del subte** frente a la **demanda del subte** (`rezago_AIC` = 4 semanas, `p_valor` = 0,002, `p_Holm` = 0,019). Se lee así: *conocer los cambios de la tarifa del subte de las últimas 4 semanas mejora la predicción del cambio de la demanda del subte de esta semana, más allá de lo que ya explica su propio pasado*. Es compatible con una respuesta de la demanda al precio con un retardo de alrededor de un mes. **No prueba causalidad**: indica precedencia predictiva y podría reflejar cualquier otro cambio que acompañe a los aumentos (anuncios, paquetes de medidas). Los pares tren–tren y tren–colectivo tienen `p_valor` de 0,018 y 0,026 pero no superan la corrección de Holm (0,14 y 0,18). En el sentido inverso no hay ningún par significativo: la tarifa no parece fijarse en respuesta a la demanda.
 
-**Qué se concluye.** No hay evidencia de que un aumento de la tarifa de un modo traslade demanda a otro. El apartado 6.6 muestra la misma ausencia de sustitución en los días de paro.
+**Qué se concluye.** No hay evidencia de que un aumento de la tarifa de un modo traslade demanda a otro. El apartado 7.6 muestra la misma ausencia de sustitución en los días de paro.
 
-### 6.5 ¿Reaccionan menos las líneas de zonas de mayor ingreso?
+### 7.5 ¿Reaccionan menos las líneas de zonas de mayor ingreso?
 
 **Hipótesis (fijada antes de correr el análisis).** Las líneas que atraviesan zonas de mayor ingreso (en particular la línea D) reaccionan menos a los saltos tarifarios del subte, porque sus usuarios serían menos sensibles al precio.
 
@@ -828,7 +832,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 **Qué se obtuvo y se concluye.** El índice ordena a las líneas así: D (1,24), B (0,96), A (0,94), H (0,93), C (0,90) y E (0,89); la D es la única claramente por encima del promedio. El coeficiente `delta` es **negativo en las ocho especificaciones**, y la hipótesis predecía el signo contrario. En tres la permutación lo marca como significativo (p = 0,015 en dos especificaciones con índice continuo y sin tendencia propia por línea, y p = 0,026 con cierre ampliado y tendencia), pero con el **signo opuesto al esperado** (las líneas de más ingreso reaccionan *más*, no menos); con la especificación base con tendencia propia por línea, `delta` es −0,05 con p = 0,54. El resultado cambia con la especificación, así que no es robusto. Además, con solo seis líneas, el p mínimo posible del contraste D contra el resto es 0,20: esa prueba **no tiene poder**. Se reporta como **sin respaldo** (la hipótesis no se confirma) y con **poder bajo** (no se la puede refutar con estos datos).
 
-### 6.6 Hitos de calendario: feriados, paros, elecciones y pandemia
+### 7.6 Hitos de calendario: feriados, paros, elecciones y pandemia
 
 **Qué es y por qué.** Son los episodios que más alteran un día cualquiera. Se mide cuánto cae (o sube) la demanda ese día respecto de lo habitual. Es un análisis **descriptivo** (no causal): compara el día con sus vecinos.
 
@@ -938,9 +942,9 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 El mínimo semanal fue de 12% (colectivo), 4% (tren) y 2% (subte) del nivel de enero–marzo de 2020; a fines de 2021 los modos habían vuelto a 97%, 75% y 65%.
 
-### 6.7 Robustez: ingreso real y síntesis de P-1
+### 7.7 Robustez: ingreso real y síntesis de P-1
 
-**Qué pasa con la elasticidad al controlar por el salario real.** En 6.2 el precio se mide en términos reales (deflactado por el IPC), pero el poder de compra de los salarios también se movió en el período y podría estar asociado tanto al precio como a la demanda. Se repiten los métodos A y B con dos variantes: (i) agregando como regresora el **salario real** (RIPTE deflactado por IPC) y (ii) midiendo la tarifa **en salarios** (tarifa / RIPTE), que mide cuánto representa el viaje del salario. El RIPTE es un salario formal, nacional y mensual: aproxima el ingreso de los trabajadores registrados, no el de todos los usuarios. En los meses sin dato se repite el último salario real.
+**Qué pasa con la elasticidad al controlar por el salario real.** En 7.2 el precio se mide en términos reales (deflactado por el IPC), pero el poder de compra de los salarios también se movió en el período y podría estar asociado tanto al precio como a la demanda. Se repiten los métodos A y B con dos variantes: (i) agregando como regresora el **salario real** (RIPTE deflactado por IPC) y (ii) midiendo la tarifa **en salarios** (tarifa / RIPTE), que mide cuánto representa el viaje del salario. El RIPTE es un salario formal, nacional y mensual: aproxima el ingreso de los trabajadores registrados, no el de todos los usuarios. En los meses sin dato se repite el último salario real.
 
 | modo | interanual: tarifa real | interanual: + salario real | interanual: tarifa en salarios | niveles c/tend.: tarifa real | niveles c/tend.: + salario real | niveles c/tend.: tarifa en salarios |
 |---|---|---|---|---|---|---|
@@ -971,13 +975,13 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 
 ---
 
-## 7. P-2. Qué método pronostica mejor y por qué
+## 8. P-2. Qué método pronostica mejor y por qué
 
 **Qué se quiere responder.** Qué método de pronóstico acierta más con la demanda diaria de usuarios, si esa ventaja es real o producto del azar, y por qué un método le gana a otro.
 
 **Qué parte viene de la cátedra y qué se incorpora de afuera.** La **Clase Forecasting** presenta tres métodos: *forecasting lineal* (regresión con tendencia y estacionalidad), *forecasting STL* (pronosticar con "naive" la serie sin estacionalidad y sumarle el patrón estacional) y los modelos **ARMA/ARIMA** (con identificación de órdenes por ACF y PACF y diagnóstico de residuos). De ahí provienen el **Naive** y el **SARIMAX** (un ARIMA con parte estacional y regresoras). **No se vieron en clase** y se incorporan como estado del arte: Prophet, Gradient Boosting, PatchTST y Chronos-2, la prueba de Diebold-Mariano, el MASE y los intervalos conformes. Se incluyen porque la pregunta de P-2 es comparar enfoques de familias distintas (estadística clásica, aprendizaje automático, redes neuronales y modelos fundacionales); cada uno indica su fuente.
 
-### 7.1 Diseño
+### 8.1 Diseño
 
 **Serie.** Usuarios distintos por día (total AMBA y por modo), de enero de 2022 a septiembre de 2026, con los 62 días faltantes completados por la reconstrucción de la sección 5.
 
@@ -991,7 +995,7 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 |---|---|---|---|
 | 1 | **Naive de 7 días** | Repite la última semana observada del entrenamiento. Es la referencia mínima: cualquier método útil debe superarla. | Clase Forecasting (método "naive") |
 | 2 | **Naive de 364 días** | Repite el mismo día de la semana del año anterior (52 semanas antes). | Variante del anterior |
-| 3 | **SARIMAX (2,0,1)x(0,1,1,7)** | Modelo autorregresivo y de medias móviles con parte estacional de período 7 y regresoras de calendario y armónicos anuales. Los órdenes se identifican en 7.2. | Clase Forecasting (ARIMA); Box y Jenkins |
+| 3 | **SARIMAX (2,0,1)x(0,1,1,7)** | Modelo autorregresivo y de medias móviles con parte estacional de período 7 y regresoras de calendario y armónicos anuales. Los órdenes se identifican en 8.2. | Clase Forecasting (ARIMA); Box y Jenkins |
 | 4 | **Prophet** | Descomposición aditiva en tendencia con quiebres, ciclo semanal y anual y feriados nacionales. | Taylor y Letham (2018) |
 | 5 | **Gradient Boosting recursivo** | Aprendizaje automático: muchos árboles de decisión pequeños, cada uno corrige el error de los anteriores. Aprende sobre una tabla de rezagos (1, 2, 7, 14, 21 y 28 días), media y desvío móvil de 7 días y calendario; pronostica paso a paso alimentándose de sus propias predicciones (por eso se llama recursivo). | Friedman (2001); implementación `HistGradientBoostingRegressor` |
 | 6 | **Chronos-2** | **Modelo fundacional** de series temporales: una red neuronal entrenada de antemano con enormes colecciones de series de muchos dominios, que pronostica sin ajustar sus pesos con los datos propios (*zero-shot*). Recibe las covariables de calendario conocidas. | Ansari et al. (2024) para Chronos; Chronos-2 (`amazon/chronos-2`) |
@@ -1007,7 +1011,7 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 
 **Prueba de significancia de Diebold-Mariano** (Diebold y Mariano, 1995). Un método puede tener menor error que otro por azar. La prueba contrasta la hipótesis nula de que **dos métodos tienen el mismo error esperado**: se calcula, para cada día, la diferencia entre el error absoluto de un método y el del otro, y se prueba si el promedio de esas diferencias es distinto de cero. Un p-valor menor a 0,05 indica que la diferencia es distinguible del azar; el signo dice cuál método es mejor. Como los errores de días consecutivos están correlacionados, el error estándar se corrige con el estimador HAC (Newey-West, 27 rezagos); sin esa corrección la prueba rechazaría de más. La prueba dice si la diferencia es real, no si es grande en la práctica (para eso están el MAE y el MASE).
 
-### 7.2 Orden del SARIMAX
+### 8.2 Orden del SARIMAX
 
 **Qué es y de dónde viene.** Identificar el orden de un ARIMA es elegir cuántos términos autorregresivos y de media móvil usa. Se hace con las herramientas de la **Clase Forecasting** ("Determinación de los órdenes p y q en base a la ACF y la PACF"), usando solo datos hasta junio de 2023 para no mirar el período de prueba: ADF y KPSS (diferencia estacional de 7 días, d = 0; ver 4.2), ACF y PACF, y una grilla de 36 órdenes por BIC exigiendo residuos sin autocorrelación (Ljung-Box).
 
@@ -1035,9 +1039,9 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 | (1,0,2)x(1,1,1,7) | 304,500 | 364,300 | 0,786 | 0,684 |
 | (2,0,1)x(1,1,1,7) | 304,900 | 364,700 | 0,809 | 0,750 |
 
-### 7.3 Resultados con el total AMBA (28 días)
+### 8.3 Resultados con el total AMBA (28 días)
 
-**Cómo se lee.** Cada fila es un método; las columnas son las métricas de 7.1 calculadas sobre los 1.161 días de prueba (sin paros ni elecciones). La segunda tabla da, para cada método, la diferencia de MAE contra el mejor (PatchTST; positiva = peor que él) y su p-valor de Diebold-Mariano.
+**Cómo se lee.** Cada fila es un método; las columnas son las métricas de 8.1 calculadas sobre los 1.161 días de prueba (sin paros ni elecciones). La segunda tabla da, para cada método, la diferencia de MAE contra el mejor (PatchTST; positiva = peor que él) y su p-valor de Diebold-Mariano.
 
 | modelo | dias | MAE | RMSE | MAPE_pct | sesgo | MASE |
 |---|---|---|---|---|---|---|
@@ -1074,9 +1078,9 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 - **PatchTST** (MAE 0,180 M, MAPE 7,17%, MASE 0,547) y **Gradient Boosting** (MAE 0,187 M, MAPE 7,43%, MASE 0,568) lideran con un **empate estadístico en el primer puesto** (Diebold-Mariano: diferencia de 0,006 M, p = 0,392), superando de forma significativa (p < 0,01) a todos los demás.
 - **Chronos-2** se ubica tercero (MAE 0,199 M, MAPE 9,25%, MASE 0,605): **sin entrenar un solo parámetro sobre la serie de SUBE**, supera con claridad y significancia estadística tanto a **Prophet** (MAE 0,254 M, MASE 0,769) como a **SARIMAX** (MAE 0,270 M, MASE 0,819).
 
-**Qué se concluye.** No hay un ganador único entre PatchTST y Gradient Boosting; ambos le ganan a los demás. Cuánta confianza merece la ventaja *numérica* de PatchTST se discute en 7.7 (sensibilidad).
+**Qué se concluye.** No hay un ganador único entre PatchTST y Gradient Boosting; ambos le ganan a los demás. Cuánta confianza merece la ventaja *numérica* de PatchTST se discute en 8.7 (sensibilidad).
 
-### 7.4 Por qué: dónde está el error
+### 8.4 Por qué: dónde está el error
 
 **Qué se hace.** Para entender *por qué* un método gana se descompone el error por tipo de día y se comparan **variantes (ablaciones)** que cambian una sola cosa por vez.
 
@@ -1107,7 +1111,7 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 
 **Qué se concluye.** En sábados y domingos el Naive de 7 días es competitivo (el patrón de fin de semana es estable); las ganancias de los modelos vienen de los **días hábiles y los feriados**. Esto coincide con lo visto en la exploración: el ciclo semanal explica casi dos tercios de la variación (4.4) y los feriados son el valor extremo dominante (4.3).
 
-### 7.5 Por modo: ¿gana el mismo método?
+### 8.5 Por modo: ¿gana el mismo método?
 
 **Qué se hace.** Se repite la evaluación para cada modo por separado (colectivo, tren, subte). Se usa el MASE porque permite comparar entre series de escalas muy distintas.
 
@@ -1157,9 +1161,9 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 - **Colectivo** (la gran mayoría de los usuarios): **PatchTST** (MASE 0,558, MAPE 7,3%) y **Gradient Boosting** (MASE 0,588, MAPE 7,6%) empatan estadísticamente en el primer lugar (p = 0,219), seguidos de cerca por **Chronos-2** (MASE 0,619).
 - **Tren:** **PatchTST gana en solitario** (MASE **0,478**, MAPE 8,6%, p < 0,0001 contra todos los demás), seguido por **Chronos-2** (MASE 0,576), mientras que entre los modelos clásicos **Gradient Boosting** (0,617) y **SARIMAX** (0,624) empatan.
 - **Subte:** **PatchTST** (MASE **0,566**, MAPE 9,7%) y **Chronos-2** (MASE **0,571**, MAPE 11,8%) **empatan en el primer puesto** (p = 0,983), superando por amplio margen a **Gradient Boosting** (0,713) y **SARIMAX** (0,749). Una explicación posible, **no probada** (no se evaluó una variante sin RevIN), es que el subte sufrió cambios marcados de nivel (en 2024 por tarifas y desde 2025 por el sistema multipago) y que la normalización por ventana de PatchTST y el escalado por contexto de Chronos-2 se ajustan al nivel local reciente, mientras que los árboles y los modelos aditivos arrastran el nivel histórico.
-- Entre los métodos clásicos se observa una complementariedad en tren y subte: los modelos aditivos ganan en días hábiles y el Gradient Boosting en feriados y fines de semana, lo que motiva evaluar el híbrido de 7.6.
+- Entre los métodos clásicos se observa una complementariedad en tren y subte: los modelos aditivos ganan en días hábiles y el Gradient Boosting en feriados y fines de semana, lo que motiva evaluar el híbrido de 8.6.
 
-### 7.6 Híbrido por tipo de día
+### 8.6 Híbrido por tipo de día
 
 **Qué es y por qué.** Si cada método rinde mejor en un tipo de día distinto, un modelo que use cada método donde rinde mejor podría superar a todos. Se probaron tres versiones, todas con los pronósticos ya calculados:
 
@@ -1184,7 +1188,7 @@ El ingreso se pudo incorporar con datos públicos (el RIPTE se descarga de datos
 
 **Qué se concluye.** No hay un método único; el mejor depende de la serie y del tipo de día. *Límite:* la idea del híbrido surgió de mirar los mismos resultados y se hicieron 24 comparaciones; es un hallazgo a confirmar en otro período.
 
-### 7.7 Robustez: huecos, horizonte, días de hito en el entrenamiento y sensibilidad de PatchTST
+### 8.7 Robustez: huecos, horizonte, días de hito en el entrenamiento y sensibilidad de PatchTST
 
 **a) Tratamiento de los días sin dato.** Se reentrenaron SARIMAX, Prophet, Gradient Boosting, Chronos-2 y PatchTST con los 62 días completados de tres maneras: con la reconstrucción desde transacciones (serie principal), con interpolación por día de la semana y dejándolos vacíos. Todas se evalúan contra la serie reconstruida, excluyendo esos 62 días de las métricas.
 
@@ -1250,9 +1254,9 @@ Los **feriados no se quitan**: son predecibles y los modelos los aprenden con el
 
 - **PatchTST, Gradient Boosting y Prophet casi no cambian** entre entrenar con la serie original o con los días imputados (MASE de PatchTST: 0,545 y 0,546; Gradient Boosting: 0,568 y 0,568; Prophet: 0,771 y 0,766). Dejar los días vacíos deteriora levemente a PatchTST (0,545 → 0,562, p = 0,028) porque las ventanas de parches que cruzan un paro reciben una interpolación interna simple.
 - **Chronos-2 y SARIMAX mejoran al imputar:** el MASE de **Chronos-2** baja de 0,602 a **0,589** (p = 0,0013) y el de **SARIMAX** de 0,819 a **0,785** (p = 0,0004, un 4% menos de MAE), porque los shocks extremos dejan de contaminar el escalado en contexto y el término de media móvil estacional.
-- **En los propios días de paro y elección nadie mejora** (MASE de 4,9 a 5,2 en todos los métodos): quitar los hitos del entrenamiento no ayuda a anticiparlos, porque no hay en el calendario nada que los anuncie. Para eso sirve el escenario de 7.9.
+- **En los propios días de paro y elección nadie mejora** (MASE de 4,9 a 5,2 en todos los métodos): quitar los hitos del entrenamiento no ayuda a anticiparlos, porque no hay en el calendario nada que los anuncie. Para eso sirve el escenario de 8.9.
 
-**d) Sensibilidad de PatchTST a la semilla y a los hiperparámetros.** *Por qué se hace.* PatchTST es una red neuronal: su resultado depende de la **semilla aleatoria** (el valor que fija la inicialización de los pesos) y de **hiperparámetros** (épocas de entrenamiento, tasa de aprendizaje, tamaño de la red) cuya elección en la corrida original no está documentada. Si su ventaja sobre el Gradient Boosting fuera un accidente de esa elección, la conclusión de 7.3 sería frágil. *Qué se hizo.* Se repitió la evaluación completa (mismos 42 cortes, total AMBA) con otras cinco semillas y con 12 variantes de un hiperparámetro por vez alrededor de la configuración original (150 épocas, tasa de aprendizaje 4e-3, `d_model` 32, 2 capas, 8 parches). No se eligió la "mejor" configuración: el objetivo es medir la dispersión, no volver a ajustar. *Cómo se lee.* `dif_MAE_vs_GB` es la diferencia de MAE contra el Gradient Boosting (negativa = PatchTST mejor) y `p_DM_vs_GB` el p-valor de Diebold-Mariano de esa diferencia.
+**d) Sensibilidad de PatchTST a la semilla y a los hiperparámetros.** *Por qué se hace.* PatchTST es una red neuronal: su resultado depende de la **semilla aleatoria** (el valor que fija la inicialización de los pesos) y de **hiperparámetros** (épocas de entrenamiento, tasa de aprendizaje, tamaño de la red) cuya elección en la corrida original no está documentada. Si su ventaja sobre el Gradient Boosting fuera un accidente de esa elección, la conclusión de 8.3 sería frágil. *Qué se hizo.* Se repitió la evaluación completa (mismos 42 cortes, total AMBA) con otras cinco semillas y con 12 variantes de un hiperparámetro por vez alrededor de la configuración original (150 épocas, tasa de aprendizaje 4e-3, `d_model` 32, 2 capas, 8 parches). No se eligió la "mejor" configuración: el objetivo es medir la dispersión, no volver a ajustar. *Cómo se lee.* `dif_MAE_vs_GB` es la diferencia de MAE contra el Gradient Boosting (negativa = PatchTST mejor) y `p_DM_vs_GB` el p-valor de Diebold-Mariano de esa diferencia.
 
 | config | MAE | MASE | dif_MAE_vs_GB | p_DM_vs_GB |
 |---|---|---|---|---|
@@ -1283,7 +1287,7 @@ Los **feriados no se quitan**: son predecibles y los modelos los aprenden con el
 
 **Qué se concluye.** La ventaja de PatchTST sobre el Gradient Boosting **no es robusta**: es pequeña (alrededor de 0,006 M de MAE), nunca significativa y depende de que el entrenamiento sea suficiente. La conclusión que se sostiene es que **PatchTST y Gradient Boosting empatan** en el primer puesto y que ambos superan al resto.
 
-### 7.8 Intervalos de predicción
+### 8.8 Intervalos de predicción
 
 **Para qué sirve.** Un pronóstico puntual ("mañana habrá 3,4 millones de usuarios") no dice cuán seguro es. Un **intervalo de predicción** acompaña ese valor con un rango dentro del cual se espera que caiga el valor real con una probabilidad dada: el de **80%** debería contener el valor real 8 de cada 10 días y el de **95%**, 19 de cada 20. Para planificar el servicio importa el rango, no solo el punto.
 
@@ -1303,7 +1307,7 @@ Los **feriados no se quitan**: son predecibles y los modelos los aprenden con el
 
 **Qué se obtuvo.** Los siete métodos están bien calibrados: la cobertura observada va de 79% a 85% para el intervalo nominal de 80% y de 94% a 95% para el de 95%. Lo que distingue a los métodos de punta es el **ancho necesario para garantizar esa cobertura**: en el de **80%**, **Chronos-2** (± 0,302 M) y **PatchTST** (± 0,304 M) logran los intervalos más estrechos, seguidos de **Gradient Boosting** (± 0,314 M), menos de la mitad del ancho del Naive de 7 días (± 0,720 M). En el de **95%**, **Gradient Boosting** (± 0,568 M) y **PatchTST** (± 0,622 M) son los más precisos (alrededor de 16%–18% de un día hábil), frente a ± 0,818 M de Chronos-2 (su cola del 95% refleja los mayores errores en feriados), ± 0,830 M de SARIMAX y ± 2,332 M del Naive de 7 días.
 
-### 7.9 Pronóstico de los hitos de P-1: feriados, paros, elecciones y saltos tarifarios
+### 8.9 Pronóstico de los hitos de P-1: feriados, paros, elecciones y saltos tarifarios
 
 **Qué se hace y por qué.** Las comparaciones anteriores excluyen los paros y las elecciones. Pero para planificar importa lo contrario: **qué pasa con la demanda si hay un paro, una elección o un aumento de tarifa**, y qué método se equivoca menos. Acá se evalúan los mismos pronósticos (origen móvil, 28 días) en los días de los hitos de P-1, sin darles información adicional: los modelos conocen solo el pasado y el calendario de feriados. Se miden tres cosas:
 
@@ -1406,36 +1410,36 @@ Conocer el evento y su efecto típico importa **mucho más que el método**. En 
 
 ---
 
-## 8. Discusión y conclusiones
+## 9. Discusión y conclusiones
 
 **Qué medimos.** En P-1 la demanda son las **transacciones** (usos de la SUBE) y en P-2 las **tarjetas distintas por día**. Ninguna cuenta personas ni viajes completos: "baja la demanda" significa que se registran menos usos o menos tarjetas (3.2).
 
-### 8.1 Respuestas a P-1 y P-2
+### 9.1 Respuestas a P-1 y P-2
 
 **P-1 (cómo se comportó la demanda ante los hitos y por qué).** El precio importa para el **subte** (elasticidad de −0,15 a −0,26 según se controle o no por el salario real; como referencia, la literatura internacional reporta valores de corto plazo del orden de −0,3) y casi nada para el **colectivo nacional** y el **tren** en los saltos tarifarios observados. Los efectos más claros y estables son los de **calendario**: un feriado laborable, un paro propio o una elección con gratuidad reducen la demanda a una fracción de un día normal, mucho más que cualquier salto de tarifa. No hay evidencia de sustitución entre modos ni de que las líneas de mayor ingreso reaccionen menos (aunque esta última prueba tiene poco poder). Los resultados del precio **no son un efecto causal demostrado**: los diseños usados (control del año anterior, control sintético, control por salario real) absorben lo común pero dependen de supuestos, y Granger es solo evidencia predictiva. En los paros, el modo que para cae a casi cero y los otros **no absorben esa demanda**: el subte no sube cuando para el colectivo y el tren cae (complementariedad).
 
 **P-2 (qué método pronostica mejor y por qué).** Con una evaluación de origen móvil (42 cortes de 28 días) y siete métodos, que incluyen un *Transformer* especializado (PatchTST) y un modelo fundacional (Chronos-2), surgen cuatro hallazgos:
 
 1. **En el total AMBA y el colectivo**, **PatchTST** (MASE 0,547, MAPE 7,17%) y **Gradient Boosting** (MASE 0,568, MAPE 7,43%) lideran en empate estadístico (p = 0,392), seguidos por **Chronos-2** (MASE 0,605).
-2. **La ventaja numérica de PatchTST no es robusta** (7.7 d): con otras seis semillas y 12 variantes de hiperparámetros, ninguna diferencia con el Gradient Boosting es significativa, y con entrenamiento insuficiente PatchTST es significativamente peor. La conclusión que se sostiene es el empate.
-3. **En el tren y el subte**, donde existen cambios marcados de nivel, **PatchTST gana con claridad en tren** (MASE 0,478, p < 0,0001) y **empata en la punta con Chronos-2 en subte** (0,566 y 0,571). Una explicación posible, aún no probada, es la normalización local por ventana (RevIN / escalado por contexto). Esta lectura por modo se hizo con una configuración y una semilla; la sensibilidad de 7.7 se midió solo en el total AMBA.
+2. **La ventaja numérica de PatchTST no es robusta** (8.7 d): con otras seis semillas y 12 variantes de hiperparámetros, ninguna diferencia con el Gradient Boosting es significativa, y con entrenamiento insuficiente PatchTST es significativamente peor. La conclusión que se sostiene es el empate.
+3. **En el tren y el subte**, donde existen cambios marcados de nivel, **PatchTST gana con claridad en tren** (MASE 0,478, p < 0,0001) y **empata en la punta con Chronos-2 en subte** (0,566 y 0,571). Una explicación posible, aún no probada, es la normalización local por ventana (RevIN / escalado por contexto). Esta lectura por modo se hizo con una configuración y una semilla; la sensibilidad de 8.7 se midió solo en el total AMBA.
 4. **El modelo fundacional (Chronos-2) supera sin entrenamiento local a SARIMAX y Prophet** (MASE 0,605 contra 0,819 y 0,769) y logra el menor error en días hábiles ordinarios (0,177 M), mientras que los modelos entrenados localmente (PatchTST y Gradient Boosting) sacan su ventaja en los **feriados nacionales** (0,280 M y 0,284 M). Para los paros y las elecciones con gratuidad, ningún método los anticipa por sí solo, pero aplicar el cociente típico medido en P-1 reduce el error entre **81% y 94%** en cualquiera de los siete modelos.
 
-### 8.2 Cómo se complementan P-1 y P-2
+### 9.2 Cómo se complementan P-1 y P-2
 
 **Un mismo dato, dos enfoques.** Para *predecir* conviene el método más flexible, aunque sea una caja negra; para *atribuir* un efecto hace falta un diseño con contrafactual y supuestos explícitos. El Gradient Boosting pronostica bien pero no dice cuánto se debe al precio; las herramientas de P-1 sí intentan aislar ese efecto, con menos precisión. Las dos preguntas se alimentan entre sí.
 
 **Lo que P-1 le aportó a P-2.**
 
-1. *Qué días son especiales y de qué tamaño.* P-1 midió que un feriado laborable deja la demanda en cerca de 0,3 de un día normal, un paro del propio modo en 0 a 0,2 y una elección con gratuidad cerca de 0. Eso explica por qué los feriados concentran el error de los modelos (7.4) y por qué ningún modelo anticipa un paro. Y permite un pronóstico condicional: si se conoce el evento y se aplica el cociente medido en P-1, el error baja entre 81% y 94% con cualquier modelo (7.9).
-2. *Cómo tratar los días atípicos al entrenar.* Como P-1 los aisló, P-2 pudo probar entrenar sin ellos o con valores imputados (7.7 c): ayuda al SARIMAX y a Chronos-2 y no cambia al Gradient Boosting ni a Prophet.
-3. *Si hace falta incluir el precio.* P-1 encontró que el precio mueve al subte y casi nada al colectivo y al tren, así que para estos dos no se justifica modelar el precio. Para el subte, el pronóstico sin precio sobrestima la demanda tras el salto de mayo de 2024; incorporar la elasticidad de P-1 mejora los saltos moderados y empeora los grandes porque sobrecorrige (7.9).
-4. *Si conviene pronosticar cada modo por separado.* P-1 (sin sustitución en paros ni en saltos tarifarios) y la CCF (4.7: los modos se mueven juntos el mismo día, sin adelantos) indican que cada modo se puede pronosticar por su cuenta y que un paro en uno no obliga a subir el pronóstico de los otros.
+1. *Qué días son especiales y de qué tamaño.* P-1 midió que un feriado laborable deja la demanda en cerca de 0,3 de un día normal, un paro del propio modo en 0 a 0,2 y una elección con gratuidad cerca de 0. Eso explica por qué los feriados concentran el error de los modelos (8.4) y por qué ningún modelo anticipa un paro. Y permite un pronóstico condicional: si se conoce el evento y se aplica el cociente medido en P-1, el error baja entre 81% y 94% con cualquier modelo (8.9).
+2. *Cómo tratar los días atípicos al entrenar.* Como P-1 los aisló, P-2 pudo probar entrenar sin ellos o con valores imputados (8.7 c): ayuda al SARIMAX y a Chronos-2 y no cambia al Gradient Boosting ni a Prophet.
+3. *Si hace falta incluir el precio.* P-1 encontró que el precio mueve al subte y casi nada al colectivo y al tren, así que para estos dos no se justifica modelar el precio. Para el subte, el pronóstico sin precio sobrestima la demanda tras el salto de mayo de 2024; incorporar la elasticidad de P-1 mejora los saltos moderados y empeora los grandes porque sobrecorrige (8.9).
+4. *Si conviene pronosticar cada modo por separado.* P-1 (sin sustitución en paros ni en saltos tarifarios) y la CCF (sección 6: los modos se mueven juntos el mismo día, sin adelantos) indican que cada modo se puede pronosticar por su cuenta y que un paro en uno no obliga a subir el pronóstico de los otros.
 5. *Qué estructura debe tener el modelo.* La exploración de la sección 4 (FFT, ACF, STL) mostró el ciclo semanal, el anual y el peso de los feriados; los modelos de P-2 los incluyen (día de la semana, términos anuales, feriados).
 
-**Lo que P-2 le aportó a P-1.** Un modelo que pronostica bien es también un contrafactual: lo que habría pasado sin el hito. Los pronósticos hechos el día anterior a cada salto tarifario (7.9) son una lectura de ese tipo, y la sobrestimación en el subte de mayo de 2024 va en la misma dirección que la caída medida en P-1. Es una ilustración con pocos eventos, no un diseño causal.
+**Lo que P-2 le aportó a P-1.** Un modelo que pronostica bien es también un contrafactual: lo que habría pasado sin el hito. Los pronósticos hechos el día anterior a cada salto tarifario (8.9) son una lectura de ese tipo, y la sobrestimación en el subte de mayo de 2024 va en la misma dirección que la caída medida en P-1. Es una ilustración con pocos eventos, no un diseño causal.
 
-### 8.3 Qué método conviene según el tipo de día
+### 9.3 Qué método conviene según el tipo de día
 
 Total AMBA, error absoluto medio en millones de usuarios (`tabla_p2_metricas_por_tipo_dia.csv` y `tabla_p2_hitos_errores.csv`):
 
@@ -1448,37 +1452,37 @@ Total AMBA, error absoluto medio en millones de usuarios (`tabla_p2_metricas_por
 | Paro (9) | Ninguno | 2,06 a 2,18 con los siete métodos |
 | Elección con gratuidad (3) | Ninguno | 1,26 a 1,51 con los siete métodos |
 
-Hay tres lecturas. (1) **No hay un método para todo:** en los días ordinarios (la mayoría) los tres métodos más nuevos están cerca (0,177 a 0,198, unos 20.000 usuarios de error medio de diferencia); las diferencias grandes aparecen en los feriados, donde Chronos-2 falla (0,786 contra 0,284). (2) **Lo anticipable y lo no anticipable:** el calendario se anticipa (feriados) y los paros y las elecciones gratuitas no, con ningún método; para esos días la información que sirve es conocer el evento y su cociente típico (P-1). (3) **Una consecuencia práctica, a explorar:** usar cada método según el tipo de día, como el híbrido de 7.6, que mejoró a tren y subte; con los métodos nuevos no se probó. Estas comparaciones por tipo de día son descriptivas (no se probó significancia por tipo de día).
+Hay tres lecturas. (1) **No hay un método para todo:** en los días ordinarios (la mayoría) los tres métodos más nuevos están cerca (0,177 a 0,198, unos 20.000 usuarios de error medio de diferencia); las diferencias grandes aparecen en los feriados, donde Chronos-2 falla (0,786 contra 0,284). (2) **Lo anticipable y lo no anticipable:** el calendario se anticipa (feriados) y los paros y las elecciones gratuitas no, con ningún método; para esos días la información que sirve es conocer el evento y su cociente típico (P-1). (3) **Una consecuencia práctica, a explorar:** usar cada método según el tipo de día, como el híbrido de 8.6, que mejoró a tren y subte; con los métodos nuevos no se probó. Estas comparaciones por tipo de día son descriptivas (no se probó significancia por tipo de día).
 
 **Un supuesto a tener presente.** Los cocientes de P-1 se miden con transacciones y se aplican a pronósticos de usuarios; se supone que ambas medidas reaccionan igual a un evento, lo cual no se verificó.
 
-### 8.4 Limitaciones
+### 9.4 Limitaciones
 
-- Los modelos clásicos (SARIMAX, Prophet, Gradient Boosting) usan configuración estándar. Los hiperparámetros de PatchTST son fijos (150 épocas, tasa de aprendizaje 4e-3) y su origen no está documentado; la sensibilidad medida en 7.7 d muestra que la ventaja sobre el Gradient Boosting no es significativa, y la lectura por modo (7.5) no se repitió con otras semillas.
+- Los modelos clásicos (SARIMAX, Prophet, Gradient Boosting) usan configuración estándar. Los hiperparámetros de PatchTST son fijos (150 épocas, tasa de aprendizaje 4e-3) y su origen no está documentado; la sensibilidad medida en 8.7 d muestra que la ventaja sobre el Gradient Boosting no es significativa, y la lectura por modo (8.5) no se repitió con otras semillas.
 - Los paros y las elecciones no se pronostican y se excluyen de las métricas; en esos días el error es mucho mayor.
 - La demanda del subte registrada en SUBE desde 2025 es de 18% a 30% menor que la que informa el CEPA/Metrovías, producto de la incorporación de medios de pago *contactless*/NFC/QR desde diciembre de 2024 que no pasan por SUBE. Aun recortando la muestra hasta noviembre de 2024 (pre-multipago), la elasticidad real del subte sigue siendo negativa y significativa (−0,18), aunque la estimación 2022–2026 sin control salarial (−0,22) está parcialmente amplificada por esa sustitución de medio de pago: al incluir indicadores en las fechas de apertura (2-dic-2024 en el subte y 22-may-2025 con QR), la elasticidad de la muestra completa queda entre −0,14 y −0,18. Las fechas son de prensa y el indicador supone una adopción inmediata, cuando fue gradual.
 - Los modelos de P-2 no incluyen ningún indicador del cambio de medio de pago: el nivel de usuarios y de transacciones registrados en SUBE (sobre todo en el subte desde diciembre de 2024) cambió por un motivo ajeno a la demanda real. Con pocos meses de datos posteriores, el modelo no podría estimar cuánto pesa.
 - Las tarifas de varias jurisdicciones son parcialmente inferidas (cada fila indica su fuente).
-- Octubre de 2026 es preliminar y no se evalúa en P-2 (la exploración de la sección 4 llega hasta el 29 de octubre).
+- Octubre de 2026 es preliminar y queda fuera de toda la evaluación: la exploración (sección 4 y siguientes) y P-2 llegan hasta el 30 de septiembre.
 - Chronos-2 se publicó en octubre de 2025 y los cortes de evaluación empiezan en junio de 2023: no se puede descartar que su preentrenamiento haya incluido datos de esas fechas, por lo que el carácter *zero-shot* solo es seguro en los cortes de 2026.
 - El híbrido es un hallazgo exploratorio a confirmar en otro período.
 - Los resultados sobre hitos de P-2 (paros, elecciones y saltos tarifarios) se basan en pocos eventos por grupo.
 - El RIPTE es un salario formal, nacional y mensual; no representa el ingreso de todos los usuarios.
-- La elección de los métodos de interpolación (sección 5) se hizo sobre los mismos bloques con que se mide su error, y la comparación de los modelos con los huecos (sección 9) se basa en solo dos meses.
+- La elección de los métodos de interpolación (sección 5) se hizo sobre los mismos bloques con que se mide su error, y la comparación de los modelos con los huecos (sección 10) se basa en solo dos meses.
 
-### 8.5 Trabajo futuro
+### 9.5 Trabajo futuro
 
 Probar los hitos como variables indicadoras (paro, elección) en lugar de quitarlos o imputarlos, y combinar la imputación con el híbrido; probar el híbrido con datos nuevos; ajustar hiperparámetros del Gradient Boosting y del SARIMAX y repetir la sensibilidad de PatchTST por modo; explorar el ajuste fino (*fine-tuning*) de modelos fundacionales sobre feriados locales y arquitecturas multivariadas como iTransformer; usar el mejor pronosticador como contrafactual de los hitos.
 
 ---
 
-## 9. Extensión: los modelos de pronóstico frente a los dos meses sin dato
+## 10. Extensión: los modelos de pronóstico frente a los dos meses sin dato
 
-**Qué se pregunta.** La sección 5 completó los 62 días faltantes de la serie de usuarios (agosto de 2022 y enero de 2024) con la reconstrucción desde las transacciones y evaluó métodos de interpolación. La sección 7 comparó siete modelos de pronóstico. Queda una pregunta que combina las dos: **si esos dos meses se pronosticaran con cada modelo, usando solo lo anterior a cada mes, ¿cuánto se acercarían a la reconstrucción y cómo quedarían frente a la mejor interpolación?** Responde, en la práctica, cuándo conviene usar un modelo de pronóstico en lugar de una interpolación para rellenar un hueco.
+**Qué se pregunta.** La sección 5 completó los 62 días faltantes de la serie de usuarios (agosto de 2022 y enero de 2024) con la reconstrucción desde las transacciones y evaluó métodos de interpolación. La sección 8 comparó siete modelos de pronóstico. Queda una pregunta que combina las dos: **si esos dos meses se pronosticaran con cada modelo, usando solo lo anterior a cada mes, ¿cuánto se acercarían a la reconstrucción y cómo quedarían frente a la mejor interpolación?** Responde, en la práctica, cuándo conviene usar un modelo de pronóstico en lugar de una interpolación para rellenar un hueco.
 
-**Diseño.** Para cada mes se pronostican 31 días con origen el último día anterior al hueco, con los siete modelos de P-2 y la misma configuración que en 7.1 (la de PatchTST, con la semilla 42). El entrenamiento de agosto de 2022 es de enero a julio de 2022 (212 días); el de enero de 2024 es de enero de 2022 a diciembre de 2023, con agosto de 2022 reconstruido. Como referencia se usa la **reconstrucción desde transacciones**. No es el dato real, que no existe, sino otra estimación con un error de 1,6% a 3,2% en meses de vacaciones (sección 5); por eso las cifras que siguen miden *distancia a la reconstrucción*, no error verdadero. Se agregan tres interpolaciones de la sección 5. Un detalle importante: las **interpolaciones usan los datos de ambos lados del hueco** (también los posteriores), mientras que los modelos solo ven lo anterior; la comparación favorece a la interpolación. El Naive de 364 días no se puede calcular para agosto de 2022 porque la serie empieza en enero de 2022.
+**Diseño.** Para cada mes se pronostican 31 días con origen el último día anterior al hueco, con los siete modelos de P-2 y la misma configuración que en 8.1 (la de PatchTST, con la semilla 42). El entrenamiento de agosto de 2022 es de enero a julio de 2022 (212 días); el de enero de 2024 es de enero de 2022 a diciembre de 2023, con agosto de 2022 reconstruido. Como referencia se usa la **reconstrucción desde transacciones**. No es el dato real, que no existe, sino otra estimación con un error de 1,6% a 3,2% en meses de vacaciones (sección 5); por eso las cifras que siguen miden *distancia a la reconstrucción*, no error verdadero. Se agregan tres interpolaciones de la sección 5. Un detalle importante: las **interpolaciones usan los datos de ambos lados del hueco** (también los posteriores), mientras que los modelos solo ven lo anterior; la comparación favorece a la interpolación. El Naive de 364 días no se puede calcular para agosto de 2022 porque la serie empieza en enero de 2022.
 
-**Cómo se lee.** La figura de arriba muestra, para cada mes, la reconstrucción (línea negra gruesa), el pronóstico de cada modelo y la mejor interpolación (línea negra punteada). Abajo, las barras ordenan los métodos por **MAPE** (error porcentual absoluto medio contra la reconstrucción, ver 7.1): menor es mejor.
+**Cómo se lee.** La figura de arriba muestra, para cada mes, la reconstrucción (línea negra gruesa), el pronóstico de cada modelo y la mejor interpolación (línea negra punteada). Abajo, las barras ordenan los métodos por **MAPE** (error porcentual absoluto medio contra la reconstrucción, ver 8.1): menor es mejor.
 
 ![Modelos de pronóstico sobre los dos huecos](../resultados/figuras/fig35_modelos_sobre_huecos.png)
 
@@ -1507,7 +1511,7 @@ Probar los hitos como variables indicadoras (paro, elección) en lugar de quitar
 
 1. **Un buen modelo de pronóstico puede igualar o superar a la mejor interpolación, pero no siempre.** Con historia suficiente (enero de 2024) PatchTST y Gradient Boosting lo hacen; con poca (agosto de 2022) solo el Gradient Boosting la iguala y varios modelos fallan mucho. Un modelo no es una alternativa segura a interpolar cuando la serie es corta.
 2. **Ningún método se acerca al error de la reconstrucción desde transacciones (1,6%–3,2%).** Es lo esperable: lo que falta en un mes de vacaciones es información, y solo una fuente adicional la aporta. Los mejores resultados de esta sección (8,8% a 17,7%) están en el orden del error de la mejor interpolación de la sección 5 (mediana de 17,2% en 89 bloques).
-3. **Límites.** Son solo dos meses, un origen cada uno, y no se calculó una prueba de significancia (con un solo bloque de 31 días autocorrelacionados no tendría poder); el liderazgo de PatchTST en enero de 2024 es un caso, no una regla, y la sección 7.7 d muestra que su ventaja general es frágil. La referencia es una estimación. Los modelos no se compararon con la interpolación en igualdad de condiciones (la interpolación ve el futuro del hueco).
+3. **Límites.** Son solo dos meses, un origen cada uno, y no se calculó una prueba de significancia (con un solo bloque de 31 días autocorrelacionados no tendría poder); el liderazgo de PatchTST en enero de 2024 es un caso, no una regla, y la sección 8.7 d muestra que su ventaja general es frágil. La referencia es una estimación. Los modelos no se compararon con la interpolación en igualdad de condiciones (la interpolación ve el futuro del hueco).
 4. **Una idea no probada.** Combinar ambos enfoques (por ejemplo, usar el pronóstico del modelo para el perfil semanal y los datos posteriores al hueco para el nivel) podría reducir el error de la interpolación; queda como trabajo futuro.
 
 ---
@@ -1541,4 +1545,4 @@ Probar los hitos como variables indicadoras (paro, elección) en lugar de quitar
 
 **Datos.** Secretaría de Transporte de la Nación, datos abiertos SUBE: <https://datos.transporte.gob.ar>. Encuesta Anual de Hogares de la Ciudad de Buenos Aires (IDECBA) y BA Data. RIPTE (datos.gob.ar). Tarifas: resoluciones del Boletín Oficial (ver `data/hitos/serie_tarifas.csv`).
 
-**Reproducibilidad.** El orden de ejecución de los scripts está en el `README.md`. Todos los resultados que muestra este informe se generan con los scripts de `scripts/` y quedan en `resultados/tablas` y `resultados/figuras`; los gráficos y tablas nuevos de las secciones 4 y 9 salen de `scripts/figuras_exploracion.py` y `scripts/modelos_sobre_huecos.py`.
+**Reproducibilidad.** El orden de ejecución de los scripts está en el `README.md`. Todos los resultados que muestra este informe se generan con los scripts de `scripts/` y quedan en `resultados/tablas` y `resultados/figuras`; los gráficos y tablas nuevos de las secciones 4 y 10 salen de `scripts/figuras_exploracion.py` y `scripts/modelos_sobre_huecos.py`.

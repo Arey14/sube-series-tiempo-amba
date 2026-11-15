@@ -9,7 +9,7 @@ Herramientas vistas en clase aplicadas a la serie SUBE (Pregunta 1: comportamien
   6. ACF de la serie
 
 Decisiones de diseño:
-  - Serie principal: desde 2022-01-01. Incluye 62 días reconstruidos desde las transacciones
+  - Serie principal: 2022-01-01 a 2026-09-30 (octubre de 2026 es preliminar). Incluye 62 días reconstruidos desde las transacciones
     (ago-2022 y ene-2024, error mediano ≈ 2%; ver usos_transacciones.py).
     Se recorta a un múltiplo de 7 días para que el ciclo semanal caiga exacto en un bin de la FFT.
   - Sensibilidad: tramo desde 2024-02-01, sin ningún día reconstruido.
@@ -41,6 +41,7 @@ MODOS = ['total_amba', 'colectivo_amba', 'subte_amba', 'tren_amba']
 COLORES = {'total_amba': '#2c3e50', 'colectivo_amba': '#2980b9', 'subte_amba': '#e67e22', 'tren_amba': '#27ae60'}
 INICIO_TRAMO = '2022-01-01'
 INICIO_SENSIBILIDAD = '2024-02-01'
+FIN_TRAMO = '2026-09-30'   # mismo corte que P-2 (octubre de 2026 es preliminar)
 SEMANA = 7
 
 
@@ -52,9 +53,9 @@ def cargar():
     return df
 
 
-def tramo_continuo(df, col, inicio=INICIO_TRAMO):
-    """Serie en millones, desde `inicio`, recortada a semanas completas (las últimas)."""
-    s = df.loc[inicio:, col] / 1e6
+def tramo_continuo(df, col, inicio=INICIO_TRAMO, fin=FIN_TRAMO):
+    """Serie en millones, de `inicio` a `fin`, recortada a semanas completas (las últimas)."""
+    s = df.loc[inicio:fin, col] / 1e6
     n = len(s) // SEMANA * SEMANA
     return s.iloc[-n:]
 
@@ -255,18 +256,23 @@ def fig_fft(df, tabla_picos):
     ax = fig.add_subplot(gs[0, :])
     ax.plot(f, a, color=COLORES['total_amba'], lw=1.2)
     marcar(ax, {1, 2, 3}, None)
+    fr = tabla_picos['frecuencia_ciclos_dia']
+    lentas = set(int(k) for k in tabla_picos.loc[fr < 0.02, 'fila'])
+    cercanas = set(int(k) for k in tabla_picos.loc[(fr >= 0.13) & (fr <= 0.155), 'fila'])
+    txt_l = ', '.join(str(k) for k in sorted(lentas))
+    txt_c = ', '.join(str(k) for k in sorted(cercanas - {1}))
     for h in (1, 2, 3):
         ax.text(h / SEMANA + 0.004, a.max() * 0.80, f'{h}/7 ciclos/día\n(período {SEMANA / h:.1f} d)', color='#c0392b', fontsize=9)
-    ax.text(0.012, a.max() * 0.45, 'Filas 4, 5, 6 y 8:\nciclos lentos pegados al borde\nizquierdo (ver ampliación A)', fontsize=9, color='#555')
-    ax.text(0.152, a.max() * 0.12, 'Fila 7: pegada al pico 1\n(ver ampliación B)', fontsize=9, color='#555')
+    ax.text(0.012, a.max() * 0.45, f'Filas {txt_l}:\nciclos lentos pegados al borde\nizquierdo (ver ampliación A)', fontsize=9, color='#555')
+    ax.text(0.152, a.max() * 0.12, f'Fila {txt_c}: pegada al pico 1\n(ver ampliación B)', fontsize=9, color='#555')
     ax.set_xlim(0, 0.5); ax.set_ylim(-0.03, a.max() * 1.18)
     ax.set_title(f'Espectro de amplitud del total AMBA, DC removida ({s.index[0].strftime("%b-%Y")} a {s.index[-1].strftime("%b-%Y")}, N={len(s)} días). '
                  'Los números son las filas de la tabla de picos', fontweight='bold', fontsize=11)
     ax.set_xlabel('Frecuencia (ciclos/día)'); ax.set_ylabel('Amplitud (millones de usuarios)')
 
     # panel 2A y 2B: ampliaciones
-    for col, (x0, x1, filas, tit) in enumerate([(0, 0.02, {4, 5, 6, 8}, 'A. Ampliación de 0 a 0,02 ciclos/día (ciclos lentos)'),
-                                                   (0.13, 0.155, {1, 7}, 'B. Ampliación alrededor de 1/7 (ciclo semanal)')]):
+    for col, (x0, x1, filas, tit) in enumerate([(0, 0.02, lentas, 'A. Ampliación de 0 a 0,02 ciclos/día (ciclos lentos)'),
+                                                   (0.13, 0.155, cercanas, 'B. Ampliación alrededor de 1/7 (ciclo semanal)')]):
         ax = fig.add_subplot(gs[1, col])
         m = (f >= x0) & (f <= x1)
         ax.plot(f[m], a[m], color=COLORES['total_amba'], lw=1.4, marker='.', ms=4)

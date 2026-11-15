@@ -770,3 +770,12 @@ En el bloque 22 se afirmó que la frase "la estimación completa (−0,22) está
 ### Estructura del informe
 
 El informe sigue ahora la lógica de la exposición: datos (3), exploración (4), interpolación (5), P-1 (6), P-2 (7), discusión (8) y extensión (9). El notebook conserva su orden de ejecución.
+
+## 25. Corte común al 30-sep-2026 y reordenamiento — 16-nov-2026
+
+- **Corte.** Se había dejado como decisión pendiente (bloque 21) que la FFT y las herramientas de clase llegaban al 29-oct-2026 y P-2 al 30-sep-2026. El autor decidió llegar en ambos casos hasta el 30-sep (octubre es preliminar). Todo el análisis exploratorio usa ahora 6-ene-2022 a 30-sep-2026 (1.729 días, 247 semanas completas).
+- **Qué cambió en los resultados.** Amplitud del ciclo semanal 0,941 M (antes 0,944). Reparto de la variación: 41,0% (1/7), 17,1% (2/7), 4,3% (3/7); juntas 62,5% (antes 62,8%); ciclos de más de 60 días 10,2% (antes 9,9%); resto 27,3%. Parseval: 18.114,6 en ambos dominios. Picos: anual a 345,8 días (0,226 M; antes 351,4 y 0,241), semestral a 192,1 días (0,178 M; antes 175,7 y 0,217), variación lenta de 1.729 días (0,192 M), un ciclo de 91,0 días (0,107 M) y el de 7,14 días (0,096 M). **El orden de las filas 7 y 8 se invirtió** respecto de la tabla anterior.
+- **Comparaciones de descomposición.** MA28 centrada: RMSE de 0,178 M contra STL en el interior; MA28 causal: 0,222; pasa-bajos: 0,200 en el interior y 0,218 en los bordes (antes 0,253 con el corte al 29-oct). Desestacionalizada: mínimo de −0,240 M con elimina-banda, −0,081 con STL y 1,739 con MA7. CCF tren–colectivo: 0,853 con residuos y 0,918 con diferencias en el rezago 0; banda de Bartlett ±0,129; subperíodos 0,881 / 0,775 / 0,874.
+- **Sin cambios.** Las conclusiones de las secciones de exploración, P-1 y P-2 no cambian; el residuo de STL en los hitos ya usaba el corte al 30-sep.
+- **Orden.** Informe y notebook comparten ahora el orden: datos (3), exploración (4), interpolación (5), CCF (6), P-1 (7), P-2 (8), discusión (9), extensión (10); el notebook agrega la sección 11 de reproducibilidad.
+
