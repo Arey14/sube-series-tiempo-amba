@@ -731,3 +731,12 @@ En el bloque 22 se afirmó que la frase "la estimación completa (−0,22) está
 - **Indicador de multipago en P-2:** se decidió no incluirlo y dejarlo como limitación. Con pocos meses de datos posteriores a la apertura el modelo no podría estimar el efecto, y los modelos con rezagos ya se ajustan al nuevo nivel.
 - **Chronos-2:** agregado como límite que solo los cortes de 2026 son seguros de no estar en su preentrenamiento.
 - **RevIN en el subte:** el notebook ahora lo presenta como explicación posible, no probada.
+
+### Revisión del notebook, secciones 1 a 4 y complemento P-1/P-2 — 15-nov-2026
+
+- **Medida de demanda.** Se aclaró que P-1 usa **transacciones** (usos de la SUBE por día, línea, modo y jurisdicción) y P-2 y la sección 4 usan **usuarios** (tarjetas distintas por día). Ninguna mide personas ni viajes completos. Los cocientes de P-1 (medidos con transacciones) se aplican en el apartado 6.9 a pronósticos de usuarios: se supone, sin haberlo verificado, que ambas medidas reaccionan igual a un evento.
+- **Reparto de la variación por frecuencia** (celda nueva de la sección 4, misma serie que la tabla de picos): 1/7 = 41,3%; 2/7 = 17,2%; 3/7 = 4,3%; las tres juntas 62,8%; períodos de más de 60 días 9,9%; resto 27,3%. Parseval: 18.385,3 en el tiempo y en frecuencia.
+- **Comparación de métodos de descomposición:** sin ganador único; STL robusto para tendencia y detección de días atípicos, FFT para saber qué ciclos hay y cuánto pesan, MA28 como control transparente; se proponen descartar el elimina-banda y el pasa-bajos ideal como métodos de trabajo.
+- **CCF tren–colectivo:** se agrega qué se esperaba (negativa si hubiera sustitución, positiva si hay causas comunes) y qué se observó; las bandas del gráfico suponen independencia y no se usan para decidir.
+- **Complemento P-1/P-2:** tabla de qué método tuvo menor error según el tipo de día (descriptiva, sin prueba de significancia por tipo de día). Hábil: Chronos-2 (0,177); sábado: PatchTST (0,139); domingo: empate; feriado laborable: PatchTST (0,284) y Gradient Boosting (0,298); paros y elecciones gratuitas: ninguno.
+- **Inconsistencia a decidir:** la serie de la FFT y de las herramientas de clase llega hasta el 29-oct-2026 (datos de octubre preliminares), mientras que P-2 termina el 30-sep-2026.
