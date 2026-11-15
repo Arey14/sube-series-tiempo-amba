@@ -172,14 +172,27 @@ def main():
     fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
     for ax, m in zip(axs, MODOS):
         ax.axhspan(*lim[m], color='#bdc3c7', alpha=0.5, label='banda de días ordinarios')
-        for tipo, c, nom in [('feriado', '#16a085', 'feriado laborable'), ('eleccion', '#8e44ad', 'elección'), ('paro', '#c0392b', 'paro')]:
+        # feriados laborables, elecciones (con y sin gratuidad) y paros según quién paró
+        clases = [('feriado', None, '#16a085', 'o', 'feriado laborable', True),
+                  ('eleccion', 'con gratuidad', '#8e44ad', 's', 'elección con gratuidad', True),
+                  ('eleccion', 'sin gratuidad aparente', '#8e44ad', 's', 'elección sin gratuidad', False),
+                  ('paro', 'colectivo (UTA)', '#c0392b', '^', 'paro del colectivo (UTA)', True),
+                  ('paro', 'tren (La Fraternidad)', '#e67e22', 'v', 'paro del tren (La Fraternidad)', True),
+                  ('paro', 'tren y subte', '#d4ac0d', 'D', 'paro de tren y subte', True),
+                  ('paro', 'general (CGT)', '#1a1a1a', 'X', 'paro general (CGT)', True)]
+        for tipo, sub_, c, mk, nom, lleno in clases:
             g = t[t.tipo == tipo]
-            ax.scatter(pd.to_datetime(g['fecha']), g[m], s=26, color=c, label=nom, zorder=3)
+            if tipo == 'eleccion':      # la elección inferida del dato (balotaje) cuenta como con gratuidad
+                g = g[g.subtipo.str.startswith('con gratuidad')] if sub_ == 'con gratuidad' else g[g.subtipo == sub_]
+            elif sub_ is not None:
+                g = g[g.subtipo == sub_]
+            ax.scatter(pd.to_datetime(g['fecha']), g[m], s=60 if tipo != 'feriado' else 28, marker=mk, label=nom, zorder=3,
+                       facecolor=c if lleno else 'white', edgecolor=c, linewidth=1.6 if tipo != 'feriado' else 0.5)
         ax.set_title(m); ax.axhline(1, color='k', lw=0.6)
         ax.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
         ax.tick_params(axis='x', rotation=60, labelsize=8)
-    axs[0].set_ylabel('Cociente contra un día habitual'); axs[0].legend(fontsize=8)
+    axs[0].set_ylabel('Cociente contra un día habitual'); axs[0].legend(fontsize=7.5, loc='upper left')
     plt.suptitle('Demanda en días de feriado, elección y paro (cada punto es un día)', fontweight='bold')
     plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig17_hitos_cociente.png'), dpi=200); plt.close()
 

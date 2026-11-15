@@ -110,9 +110,35 @@ La serie del total AMBA (media móvil de 7 días en los gráficos, para que no s
 
 ![Estacionalidad semanal y anual](../resultados/figuras/fig2_estacionalidad_y_correlacion.png)
 
-*Figura 2. Arriba, distribución de los usuarios por día de la semana (izquierda) y por mes del año (derecha) para cada modo, 2022–2026; la caja va del cuartil 25 al 75 y la línea interior es la mediana. Abajo, ACF y PACF de la serie con diferencia simple y estacional (se explican en 8.2).*
+*Figura 2. Arriba, distribución de los usuarios por día de la semana (izquierda) y por mes del año (derecha) para cada modo, 2022–2026; la caja va del cuartil 25 al 75 y la línea interior es la mediana. Abajo, ACF y PACF de la serie con diferencia simple y estacional (se explican abajo y se usan en 8.2).*
 
 **Qué muestra.** En el total AMBA, la mediana de un día hábil es de unos 3,7 a 3,9 millones de usuarios, la de un sábado 2,4 y la de un domingo 1,4: el fin de semana es un tercio a la mitad de un día hábil. Por mes, el promedio va de 2,4 millones en enero a 3,3 o 3,4 en septiembre y octubre; julio (3,0) y diciembre (2,9) muestran las vacaciones de invierno y de verano.
+
+#### Cómo se interpretan la ACF y la PACF (paneles inferiores de la figura 2)
+
+*Base teórica: Clase Forecasting, secciones "Determinación de los órdenes p y q en base a la ACF y la PACF" y "Forecasting ARIMA". Box y Jenkins (1970) es la referencia original del procedimiento.*
+
+**Qué son.** La **autocorrelación** de rezago k es la correlación entre la serie y ella misma k días antes: vale 1 en el rezago 0 (la serie consigo misma), cerca de 0 si el pasado a k días no informa nada del presente, y se acerca a ±1 si lo informa mucho. La **ACF** (función de autocorrelación) la muestra para cada rezago. La **PACF** (autocorrelación parcial) muestra, para cada rezago k, la correlación que queda entre la serie y su valor k días antes **después de descontar lo que ya explican los rezagos intermedios** (1, 2, …, k − 1): es el aporte propio de cada rezago. En el gráfico, cada barra vertical es un rezago (eje horizontal, en días) y su altura es la correlación (eje vertical, de −1 a 1). La **zona celeste** es la banda de confianza de 95% para una serie sin autocorrelación (aproximadamente ±1,96/√n, con n el número de datos): una barra que sobresale de la banda es una autocorrelación significativa; una que queda adentro no se distingue de cero.
+
+**Qué lecturas se extraen.** Se buscan cuatro cosas:
+
+| Qué se observa | Qué indica | Qué se hace con eso |
+|---|---|---|
+| Barras que **decaen muy lento** en la ACF (todas altas y positivas) | La serie tiene tendencia o saltos de nivel: no es estacionaria | Diferenciar (4.2) |
+| **Picos en los múltiplos de un período** (7, 14, 21…) | Estacionalidad de ese período (aquí, semanal) | Diferencia estacional o términos estacionales |
+| ACF que se **corta** tras q rezagos y PACF que **decae** gradualmente | Estructura de **media móvil** de orden q (MA) | Incluir q términos de media móvil |
+| PACF que se **corta** tras p rezagos y ACF que **decae** gradualmente | Estructura **autorregresiva** de orden p (AR) | Incluir p términos autorregresivos |
+| Barras que **casi todas** quedan dentro de la banda | No queda estructura temporal por modelar (ruido blanco) | Es lo que se busca en los **residuos** de un modelo |
+
+(Si las dos decaen gradualmente, el modelo suele necesitar términos de ambos tipos: ARMA.) Es una guía, no una regla exacta: con cientos de rezagos, alrededor de 5% de las barras sobresale de la banda solo por azar, y las lecturas ambiguas se resuelven comparando modelos con criterios de información (8.2).
+
+**Cómo se lee la figura 2.** Los paneles inferiores corresponden al total AMBA ya diferenciado con **una diferencia simple y una estacional** (∇₁∇₇, ver 4.2), no a la serie original. Aproximando los valores desde el gráfico: en la ACF hay una barra negativa en el rezago 1 (alrededor de −0,35), otra más negativa en el rezago 7 (alrededor de −0,49), una positiva en el rezago 8 (+0,21) y casi todo lo demás dentro de la banda; en la PACF las barras de los rezagos 1 a 4 son negativas (−0,35 a −0,18), hay una marcada en el rezago 7 (−0,42) y otras más chicas en los múltiplos de 7 (−0,25 en el 14).
+
+- **Rezago 7 (−0,49).** Restar la semana anterior a una serie con ciclo semanal estable deja un residuo semanal con correlación negativa de ese rezago: es la señal típica de un término de **media móvil estacional** (SMA, de orden 1).
+- **Rezago 1 negativo y rezagos 1 a 4 negativos en la PACF.** Es la huella de la **sobrediferenciación** que se midió en 4.2: la diferencia simple, agregada sobre una serie que ya era estacionaria después de la diferencia estacional, introduce una correlación negativa en el rezago 1. Por eso el modelo de P-2 usa solo la diferencia estacional (d = 0, D = 1) y el orden se identifica en 8.2 con ese gráfico, no con este.
+- **Pocas barras fuera de la banda a partir del rezago 9.** No hay otro ciclo fuerte en los datos diferenciados: el ciclo semanal quedó removido y no se observa un patrón sistemático adicional.
+
+**Conclusión.** Estos dos gráficos sirven para dos cosas: confirmar que existe **estacionalidad semanal** (picos en el rezago 7 y sus múltiplos) y fundamentar las **diferencias** elegidas; el orden del modelo ARIMA se decide después, con la serie diferenciada que usa el modelo (8.2).
 
 ### 4.2 Estacionariedad y diferenciación (ADF, KPSS)
 
@@ -690,7 +716,7 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 ![Razón interanual de usos en 2024](../resultados/figuras/fig13_usos_yoy_tarifas_2024.png)
 
-*Figura 18. Razón entre los usos de días hábiles de 2024 y los del mismo día de 2023, por modo, con los saltos tarifarios marcados.*
+*Figura 18. Razón entre los usos de días hábiles de 2024 y los del mismo día de 2023, por modo, con los saltos tarifarios marcados (las etiquetas están arriba del área de datos, en recuadros escalonados).*
 
 ![Estudio de eventos](../resultados/figuras/fig14_estudio_eventos.png)
 
@@ -842,7 +868,9 @@ Si el resultado cambia mucho (en signo o tamaño) entre las dos versiones, el pa
 
 ![Cociente por tipo de hito](../resultados/figuras/fig17_hitos_cociente.png)
 
-*Figura 22. Cociente de la demanda de cada día de hito respecto de lo habitual, por modo, contra la banda de días ordinarios.*
+*Figura 22. Cociente de la demanda de cada día de hito respecto de lo habitual, por modo, contra la banda de días ordinarios. Cada símbolo es un tipo de día: círculo, feriado laborable; cuadrado lleno, elección con gratuidad (incluye el balotaje inferido del dato); cuadrado vacío, elección sin gratuidad; triángulo hacia arriba, paro del colectivo (UTA); triángulo hacia abajo, paro del tren (La Fraternidad); rombo, paro de tren y subte; cruz, paro general (CGT).*
+
+**Cómo leer la figura 22 por tipo.** Los cuadrados llenos (elección con gratuidad) están pegados a 0 en los tres modos, mientras que los vacíos (sin gratuidad) quedan entre 0,5 y 1,1, es decir, mucho más cerca de lo habitual: la gratuidad, y no la elección en sí, es lo que vacía el transporte. Entre los paros, el modo que paró cae cerca de 0 (triángulos rojos en el colectivo, entre 0,09 y 0,20 en los tres casos; triángulo naranja y rombo en el tren, en 0; cruces en los paros generales), y un modo que no paró queda más arriba: los paros del colectivo (triángulos rojos) dejan al subte en 1,0, dentro de la banda ordinaria, y al tren entre 0,66 y 0,79 (caída parcial). Las dos cruces del colectivo en 0,62 son el primer paro general (24 de enero de 2024) y el del 10 de abril de 2025; en este último la UTA no adhirió y el colectivo igual cayó a 0,62 (otros factores de ese día, sin explicación comprobada). La tabla de la figura 23 da los números por tipo.
 
 | tipo | modo | dias | mediana_cociente | minimo | maximo | banda_ruido_inf | banda_ruido_sup | pct_fuera_de_banda |
 |---|---|---|---|---|---|---|---|---|

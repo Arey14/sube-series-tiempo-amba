@@ -73,15 +73,20 @@ def tabla(usos):
 
 
 def graficar(usos):
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(14, 7.5))
     for s in SERIES:
         r = razon_interanual(usos[s]).dropna().loc['2023-11-15':'2024-07-15']
         ax.plot(r.index, r.rolling(7, center=True, min_periods=3).median(), color=COLORES[s], lw=1.6, label=s)
-    for f, txt in FECHAS.items():
+    # las etiquetas de los saltos van arriba de la zona de datos (0,5 a 1,5), escalonadas y con letra grande
+    alturas = [1.90, 1.78, 1.66, 1.90, 1.78]
+    for (f, txt), y in zip(FECHAS.items(), alturas):
         ax.axvline(pd.Timestamp(f), color='k', ls=':', alpha=0.5)
-        ax.text(pd.Timestamp(f), ax.get_ylim()[1] * 0.98, txt, rotation=90, va='top', ha='right', fontsize=8)
+        ax.text(pd.Timestamp(f) + pd.Timedelta(days=1), y, txt.replace('\n', ' '), va='center', ha='left', fontsize=11, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#7f8c8d', alpha=0.95), zorder=5)
     ax.axhline(1, color='k', lw=0.6)
-    ax.set_ylim(0.5, 1.5)
+    ax.set_ylim(0.5, 2.0)
+    ax.set_yticks([0.5, 0.75, 1.0, 1.25, 1.5])
+    ax.axhline(1.55, color='#7f8c8d', lw=0.8)
     ax.set_title('Transacciones en días hábiles vs. el mismo día del año anterior (mediana móvil de 7 días hábiles)', fontweight='bold')
     ax.set_ylabel('Cociente 2024 / 2023'); ax.legend(loc='lower left', ncol=3)
     plt.tight_layout(); plt.savefig(os.path.join(FIG_DIR, 'fig13_usos_yoy_tarifas_2024.png'), dpi=200); plt.close()
