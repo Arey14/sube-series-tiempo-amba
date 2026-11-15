@@ -740,3 +740,33 @@ En el bloque 22 se afirmó que la frase "la estimación completa (−0,22) está
 - **CCF tren–colectivo:** se agrega qué se esperaba (negativa si hubiera sustitución, positiva si hay causas comunes) y qué se observó; las bandas del gráfico suponen independencia y no se usan para decidir.
 - **Complemento P-1/P-2:** tabla de qué método tuvo menor error según el tipo de día (descriptiva, sin prueba de significancia por tipo de día). Hábil: Chronos-2 (0,177); sábado: PatchTST (0,139); domingo: empate; feriado laborable: PatchTST (0,284) y Gradient Boosting (0,298); paros y elecciones gratuitas: ninguno.
 - **Inconsistencia a decidir:** la serie de la FFT y de las herramientas de clase llega hasta el 29-oct-2026 (datos de octubre preliminares), mientras que P-2 termina el 30-sep-2026.
+
+## 24. Informe final completo, sensibilidad de PatchTST y modelos sobre los dos huecos — 15-nov-2026
+
+### Sensibilidad de PatchTST (`scripts/sensibilidad_patchtst_p2.py`)
+
+- **Diseño.** Mismos 42 cortes de 28 días del total AMBA. Se varía una cosa por vez alrededor de la configuración original (150 épocas, tasa 4e-3, `d_model` 32, 2 capas, 8 parches, semilla 42): 5 semillas más (0, 1, 2, 3, 4) y 12 variantes de hiperparámetros (épocas 50/100/300, tasa 0,001/0,002/0,008, `d_model` 16/64, capas 1/3, parches 4/12). No se eligió la mejor configuración.
+- **Resultado.** MASE con las seis semillas: 0,544 a 0,563 (mediana 0,555), contra 0,568 del Gradient Boosting; ninguna diferencia de MAE es significativa (Diebold-Mariano, p de 0,31 a 0,85). Hiperparámetros: 0,537 a 0,801; solo 50 épocas y tasa 0,001 son significativamente peores (p < 0,0001); las otras 10 no se distinguen del Gradient Boosting (p ≥ 0,20). 14 de las 19 corridas (18 más la original) tienen MASE menor que el Gradient Boosting.
+- **Reproducción.** La semilla 42 con la configuración original da MAE 0,1791 M; la corrida original del repositorio, 0,1803 M. Casi igual, no idéntico.
+- **Lectura.** La ventaja de PatchTST sobre el Gradient Boosting (unos 0,006 M de MAE) no es robusta ni significativa; con entrenamiento insuficiente PatchTST pierde. Se sostiene el empate. La lectura por modo (tren, subte) no se repitió con otras semillas.
+
+### Residuo de STL en los hitos (`scripts/figuras_exploracion.py`)
+
+- Umbral de ±20% del valor esperado (con 3 desvíos robustos se marcaba el 18% de los días ordinarios). Superan el umbral 74 de 77 feriados laborables, 7 de 9 paros y 5 de 6 elecciones; 4 de 8 días 24 y 31 de diciembre y 3 de 19 feriados en fin de semana. Se marcan 140 días: 93 son hitos conocidos y 47 (2,9% de los ordinarios) no, varios cerca de fines de semana largos (no verificado).
+- Los paros no detectados (21-feb-2024 y 10-abr-2025) son paros sin adhesión del colectivo, que domina el total. Tres feriados laborables no detectados son días no laborables optativos según el calendario (no verificado).
+
+### Comparación de descomposiciones
+
+- Tendencia contra STL (RMSE, M): MA28 centrada 0,178 interior; MA28 causal 0,220; pasa-bajos 0,200 interior y 0,253 en bordes. Desestacionalizada: mínimo −0,237 M con elimina-banda (2 días ≤ 0), −0,080 con STL (1 día) y 1,739 con MA7. **Corrige** el texto anterior, que atribuía los valores ≤ 0 solo al elimina-banda.
+- CCF tren–colectivo: la banda de Bartlett es de ±0,126 (la ingenua, ±0,047); el piso de 0,3 a 0,4 supera ambas bandas. Por subperíodo el rezago 0 es 0,88 / 0,78 / 0,87 (2022–23, 2024, 2025–26) y el piso cae a ~0,1 en 2024, lo que apoya que es un movimiento lento común y no una relación con retraso.
+
+### Modelos de P-2 sobre los dos huecos (`scripts/modelos_sobre_huecos.py`)
+
+- Referencia: la reconstrucción desde transacciones (error de 1,6% a 3,2% en meses de vacaciones). Origen: el día anterior a cada hueco; 31 días.
+- MAPE agosto de 2022 (7 meses de historia): lineal por día 17,2%; PCHIP × perfil 17,5%; Gradient Boosting 17,7%; Naive 7 días 21,1%; Chronos-2 22,0%; PatchTST 26,9%; SARIMAX 54,2%; Prophet 68,0%; spline original 158%. MAPE enero de 2024: PatchTST 8,8%; Gradient Boosting 12,2%; lineal por día 14,3%; Chronos-2 17,5%; Naive 7 días 18,0%; SARIMAX 18,7%; PCHIP × perfil 19,4%; Naive 364 días 20,0%; Prophet 25,2%; spline original 167%.
+- Dos casos, un origen cada uno, sin prueba de significancia; las interpolaciones usan datos de ambos lados del hueco y los modelos no. Las interpolaciones y el Gradient Boosting igualan o mejoran a casi todos los modelos con poca historia.
+- Nota técnica: Prophet no corre con `PYTHONUTF8=1` en esta máquina (la ruta del usuario tiene un carácter acentuado y `cmdstanpy` decodifica la salida de `where.exe` en UTF-8); se corrió con `PYTHONIOENCODING=utf-8`. Se instaló `chronos-forecasting` en el entorno virtual.
+
+### Estructura del informe
+
+El informe sigue ahora la lógica de la exposición: datos (3), exploración (4), interpolación (5), P-1 (6), P-2 (7), discusión (8) y extensión (9). El notebook conserva su orden de ejecución.
