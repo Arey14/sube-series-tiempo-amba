@@ -1,4 +1,9 @@
 metodo,ventanas,MAPE_mediano,MAPE_p90,MAE_medio_M,ciclo_semanal_conservado
+pchip_tendencia_x_perfil,89,17.21,28.98,0.39,0.89
+lineal_tendencia_x_perfil,89,17.25,28.93,0.38,0.89
 lineal_por_dia_semana,89,17.4,32.3,0.39,0.95
+pchip_por_dia_semana,89,17.73,33.2,0.4,0.96
+spline_tendencia_x_perfil,89,25.89,56.32,0.75,0.87
+spline_por_dia_semana,89,28.86,44.79,0.77,1.31
 lineal,89,51.25,70.66,0.9,0.01
-spline,89,76.26,323.42,3.25,0.15
+spline_cubico_original,89,76.26,323.42,3.25,0.15

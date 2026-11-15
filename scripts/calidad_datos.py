@@ -15,7 +15,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.interpolate import CubicSpline
+from scipy.interpolate import CubicSpline, PchipInterpolator
 
 plt.style.use('seaborn-v0_8-whitegrid')
 
@@ -78,18 +78,87 @@ def interp_lineal_por_dia_semana(s):
     return out
 
 
+def _ord(indice):
+    return indice.map(pd.Timestamp.toordinal).values
+
+
+def _rachas_faltantes(s):
+    """Lista de (primer día, último día) de cada racha de días faltantes."""
+    f = pd.Series(s.index[s.isna()])
+    if f.empty:
+        return []
+    g = (f.diff() != pd.Timedelta(days=1)).cumsum()
+    return [(x.iloc[0], x.iloc[-1]) for _, x in f.groupby(g)]
+
+
+def spline_por_dia_semana(s, clase=CubicSpline):
+    """Un spline (o `clase`) para cada día de la semana: cada uno ve un punto por semana, sin el ciclo semanal."""
+    out = s.copy()
+    for d in range(7):
+        sub = s[s.index.day_of_week == d]
+        k = sub.dropna()
+        f = clase(_ord(k.index), k.values)
+        m = sub.isna()
+        out[sub.index[m]] = f(_ord(sub.index[m]))
+    return out
+
+
+def tendencia_x_perfil(s, clase=CubicSpline, borde=28, ventana=60):
+    """Combina dos componentes, como una descomposición.
+
+    1. Tendencia: `clase` (spline cúbico por defecto) sobre la media móvil de 7 días, que no tiene ciclo semanal.
+    2. Perfil semanal: cociente medio de cada día de la semana respecto de esa tendencia en los `borde` días
+       vecinos al hueco (antes y después).
+    Estimado = tendencia x perfil del día. Se resuelve cada racha de días faltantes por separado.
+    """
+    out = s.copy()
+    for ini, fin in _rachas_faltantes(s):
+        w = s.loc[ini - pd.Timedelta(days=ventana):fin + pd.Timedelta(days=ventana)]
+        k = w.rolling(7, center=True).mean().dropna()
+        f = clase(_ord(k.index), k.values)
+        tend = pd.Series(f(_ord(w.index)), index=w.index)
+        razon = w / tend
+        antes = (razon.index >= ini - pd.Timedelta(days=borde)) & (razon.index < ini)
+        despues = (razon.index > fin) & (razon.index <= fin + pd.Timedelta(days=borde))
+        vec = razon[antes | despues].dropna()
+        perfil = vec.groupby(vec.index.day_of_week).mean()
+        dias = pd.date_range(ini, fin)
+        out[dias] = [tend[d] * perfil[d.day_of_week] for d in dias]
+    return out
+
+
+def _recta(x, y):
+    return lambda z: np.interp(z, x, y)
+
+
+# Métodos que se muestran en la figura principal (fig7): la interpolación lineal, el MEJOR spline de los probados
+# (spline cúbico sobre la tendencia x perfil semanal, ver `METODOS_TODOS`) y la lineal por día de la semana.
 METODOS = {
     'lineal': interp_lineal,
-    'spline': interp_spline,
+    'spline_tendencia_x_perfil': tendencia_x_perfil,
     'lineal_por_dia_semana': interp_lineal_por_dia_semana,
 }
 
+# Todos los métodos probados (tabla_simulacion_interpolacion y fig7b). `spline_cubico_original` es el spline
+# aplicado directamente a la serie diaria; el resto son variantes del spline y de la interpolación lineal.
+METODOS_TODOS = {
+    'lineal': interp_lineal,
+    'lineal_por_dia_semana': interp_lineal_por_dia_semana,
+    'lineal_tendencia_x_perfil': lambda s: tendencia_x_perfil(s, _recta),
+    'spline_cubico_original': interp_spline,
+    'spline_por_dia_semana': spline_por_dia_semana,
+    'spline_tendencia_x_perfil': tendencia_x_perfil,
+    'pchip_por_dia_semana': lambda s: spline_por_dia_semana(s, PchipInterpolator),
+    'pchip_tendencia_x_perfil': lambda s: tendencia_x_perfil(s, PchipInterpolator),
+}
 
-def simular_huecos(serie, largo=LARGO_HUECO_SIM, paso_dias=14, margen=35):
+
+def simular_huecos(serie, largo=LARGO_HUECO_SIM, paso_dias=14, margen=35, metodos=None):
     """Oculta bloques de `largo` días de datos reales y mide el error de cada método.
 
     Solo usa ventanas sin huecos reales cerca. Evalúa solo sobre los días ocultos.
     """
+    metodos = METODOS_TODOS if metodos is None else metodos
     filas = []
     inicios = pd.date_range('2022-10-01', '2026-07-31', freq=f'{paso_dias}D')
     for ini in inicios:
@@ -100,7 +169,7 @@ def simular_huecos(serie, largo=LARGO_HUECO_SIM, paso_dias=14, margen=35):
         real = serie.loc[ini:fin]
         s = serie.loc[ini - pd.Timedelta(days=60):fin + pd.Timedelta(days=60)].copy()
         s.loc[ini:fin] = np.nan
-        for nombre, f in METODOS.items():
+        for nombre, f in metodos.items():
             est = f(s).loc[ini:fin]
             err = est - real
             amp = lambda x: (x - x.rolling(7, center=True, min_periods=4).mean()).std()
@@ -123,32 +192,61 @@ def imputar(df, metodo='lineal_por_dia_semana'):
     return out
 
 
-def graficar(df_crudo, resumen_sim, sim):
-    """Hueco real de ene-2024 con cada método + distribución del error simulado."""
-    fig, axes = plt.subplots(1, 2, figsize=(15, 5), gridspec_kw={'width_ratios': [1.6, 1]})
+ETIQUETAS = {
+    'lineal': 'lineal',
+    'lineal_por_dia_semana': 'lineal por día\nde la semana',
+    'lineal_tendencia_x_perfil': 'recta (tendencia)\n× perfil semanal',
+    'spline_cubico_original': 'spline cúbico\noriginal',
+    'spline_por_dia_semana': 'spline por día\nde la semana',
+    'spline_tendencia_x_perfil': 'spline (tendencia)\n× perfil semanal',
+    'pchip_por_dia_semana': 'PCHIP por día\nde la semana',
+    'pchip_tendencia_x_perfil': 'PCHIP (tendencia)\n× perfil semanal',
+}
+COLORES = {
+    'lineal': '#e74c3c', 'lineal_por_dia_semana': '#27ae60', 'lineal_tendencia_x_perfil': '#16a085',
+    'spline_cubico_original': '#7f8c8d', 'spline_por_dia_semana': '#d35400',
+    'spline_tendencia_x_perfil': '#8e44ad', 'pchip_por_dia_semana': '#2980b9', 'pchip_tendencia_x_perfil': '#f1c40f',
+}
+
+
+def _grafico_hueco_y_cajas(df_crudo, sim, metodos, archivo, titulo_hueco, ancho_cajas=1.0, tam=(15, 5)):
+    """Panel izquierdo: el hueco real de enero 2024 completado por cada método. Derecho: error al ocultar bloques."""
+    fig, axes = plt.subplots(1, 2, figsize=tam, gridspec_kw={'width_ratios': [1.6, ancho_cajas]})
     ini, fin = pd.Timestamp('2023-12-01'), pd.Timestamp('2024-03-01')
     serie = df_crudo['total_amba'].loc[ini:fin]
     ax = axes[0]
     ax.plot(serie.index, serie / 1e6, 'k-', lw=1.6, label='Observado')
-    colores = {'lineal': '#e74c3c', 'spline': '#8e44ad', 'lineal_por_dia_semana': '#27ae60'}
-    for nombre, f in METODOS.items():
-        est = f(df_crudo['total_amba']).loc[ini:fin]
-        ax.plot(est.index, est / 1e6, '--', lw=1.3, color=colores[nombre], label=nombre)
-    ax.set_title('Hueco real de enero 2024: imputación según método', fontweight='bold')
+    for nombre in metodos:
+        est = METODOS_TODOS[nombre](df_crudo['total_amba']).loc[ini:fin]
+        ax.plot(est.index, est / 1e6, '--', lw=1.3, color=COLORES[nombre], label=ETIQUETAS[nombre].replace('\n', ' '))
+    ax.set_title(titulo_hueco, fontweight='bold')
     ax.set_ylabel('Millones de usuarios')
-    ax.legend(loc='lower right')
+    ax.legend(loc='lower right', fontsize=8)
 
     ax = axes[1]
-    orden = ['lineal', 'spline', 'lineal_por_dia_semana']
-    datos = [sim.loc[sim.metodo == m, 'MAPE (%)'].clip(upper=150) for m in orden]
-    bp = ax.boxplot(datos, tick_labels=['lineal', 'spline', 'lineal por\ndía de semana'], patch_artist=True)
-    for patch, m in zip(bp['boxes'], orden):
-        patch.set_facecolor(colores[m]); patch.set_alpha(0.5)
-    ax.set_title('Error al ocultar bloques de 31 días reales', fontweight='bold')
+    datos = [sim.loc[sim.metodo == m, 'MAPE (%)'].clip(upper=150) for m in metodos]
+    bp = ax.boxplot(datos, tick_labels=[ETIQUETAS[m] for m in metodos], patch_artist=True)
+    for patch, m in zip(bp['boxes'], metodos):
+        patch.set_facecolor(COLORES[m]); patch.set_alpha(0.5)
+    ax.set_title('Error al ocultar 89 bloques de 31 días reales', fontweight='bold')
     ax.set_ylabel('MAPE (%) (recortado en 150)')
+    ax.tick_params(axis='x', labelsize=8 if len(metodos) > 3 else 10, rotation=0 if len(metodos) <= 3 else 60)
     plt.tight_layout()
-    plt.savefig(os.path.join(FIG_DIR, 'fig7_interpolacion_huecos.png'), dpi=200)
+    plt.savefig(os.path.join(FIG_DIR, archivo), dpi=200)
     plt.close()
+
+
+def graficar(df_crudo, sim):
+    """fig7: la lineal, el MEJOR spline y la lineal por día de la semana (ver METODOS)."""
+    _grafico_hueco_y_cajas(df_crudo, sim, list(METODOS), 'fig7_interpolacion_huecos.png',
+                           'Hueco real de enero 2024: imputación según método')
+
+
+def graficar_variantes(df_crudo, sim):
+    """fig7b: todos los métodos probados (lineal y spline, con sus variantes), ordenados por error mediano."""
+    orden = sim.groupby('metodo')['MAPE (%)'].median().sort_values().index.tolist()
+    _grafico_hueco_y_cajas(df_crudo, sim, orden, 'fig7b_interpolacion_variantes.png',
+                           'Hueco real de enero 2024: todos los métodos probados', ancho_cajas=1.5, tam=(17, 6.5))
 
 
 def total_vs_modos(df):
@@ -235,7 +333,8 @@ def main():
     print("Fechas atípicas NO feriado (razón vs. mediana del mismo día de semana):")
     print(sin_fer.to_string(index=False))
 
-    graficar(crudo, resumen, sim)
+    graficar(crudo, sim)
+    graficar_variantes(crudo, sim)
     imputado = imputar(crudo)
     imputado.to_csv(os.path.join(PROC_DIR, 'serie_sube_diaria_imputada.csv'), index_label='fecha')
     print(f"Serie imputada guardada ({int(imputado['imputado'].sum())} días marcados).")

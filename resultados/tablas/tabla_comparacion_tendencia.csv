@@ -1,0 +1,4 @@
+metodo,dias_con_valor,dias_sin_valor,RMSE_vs_STL_interior_M,RMSE_vs_STL_bordes_M,correlacion_con_STL,nota
+MA28 centrada,1702,27,0.178,0.106,0.958,"pierde 27 días (14 en cada extremo, aprox.)"
+MA28 causal,1702,27,0.222,0.062,0.883,solo usa pasado; llega unos 14 días tarde
+Pasa-bajos ideal (FFT),1729,0,0.2,0.218,0.927,ondula cerca de cambios bruscos (Gibbs)

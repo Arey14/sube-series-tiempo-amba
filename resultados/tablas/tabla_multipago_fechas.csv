@@ -1,0 +1,22 @@
+especificacion,modo,muestra,control_salario,escalones,semanas,R2,cond_num,dlog_tarifa,dlog_tarifa_ee,dlog_tarifa_p,multipago_dic24,multipago_dic24_ee,multipago_dic24_p,qr_may25,qr_may25_ee,qr_may25_p,contactless_colectivo_mar25,contactless_colectivo_mar25_ee,contactless_colectivo_mar25_p
+A. subte completa,subte,completa,False,ninguno,186,0.634,4.5,-0.224,0.026,0.0,,,,,,,,,
+A. subte completa,subte,completa,False,multipago_dic24,186,0.867,4.9,-0.148,0.015,0.0,-0.242,0.022,0.0,,,,,,
+A. subte completa,subte,completa,False,multipago_dic24+qr_may25,186,0.904,5.2,-0.178,0.014,0.0,-0.194,0.018,0.0,-0.098,0.015,0.0,,,
+A. subte completa,subte,completa,True,ninguno,186,0.77,10.5,-0.145,0.025,0.0,,,,,,,,,
+A. subte completa,subte,completa,True,multipago_dic24,186,0.871,14.7,-0.138,0.016,0.0,-0.213,0.035,0.0,,,,,,
+A. subte completa,subte,completa,True,multipago_dic24+qr_may25,186,0.904,15.8,-0.175,0.014,0.0,-0.188,0.023,0.0,-0.096,0.015,0.0,,,
+B. tren con escalón del subte,tren,completa,False,multipago_dic24,186,0.479,4.6,-0.041,0.027,0.127,-0.009,0.025,0.716,,,,,,
+B. colectivo nacional con escalón del subte,colectivo_nacional,completa,False,multipago_dic24,186,0.56,4.6,-0.02,0.046,0.67,-0.171,0.034,0.0,,,,,,
+B. colectivo nacional con su propia fecha (27-mar-2025),colectivo_nacional,completa,False,contactless_colectivo_mar25,186,0.642,4.6,-0.074,0.03,0.016,,,,,,,-0.201,0.038,0.0
+B. tren con escalón del subte,tren,completa,True,multipago_dic24,186,0.62,12.9,-0.042,0.017,0.017,0.113,0.039,0.004,,,,,,
+B. colectivo nacional con escalón del subte,colectivo_nacional,completa,True,multipago_dic24,186,0.56,13.1,-0.02,0.046,0.668,-0.166,0.059,0.006,,,,,,
+B. colectivo nacional con su propia fecha (27-mar-2025),colectivo_nacional,completa,True,contactless_colectivo_mar25,186,0.661,9.9,-0.069,0.033,0.038,,,,,,,-0.177,0.048,0.0
+C. ventana de la apertura,subte,2024-09-02 a 2025-02-23,False,multipago_dic24,25,0.813,25.8,-0.396,0.106,0.001,-0.106,0.017,0.0,,,,,,
+C. ventana de la apertura,tren,2024-09-02 a 2025-02-23,False,multipago_dic24,25,0.755,8.7,-0.11,0.022,0.0,-0.016,0.022,0.479,,,,,,
+C. ventana de la apertura,colectivo_nacional,2024-09-02 a 2025-02-23,False,multipago_dic24,25,0.737,7.1,0.111,0.016,0.0,-0.059,0.021,0.011,,,,,,
+E. colectivo total sin escalón,colectivo_total,completa,False,ninguno,186,0.573,4.4,-0.105,0.02,0.0,,,,,,,,,
+E. colectivo total con su fecha (27-mar-2025),colectivo_total,completa,False,contactless_colectivo_mar25,186,0.606,4.6,-0.12,0.019,0.0,,,,,,,-0.049,0.021,0.022
+E. colectivo total con escalón del subte (placebo),colectivo_total,completa,False,multipago_dic24,186,0.574,4.6,-0.105,0.021,0.0,-0.007,0.022,0.755,,,,,,
+E. colectivo total sin escalón,colectivo_total,completa,True,ninguno,186,0.573,8.4,-0.105,0.021,0.0,,,,,,,,,
+E. colectivo total con su fecha (27-mar-2025),colectivo_total,completa,True,contactless_colectivo_mar25,186,0.612,9.9,-0.122,0.018,0.0,,,,,,,-0.059,0.023,0.012
+E. colectivo total con escalón del subte (placebo),colectivo_total,completa,True,multipago_dic24,186,0.574,13.1,-0.105,0.021,0.0,-0.01,0.038,0.788,,,,,,

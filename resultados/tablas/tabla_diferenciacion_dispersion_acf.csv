@@ -1,0 +1,4 @@
+version,dias,desvio_M,ACF_rezago_1,ACF_rezago_7,ACF_rezago_14
+Nivel,1734,1.041,0.341,0.726,0.706
+Diferencia estacional,1727,0.764,0.227,-0.47,-0.011
+Diferencia estacional + simple,1726,0.95,-0.36,-0.493,0.002

@@ -9,7 +9,7 @@ Herramientas vistas en clase aplicadas a la serie SUBE (Pregunta 1: comportamien
   6. ACF de la serie
 
 Decisiones de diseño:
-  - Serie principal: desde 2022-01-01. Incluye 62 días reconstruidos desde las transacciones
+  - Serie principal: 2022-01-01 a 2026-09-30 (octubre de 2026 es preliminar). Incluye 62 días reconstruidos desde las transacciones
     (ago-2022 y ene-2024, error mediano ≈ 2%; ver usos_transacciones.py).
     Se recorta a un múltiplo de 7 días para que el ciclo semanal caiga exacto en un bin de la FFT.
   - Sensibilidad: tramo desde 2024-02-01, sin ningún día reconstruido.
@@ -41,6 +41,7 @@ MODOS = ['total_amba', 'colectivo_amba', 'subte_amba', 'tren_amba']
 COLORES = {'total_amba': '#2c3e50', 'colectivo_amba': '#2980b9', 'subte_amba': '#e67e22', 'tren_amba': '#27ae60'}
 INICIO_TRAMO = '2022-01-01'
 INICIO_SENSIBILIDAD = '2024-02-01'
+FIN_TRAMO = '2026-09-30'   # mismo corte que P-2 (octubre de 2026 es preliminar)
 SEMANA = 7
 
 
@@ -52,9 +53,9 @@ def cargar():
     return df
 
 
-def tramo_continuo(df, col, inicio=INICIO_TRAMO):
-    """Serie en millones, desde `inicio`, recortada a semanas completas (las últimas)."""
-    s = df.loc[inicio:, col] / 1e6
+def tramo_continuo(df, col, inicio=INICIO_TRAMO, fin=FIN_TRAMO):
+    """Serie en millones, de `inicio` a `fin`, recortada a semanas completas (las últimas)."""
+    s = df.loc[inicio:fin, col] / 1e6
     n = len(s) // SEMANA * SEMANA
     return s.iloc[-n:]
 
@@ -123,7 +124,8 @@ def picos(freq, amp, k=8, min_sep=3):
             elegidos.append(i)
         if len(elegidos) == k:
             break
-    return pd.DataFrame({'frecuencia_ciclos_dia': freq[elegidos].round(5),
+    return pd.DataFrame({'fila': range(1, len(elegidos) + 1),
+                         'frecuencia_ciclos_dia': freq[elegidos].round(5),
                          'periodo_dias': (1 / freq[elegidos]).round(2),
                          'amplitud_M': amp[elegidos].round(4)})
 
@@ -232,20 +234,60 @@ def respuesta_colectivo_en_dias_candidatos(df, fechas):
 
 # --- Figuras ------------------------------------------------------------------------
 
-def fig_fft(df):
+def fig_fft(df, tabla_picos):
+    """Espectro del total AMBA con cada fila de `tabla_picos` marcada y numerada, dos ampliaciones y el espectro por modo."""
     s = tramo_continuo(df, 'total_amba')
-    fig, axes = plt.subplots(2, 1, figsize=(13, 9))
     f, a, _ = espectro(s)
-    ax = axes[0]
+    fig = plt.figure(figsize=(14, 14))
+    gs = fig.add_gridspec(3, 2, height_ratios=[1.1, 1, 1])
+    colores_fila = plt.cm.tab10(np.arange(len(tabla_picos)))
+
+    def marcar(ax, filas, etiqueta_y):
+        for _, r in tabla_picos.iterrows():
+            if int(r['fila']) not in filas:
+                continue
+            c = colores_fila[int(r['fila']) - 1]
+            ax.axvline(r['frecuencia_ciclos_dia'], color=c, ls=':', lw=1.6, alpha=0.9)
+            ax.annotate(f"{int(r['fila'])}", (r['frecuencia_ciclos_dia'], r['amplitud_M']), xytext=(0, 14), textcoords='offset points',
+                        ha='center', fontsize=11, fontweight='bold', color='white',
+                        bbox=dict(boxstyle='circle,pad=0.25', fc=c, ec='none'))
+
+    # panel 1: espectro completo
+    ax = fig.add_subplot(gs[0, :])
     ax.plot(f, a, color=COLORES['total_amba'], lw=1.2)
+    marcar(ax, {1, 2, 3}, None)
+    fr = tabla_picos['frecuencia_ciclos_dia']
+    lentas = set(int(k) for k in tabla_picos.loc[fr < 0.02, 'fila'])
+    cercanas = set(int(k) for k in tabla_picos.loc[(fr >= 0.13) & (fr <= 0.155), 'fila'])
+    txt_l = ', '.join(str(k) for k in sorted(lentas))
+    txt_c = ', '.join(str(k) for k in sorted(cercanas - {1}))
     for h in (1, 2, 3):
-        ax.axvline(h / SEMANA, color='#c0392b', ls='--', alpha=0.6)
-        ax.text(h / SEMANA + 0.003, a.max() * 0.92, f'{h}/7\n({SEMANA / h:.1f} d)', color='#c0392b', fontsize=9)
-    ax.set_xlim(0, 0.5)
-    ax.set_title(f'Espectro de amplitud del total AMBA, DC removida ({s.index[0].strftime("%b-%Y")} a {s.index[-1].strftime("%b-%Y")}, N={len(s)} días)',
-                 fontweight='bold')
+        ax.text(h / SEMANA + 0.004, a.max() * 0.80, f'{h}/7 ciclos/día\n(período {SEMANA / h:.1f} d)', color='#c0392b', fontsize=9)
+    ax.text(0.012, a.max() * 0.45, f'Filas {txt_l}:\nciclos lentos pegados al borde\nizquierdo (ver ampliación A)', fontsize=9, color='#555')
+    ax.text(0.152, a.max() * 0.12, f'Fila {txt_c}: pegada al pico 1\n(ver ampliación B)', fontsize=9, color='#555')
+    ax.set_xlim(0, 0.5); ax.set_ylim(-0.03, a.max() * 1.18)
+    ax.set_title(f'Espectro de amplitud del total AMBA, DC removida ({s.index[0].strftime("%b-%Y")} a {s.index[-1].strftime("%b-%Y")}, N={len(s)} días). '
+                 'Los números son las filas de la tabla de picos', fontweight='bold', fontsize=11)
     ax.set_xlabel('Frecuencia (ciclos/día)'); ax.set_ylabel('Amplitud (millones de usuarios)')
-    ax = axes[1]
+
+    # panel 2A y 2B: ampliaciones
+    for col, (x0, x1, filas, tit) in enumerate([(0, 0.02, lentas, 'A. Ampliación de 0 a 0,02 ciclos/día (ciclos lentos)'),
+                                                   (0.13, 0.155, cercanas, 'B. Ampliación alrededor de 1/7 (ciclo semanal)')]):
+        ax = fig.add_subplot(gs[1, col])
+        m = (f >= x0) & (f <= x1)
+        ax.plot(f[m], a[m], color=COLORES['total_amba'], lw=1.4, marker='.', ms=4)
+        marcar(ax, filas, None)
+        for _, r in tabla_picos.iterrows():
+            if int(r['fila']) in filas:
+                ax.text(r['frecuencia_ciclos_dia'], -a[m].max() * 0.07, f"{r['periodo_dias']:g} d", ha='center', va='top', fontsize=8,
+                        color=colores_fila[int(r['fila']) - 1])
+        ax.set_xlim(x0, x1)
+        ax.set_ylim(-a[m].max() * 0.2, a[m].max() * 1.3)
+        ax.set_title(tit, fontweight='bold', fontsize=10)
+        ax.set_xlabel('Frecuencia (ciclos/día)'); ax.set_ylabel('Amplitud (M)')
+
+    # panel 3: por modo
+    ax = fig.add_subplot(gs[2, :])
     for col in ['colectivo_amba', 'subte_amba', 'tren_amba']:
         fm, am, _ = espectro(tramo_continuo(df, col))
         ax.semilogy(fm, am, color=COLORES[col], lw=1, label=col, alpha=0.9)
@@ -356,7 +398,7 @@ def main():
     p = picos(f, a)
     p.to_csv(os.path.join(TABLA_DIR, 'tabla_fft_picos_total.csv'), index=False)
     print(p.to_string(index=False))
-    fig_fft(df)
+    fig_fft(df, p)
     amp_sin = amplitud_en(tramo, 1 / 7)
     f2, a2, _ = espectro(tramo, quitar_tendencia=True)
     print(f"Amplitud semanal 1/7: {amp_sin:.4f} M (sin quitar tendencia) vs "
