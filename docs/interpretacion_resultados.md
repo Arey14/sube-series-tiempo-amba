@@ -722,3 +722,12 @@ En el bloque 22 se afirmó que la frase "la estimación completa (−0,22) está
 **Cómo leer "−0,24 en logaritmos".** El modelo trabaja con logaritmos naturales de la demanda; para pasar el coeficiente a porcentaje se calcula e^(−0,24) − 1 ≈ −21%. Con 1.000.000 de viajes registrados antes del multipago, quedarían unos 787.000. Con coeficientes chicos se lee casi directo como porcentaje: −0,02 es aproximadamente −2%. La elasticidad (−0,14 a −0,18) también está en logaritmos: −0,175 significa que un aumento de 10% de la tarifa se asocia con una caída de alrededor de 1,75% de la demanda.
 
 **Qué aporta.** (1) Una medida de cuánto bajó la demanda registrada por algo que no es precio (−21%, del orden de la brecha de 18% a 30% con CEPA). (2) Una elasticidad más limpia: de −0,224 a un rango de −0,14 a −0,18. Qué no aporta: no sabe que ese cambio es multipago; absorbe cualquier cambio del subte desde esa fecha que no sea precio, salario ni calendario.
+
+### Seguimiento de los pendientes del bloque 21 — 15-nov-2026
+
+- **Covariables de Chronos-2:** el error está solo en `PR-Review.md` (lista con puentes, recesos escolares y víspera de feriado). El notebook y el README dicen "las mismas covariables de calendario", que es correcto. No se modificó el archivo de Arey14.
+- **PatchTST sin cambios con días vacíos:** corregido en el README (el notebook ya decía que empeora de 0,545 a 0,562, p = 0,028).
+- **Hiperparámetros de PatchTST:** sin respuesta todavía. Mientras tanto, el notebook y el README dicen lo que se sabe: fijos, una sola semilla, sin búsqueda documentada. Hay que actualizar esa frase cuando Arey14 responda.
+- **Indicador de multipago en P-2:** se decidió no incluirlo y dejarlo como limitación. Con pocos meses de datos posteriores a la apertura el modelo no podría estimar el efecto, y los modelos con rezagos ya se ajustan al nuevo nivel.
+- **Chronos-2:** agregado como límite que solo los cortes de 2026 son seguros de no estar en su preentrenamiento.
+- **RevIN en el subte:** el notebook ahora lo presenta como explicación posible, no probada.
