@@ -1,0 +1,8 @@
+metodo,bloques,MAPE_mediano,MAPE_p90,MAPE_mediano_ene_feb_jul,ciclo_semanal_conservado
+pchip_tendencia_x_perfil,89,17.21,30.7,13.6,0.89
+lineal_tendencia_x_perfil,89,17.25,30.11,13.35,0.89
+lineal_por_dia_semana (referencia),89,17.4,32.3,16.78,0.95
+pchip_por_dia_semana,89,17.73,33.2,16.73,0.96
+spline_tendencia_x_perfil,89,25.89,56.32,24.96,0.87
+spline_por_dia_semana,89,28.86,44.79,25.54,1.31
+spline (referencia),89,76.26,323.42,70.53,0.15
