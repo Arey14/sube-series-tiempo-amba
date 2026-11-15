@@ -532,3 +532,193 @@ Solo total AMBA (no por modo ni el híbrido). El horizonte de 90 días tiene 13 
 - En los propios días de paro y de elección nadie mejora (MASE de 4,9 a 5,1).
 
 **Límites.** Solo total AMBA. La explicación del SARIMAX (los valores extremos contaminan las semanas siguientes por el término de media móvil estacional) no se probó directamente. Un corte excluido por falla numérica en una variante.
+
+## 21. P-2: modelos de última generación (PatchTST y Chronos-2) y brecha del subte con CEPA — 15-nov-2026
+
+Este bloque documenta lo que Arey14 agregó en `main` después de aprobar el PR #1 (commits `b33cac8`, `553c604`, `15c0c38` y `a7c5067`, 14-nov-2026). La lectura de qué se agregó sale del código y de las tablas versionadas. **No se volvió a correr ninguna corrida**: los números son los que quedaron en `resultados/tablas/` y en `data/procesado/`. Lo que sigue sin comprobar se marca como tal.
+
+### Qué se agregó
+
+| Qué | Dónde | Descripción |
+|---|---|---|
+| **PatchTST** | `scripts/pronosticos_p2.py` (`patchtst`) | Red de tipo Transformer para series de tiempo. *Parche* (patch): tramo de 7 días consecutivos que se trata como una unidad (un "token"). El contexto son 56 días (8 parches). *RevIN* (normalización reversible por instancia): cada ventana de entrada se estandariza con su propia media y desvío antes de entrar a la red, y la salida se des-estandariza. Se reentrena en cada corte solo con datos hasta el corte (150 épocas, tasa de aprendizaje 4e-3, una semilla, modelo chico: `d_model` = 32, 2 capas, 4 cabezas). Usa como covariables futuras el calendario (14 columnas). |
+| **Chronos-2** | `scripts/pronosticos_p2.py` (`chronos2`) | Modelo fundacional de series de tiempo (*foundation model*: red preentrenada sobre muchísimas series de otros dominios), usado **sin ajustar ningún peso** con los datos de SUBE (*zero-shot*: pronostica con el pasado de la serie como contexto). Dos variantes: `chronos2` (con covariables de calendario) y `chronos2_zeroshot` (solo el pasado de la serie, como ablación). |
+| **Dependencias** | `requirements.txt` | `torch>=2.0.0` y `chronos-forecasting>=2.3.0`. Chronos-2 se descarga de Hugging Face en la primera corrida. |
+| **Prueba de fuga** | `scripts/verificar_sin_fuga_p2.py` | Incluye los dos modelos nuevos. Según el `PR-Review.md`, los siete modelos pasan con diferencia 0. |
+| **Pipeline P-2 recalculado** | `scripts/evaluacion_pronosticos.py` y los analizadores de P-2 | Mismos 42 cortes de 28 días; los dos modelos nuevos entran en total, por modo, horizontes, huecos, hitos y entrenamiento sin hitos. Los modelos anteriores no cambian de valor. |
+| **Interpolación y herramientas de clase en el notebook** | Notebook, secciones 3 y 4 | `fig7` (lineal vs. spline vs. día de la semana) y `fig8` a `fig11` (FFT, MA vs. STL, filtros en frecuencia, CCF) pasan al notebook y al README. No hay resultados nuevos: eran figuras que ya generaban los scripts. |
+| **Explicación de la brecha del subte con CEPA** | Notebook y README | La brecha de 18% a 30% desde 2025 se atribuye al sistema de pago contactless/QR (multipago) en el subte. Ver más abajo. |
+| **Chequeo de la elasticidad del subte hasta nov-2024** | Notebook y README | Elasticidad interanual real −0,175 (IC 95%: −0,216 a −0,134) sin control salarial y −0,178 con control salarial, con 90 semanas. Ver más abajo. |
+
+### Resultados de P-2 con los dos modelos nuevos (total AMBA, 28 días, sin paros ni elecciones, 1.161 días)
+
+| Modelo | MAE | MAPE | MASE |
+|---|---|---|---|
+| **PatchTST** | **0,180** | **7,2%** | **0,547** |
+| Gradient Boosting | 0,187 | 7,4% | 0,568 |
+| Chronos-2 (con calendario) | 0,199 | 9,3% | 0,605 |
+| Prophet | 0,254 | 11,9% | 0,769 |
+| Chronos-2 (solo pasado) | 0,268 | 13,6% | 0,817 |
+| SARIMAX | 0,270 | 11,8% | 0,819 |
+| Naive 364 días | 0,395 | 17,4% | 1,195 |
+| Naive 7 días | 0,472 | 19,5% | 1,431 |
+
+(`tabla_p2_metricas_globales.csv`.) Diebold-Mariano: PatchTST y Gradient Boosting **no se distinguen** (diferencia de MAE 0,006 M, p = 0,392). PatchTST supera a todos los demás modelos con p < 0,01 salvo al Gradient Boosting. La tabla solo compara contra PatchTST y contra el Naive de 7 días; la comparación del Gradient Boosting contra Chronos-2 no se calculó.
+
+### Lectura
+
+- **El primer puesto pasa a ser compartido.** En el bloque 11 el Gradient Boosting ganaba solo; ahora comparte la punta con PatchTST. La conclusión "gana el Gradient Boosting" ya no se puede escribir sola. El orden de PatchTST sobre el Gradient Boosting no es una diferencia estadística.
+- **Por período** (`tabla_p2_metricas_por_periodo.csv`, MASE): PatchTST tiene menor MASE en jul-dic 2023 (0,59 contra 0,76) y en 2025 (0,548 contra 0,557); el Gradient Boosting en 2024 (0,556 contra 0,562) y en 2026 (0,466 contra 0,493). Salvo 2023 las diferencias son chicas y no se probaron por período. El Gradient Boosting tuvo un sesgo de −0,147 M en jul-dic 2023 (subestima) que no tiene PatchTST. En el período más reciente, que es el que el modelo fundacional no pudo haber visto, el Gradient Boosting es el mejor.
+- **Por modo** (MASE, `tabla_p2_modo_metricas.csv` y `tabla_p2_modo_diebold_mariano.csv`): en colectivo PatchTST (0,558) y Gradient Boosting (0,588) no se distinguen (p = 0,219); en tren PatchTST (0,478) supera a todos (p < 0,002 contra cada uno); en subte PatchTST (0,566) y Chronos-2 (0,571) empatan (p = 0,983) y superan al Gradient Boosting (p = 0,004 contra PatchTST). El híbrido del bloque 13 (MASE 0,54 en tren y 0,61 en subte) queda por detrás de PatchTST en ambos.
+- **Por tipo de día** (total, `tabla_p2_metricas_por_tipo_dia.csv`, MAE): Chronos-2 con calendario es el mejor en **días hábiles** (0,177; Gradient Boosting 0,198; PatchTST 0,191) pero es **mucho peor en feriados**: 0,762 en feriados contra 0,284 del Gradient Boosting y 0,280 de PatchTST; incluso peor que el SARIMAX (0,674) en ese tipo de día. El calendario que recibe Chronos-2 no le alcanza para tratar los feriados como lo hacen los modelos entrenados con él.
+- **Ablación de Chronos-2:** sin calendario, el MAE sube de 0,199 a 0,268 (+35%), y en feriados de 0,762 a 1,64. El modelo fundacional por sí solo no conoce los feriados argentinos.
+- **Horizontes** (`tabla_p2_horizontes_metricas.csv`, MASE): a **7 días** gana PatchTST (0,523; Gradient Boosting 0,559); a 28 días PatchTST (0,547) y Gradient Boosting (0,568); a **90 días** gana el Gradient Boosting (0,612; Chronos-2 0,662; PatchTST 0,671). PatchTST se entrena con ventanas de hasta 28 días de salida (`H_tr = min(horizonte, 28)`), así que a 90 días pronostica más allá de lo que aprendió; es una explicación probable de que su ventaja desaparezca, no probada.
+- **Intervalos conformes** (`tabla_p2_intervalos.csv`): la cobertura observada es cercana a la nominal en los siete (80%: 0,79 a 0,85; 95%: 0,94 a 0,95). Al 95%, el semiancho es de 0,57 M (Gradient Boosting), 0,62 (PatchTST) y 0,82 (Chronos-2).
+- **Huecos y entrenamiento sin hitos:** el ranking se mantiene. Con los días de paro y elección vacíos PatchTST empeora levemente (diferencia de MAE +0,0055 M, p = 0,028); con esos días imputados mejora Chronos-2 (−0,004 M, p = 0,0013), igual que el SARIMAX. En el README se dice "no cambia a PatchTST": con los días vacíos sí cambia, aunque poco.
+- **Hitos de P-1** (`tabla_p2_hitos_errores.csv`, `tabla_p2_hitos_escenario.csv`): el resultado es el mismo con siete modelos. Ninguno anticipa paros ni elecciones con gratuidad (MAE de 2,06 a 2,18 M en paros); conocer el evento y su cociente típico reduce el error de 78% a 79% en el modo que para (colectivo) y de 89% a 99% en elecciones con gratuidad, con cualquiera de los siete. En feriados laborables PatchTST (0,284) y el Gradient Boosting (0,298) son los mejores; Chronos-2 (0,786) queda por debajo del SARIMAX (0,507). **Saltos tarifarios grandes** (`tabla_p2_hitos_tarifas_resumen.csv`): los modelos nuevos sobrestiman la demanda tras un salto grande más que los demás (PatchTST +14,1%, Chronos-2 +9,3%, contra +3,6% del Gradient Boosting; los valores habituales son de +1,4% a +3,9%).
+
+### Qué se puede afirmar y qué no
+
+- **Se puede afirmar:** para el total AMBA a 28 días, PatchTST y el Gradient Boosting son los mejores y no se distinguen entre sí; ambos superan a Prophet, SARIMAX y Chronos-2. Un modelo fundacional sin ajuste, con calendario, rinde mejor que Prophet y el SARIMAX sin haber visto la serie, pero no mejor que los dos primeros y falla en feriados. La ablación muestra que el calendario es lo que más le suma.
+- **No se puede afirmar todavía** la explicación que da el `PR-Review.md` para el subte: que la normalización por ventana (RevIN) y el reescalado por contexto "se adaptan instantáneamente" a los cambios de nivel por tarifas y multipago. Es una hipótesis razonable, pero no hay una variante sin RevIN que la ponga a prueba. Además, justo después de los saltos tarifarios grandes PatchTST es el modelo que más sobrestima (+14%).
+- **El número exacto del primer puesto es optimista hasta que se aclare cómo se eligieron los hiperparámetros de PatchTST** (ver pendientes). Una sola semilla tampoco alcanza para saber cuánto varía el resultado entre corridas.
+
+### Diferencias entre el `PR-Review.md` y el código o las tablas
+
+| Qué dice el `PR-Review.md` | Qué hay en el repositorio |
+|---|---|
+| Chronos-2 recibe como covariables `es_feriado`, `es_puente`, `es_receso_escolar`, `vispera_feriado` y `dia_despues_feriado`. | El código usa `calendario()` más cinco dummies de día de la semana: feriado, Nochebuena y fin de año, tres armónicos anuales (seno y coseno) y día de la semana. **No hay puentes, recesos escolares ni víspera de feriado.** Lo mismo vale para PatchTST (14 columnas). |
+| A 7 días gana el Gradient Boosting (MASE 0,504); a 90 días lideran Gradient Boosting 0,549, PatchTST 0,577 y Chronos-2 0,623. | En las tablas, a 7 días gana PatchTST (0,523 contra 0,559 del Gradient Boosting) y a 90 días el Gradient Boosting vale 0,612, Chronos-2 0,662 y PatchTST 0,671. El README sí coincide con las tablas. |
+| "Se actualizó `docs/interpretacion_resultados.md` (bloque 2)" y "bloques 1 a 20". | Los documentos de `docs/` no se tocaron en esos commits; este bloque 21 es la primera actualización. |
+
+### Brecha del subte con CEPA y elasticidad hasta nov-2024
+
+**Brecha con CEPA.** Se atribuye a que desde diciembre de 2024 el subte acepta pago con tarjetas bancarias contactless, celulares con NFC y QR, y esos viajes no pasan por SUBE. Es consistente con lo que ya habíamos visto: coincidencia con CEPA hasta 2024 y brecha de 18% a 30% desde 2025, con todas las líneas bajando parejas (bloque 2), lo que apuntaba a una diferencia de definición y no a líneas faltantes. **No hay fuente que cite la fecha ni el mecanismo.** Hasta tenerla, queda como hipótesis plausible y no como causa establecida.
+
+**Elasticidad hasta nov-2024.** Con el cálculo restringido a 2022-03-07 a 2024-11-24 el resultado es −0,175 (IC 95%: −0,216 a −0,134) sin control salarial y −0,178 con control salarial. Lectura:
+
+- Sostiene que el subte reaccionó al precio **antes** del multipago: el signo y el tamaño (de −0,15 a −0,26 según la especificación) no dependen de ese cambio.
+- **No sostiene** la frase "la estimación completa sin control salarial (−0,22) está amplificada por la sustitución de medio de pago". Con control salarial la muestra completa da −0,15 y la restringida −0,178, o sea que la restringida es más grande. Esa frase necesita otra evidencia o hay que sacarla.
+- Los tres saltos grandes de tarifa son de 2024, así que la muestra hasta nov-2024 conserva casi toda la variación que identifica el efecto: no es una prueba independiente.
+- **Este cálculo no se puede reproducir desde el repositorio**: `modelo_precio_demanda.py` no cambió, no hay una tabla nueva y el notebook cita los números solo en texto. Se reproduce en el bloque 22.
+
+### Pendientes de este bloque
+
+1. Cómo se eligieron los hiperparámetros de PatchTST (150 épocas, tasa 4e-3, `d_model` 32): si fue mirando los 42 cortes de evaluación, el resultado es optimista y hay que decirlo. Consulta a Arey14 en curso. Mientras tanto, la limitación del notebook "configuración estándar sin ajuste fino de hiperparámetros" no se puede sostener para PatchTST.
+2. Fuente y fecha del multipago en el subte. Consulta en curso.
+3. Corregir en el notebook y en el README la lista de covariables de calendario de Chronos-2 y la afirmación sobre PatchTST sin cambios con días vacíos.
+4. Chronos-2 se publicó en octubre de 2025 y los cortes empiezan en junio de 2023. No se puede descartar que su preentrenamiento incluya datos de estas fechas; solo los cortes de 2026 son limpios. Decirlo como limitación del *zero-shot*.
+5. Probar una variante de PatchTST sin RevIN y con varias semillas para sostener (o descartar) la explicación del subte.
+
+## 22. P-1: reproducción del chequeo de la elasticidad del subte antes del multipago — 15-nov-2026
+
+Script nuevo: `scripts/chequeo_pre_multipago.py` (importa las funciones de `modelo_precio_demanda.py` sin modificarlas). Tabla: `resultados/tablas/tabla_chequeo_pre_multipago.csv`. Motivo: el bloque 21 dejó pendiente que el cálculo "hasta nov-2024" del notebook no estaba versionado.
+
+### Qué se hizo
+
+Se arma el panel semanal completo, se calcula la diferencia interanual de 52 semanas sobre toda la serie y recién después se descartan las semanas posteriores a la fecha de corte; así cada observación es la misma que en la muestra completa. La regresión es la de `interanual()`: log de la demanda del subte sin línea D contra el log de la tarifa real, con controles de feriados, paros y elecciones, y error estándar HAC de 8 rezagos; con y sin el salario real (RIPTE / IPC). Además del corte de noviembre de 2024 se probaron otros seis, para ver si el resultado depende de esa fecha.
+
+### Resultado
+
+**El cálculo del notebook se reproduce exacto.** Corte al 24-nov-2024: −0,175 (IC 95%: −0,216 a −0,134) sin control salarial y −0,178 (−0,219 a −0,137) con control, con 90 semanas interanuales (6-mar-2023 a 18-nov-2024). La muestra completa también coincide con las tablas del repo (−0,224 y −0,145, 186 semanas).
+
+Elasticidad interanual del subte con tarifa real, según hasta qué fecha llega la muestra:
+
+| Muestra | Semanas | Sin control salarial | Con control salarial (IC 95%) |
+|---|---|---|---|
+| Hasta 30-jun-2024 | 69 | −0,132 | −0,140 (−0,171 a −0,109) |
+| Hasta 29-sep-2024 | 82 | −0,141 | −0,145 (−0,163 a −0,128) |
+| **Hasta 24-nov-2024** | 90 | **−0,175** | **−0,178** (−0,219 a −0,137) |
+| Hasta 29-dic-2024 | 95 | −0,197 | −0,194 (−0,237 a −0,152) |
+| Hasta 30-mar-2025 | 108 | −0,245 | −0,206 (−0,252 a −0,161) |
+| Hasta 29-jun-2025 | 121 | −0,243 | −0,186 (−0,238 a −0,135) |
+| Hasta 27-sep-2026 (completa) | 186 | −0,224 | −0,145 (−0,193 a −0,097) |
+| Solo desde el 2-dic-2024 | 95 | −0,197 | **−0,018** (−0,080 a +0,043) |
+
+### Lectura
+
+- **Se sostiene que el subte reaccionó al precio antes del multipago.** En todos los cortes anteriores a diciembre de 2024 la elasticidad es negativa y distinta de cero, de −0,13 a −0,18. La afirmación del notebook de que "la sensibilidad al precio ya existía" tiene respaldo.
+- **El valor de −0,175 es un punto de una trayectoria, no un valor estable.** Pasa de −0,13 (corte de junio de 2024) a −0,175 (noviembre) con solo agregar semanas de 2024. La muestra de 90 semanas incluye el aumento del tramo C del 1-oct-2024 y, con él, las semanas de octubre y noviembre; sin ellas queda en −0,14. Por eso conviene decir "de −0,13 a −0,18 antes del multipago" y no citar un solo número con tres decimales.
+- **La frase "la estimación completa sin control salarial (−0,22) está amplificada por el multipago" no se puede sostener con estos datos.** Sin control salarial, la elasticidad crece (en valor absoluto) justo después de diciembre de 2024: de −0,175 (noviembre) a −0,197 (diciembre) y −0,245 (marzo de 2025). Eso es lo que se vería si el multipago amplificara el efecto, pero es también lo que se vería si se agregara variación genuina del precio (el aumento a $832 del 28-feb-2025, los ajustes mensuales) o si el salario real se confundiera con el precio. Con el control salarial, el efecto de la muestra completa (−0,145) es **menor** que el de antes del multipago (−0,178), no mayor.
+- **Con control salarial, el período posterior no muestra efecto del precio** (−0,018, IC 95%: −0,080 a +0,043); sin control sí (−0,197). Es decir, desde diciembre de 2024 el precio real y el salario real del subte se mueven tan juntos que el modelo no los separa; eso puede ser un problema de identificación y no ausencia de efecto. No se puede afirmar nada sobre cómo reaccionó el subte al precio durante el multipago.
+- **Hay una dificultad de fondo en este diseño.** La diferencia interanual compara cada semana de 2025 y 2026 con la misma semana del año anterior. Si el multipago sacó viajes de SUBE en 2025, esa caída entra en la diferencia interanual y se puede confundir con respuesta al precio. El chequeo hasta nov-2024 evita ese problema solo para las semanas anteriores, que son las que tienen mayor variación de precio (los tres saltos grandes de 2024), de modo que **no es una prueba independiente**: coincide en gran parte con la muestra que identifica el efecto.
+
+### Qué se puede afirmar
+
+El subte respondió al precio antes del multipago, con una elasticidad real del orden de −0,13 a −0,18. Qué parte de la estimación con toda la muestra se debe al multipago **no se puede separar** con este diseño: ni los datos de SUBE ni el control salarial lo permiten, y la fecha de inicio del multipago no tiene fuente (consulta pendiente, ver bloque 21). La estimación que más conviene citar en el video es el rango de −0,13 a −0,26 según la especificación, con la advertencia de que desde 2025 la serie de SUBE del subte no cubre todos los viajes.
+
+### Límites
+
+- La fecha de corte (nov-2024) es la que usa Arey14; la fecha real de inicio del multipago no está verificada. El barrido muestra que el resultado depende de la fecha.
+- Las observaciones interanuales consecutivas se superponen (comparten semanas del año anterior): el error estándar HAC de 8 rezagos puede quedar chico.
+- No se probó una especificación con un indicador de "período con multipago" o con la serie de CEPA como control, que sería el paso siguiente si se consigue la fecha y los datos.
+
+## 23. P-1: control por las fechas del multipago (corrige la lectura del bloque 22) — 15-nov-2026
+
+Script nuevo: `scripts/chequeo_multipago_fechas.py`. Tablas: `tabla_multipago_fechas.csv` y `tabla_multipago_placebo_escalon.csv`. El bloque 22 cortaba la muestra en una fecha (nov-2024); este bloque modela el multipago con indicadores en las fechas de apertura. **Cambia una conclusión del bloque 22** (ver "Corrección").
+
+### Fechas usadas y qué se verificó
+
+| Hecho | Fecha | Fuente y estado |
+|---|---|---|
+| Subte: tarjetas contactless y celulares con NFC en toda la red | **2-dic-2024** (prueba previa en cinco molinetes desde el 25-nov) | Prensa: La Nación (2-dic-2024), Cronista (prueba del 25-nov). Algunas notas dicen 1-dic. Fecha de prensa; no se leyó norma ni comunicado de Emova. |
+| Subte: pago con QR en todas las líneas | **22-may-2025** (la semana anterior ya funcionaba con Mercado Pago) | Infobae y La Nación del 22-may-2025. |
+| Colectivos: primeras líneas con tarjetas contactless y NFC (CABA 4, 12, 34, 39, 61, 62, 68 y línea 1 del AMBA) | **27-mar-2025** | Prensa del mismo día y páginas de argentina.gob.ar (el comunicado original no se pudo abrir). Expansión posterior por tandas. |
+| Decreto 698/2024 y estándar de QR del BCRA desde el 12-may-2025 | — | Vienen de una síntesis externa; **no se verificaron**. |
+
+Lo que **no** está verificado: que los viajes con tarjeta o QR no queden en el dataset de transacciones de SUBE (es la hipótesis de Arey14) y cuántos viajes se pasaron a esos medios mes a mes.
+
+### Diseño (fijado antes de correr; está en el encabezado del script)
+
+Si el multipago saca viajes de SUBE se esperaba: **P1**, un escalón negativo en el subte; **P2**, que al agregarlo la elasticidad de la muestra completa baje en valor absoluto; **P3**, escalón cercano a cero en el tren (sin multipago en esa fecha); **P4**, un escalón negativo fuera del rango de escalones en fechas sin evento, en la ventana sep-2024 a feb-2025, durante la cual la tarifa del subte está constante (entre el 1-oct-2024 y el 28-feb-2025 no hubo cambios).
+
+Un escalón de nivel en la serie interanual entra como diferencia con 52 semanas atrás: vale 1 durante las 52 semanas siguientes a la apertura y 0 después, porque la semana del año anterior ya tenía multipago.
+
+### Resultados (elasticidad interanual real; escalón = coeficiente del indicador, en logaritmos)
+
+**A. Subte, muestra completa (186 semanas).**
+
+| Especificación | Sin control salarial: elasticidad | escalón dic-24 | escalón QR | Con control salarial: elasticidad | escalón dic-24 | escalón QR |
+|---|---|---|---|---|---|---|
+| Sin indicadores (bloque 22) | −0,224 | — | — | −0,145 | — | — |
+| Escalón dic-2024 | **−0,148** | −0,242 (ee 0,022) | — | **−0,138** | −0,213 (ee 0,035) | — |
+| Escalones dic-2024 y mayo-2025 | −0,178 | −0,194 (ee 0,018) | −0,098 (ee 0,015) | −0,175 | −0,188 (ee 0,023) | −0,096 (ee 0,015) |
+
+**B. Placebos de modo.** Tren con el escalón de dic-2024: −0,009 (p = 0,72) sin control salarial y +0,113 (p = 0,004) con control. Colectivo con todas las jurisdicciones: escalón de dic-2024 = −0,007 (p = 0,76); con su propia fecha (27-mar-2025), −0,049 (p = 0,022) sin control y −0,059 (p = 0,012) con control.
+
+**C. Ventana de la apertura (25 semanas, 2-sep-2024 a 23-feb-2025, sin control salarial).** Subte: escalón −0,106 (ee 0,017). Tren: −0,016 (p = 0,48). Placebo: el mismo escalón en 65 semanas sin evento de pago (jun-2023 a ago-2024) da un rango de −0,08 a +0,05 (percentiles 5 y 95; mediana −0,002). El escalón real queda por debajo del 96,9% de los placebos (proporción de dos colas con |coeficiente| ≥ |real| = 0,046).
+
+### Lectura
+
+- **P1 se cumple.** En el subte hay un descenso de nivel de la demanda registrada en SUBE a partir de la apertura: −0,24 en logaritmos (−21%) en la muestra completa con un solo escalón. Es del mismo orden que la brecha de 18% a 30% con CEPA (bloque 2), que se calculó por otro camino y con otros datos. Esa coincidencia es lo que más pesa a favor de que el escalón sea multipago.
+- **P2 se cumple con un escalón, no del todo con dos.** Con el escalón de diciembre la elasticidad del subte baja de −0,224 a −0,148 (de −0,145 a −0,138 con control salarial). Con los dos escalones queda en −0,178 y −0,175. En todos los casos con indicadores, la elasticidad cae dentro del rango medido antes del multipago (de −0,13 a −0,18, bloque 22): modelar el multipago acerca la muestra completa a la anterior.
+- **P3 se cumple sin control salarial** (tren −0,009) y no con él (+0,113). Con control salarial el tren responde distinto y no se investigó por qué; el placebo del colectivo total sí sale limpio en las dos versiones (−0,007 y −0,010).
+- **P4 se cumple con matices.** En la ventana de la apertura el escalón del subte es de −0,106 (−10%), más negativo que 96,9% de los escalones en fechas sin evento. Es menor que el de la muestra completa (−0,24): la adopción fue gradual y un escalón único es una aproximación. Con 25 semanas y poca variación de precio dentro de la ventana, la elasticidad de esa regresión (−0,40) no es interpretable.
+- **Colectivo.** `colectivo_nacional` no sirve para este chequeo: da un escalón de −0,17 con la fecha del subte y −0,20 con la suya, pero en 2025 líneas de jurisdicción nacional pasaron a CABA (ruptura de composición, registro de cambios, sección 3). Con todas las jurisdicciones sumadas el placebo del subte da cero y el escalón del 27-mar-2025 da −5% a −6%, chico y significativo; es consistente con que al inicio solo unas pocas líneas tenían el sistema.
+
+### Corrección a la lectura del bloque 22
+
+En el bloque 22 se afirmó que la frase "la estimación completa (−0,22) está amplificada por el multipago" no se sostenía. Con la evidencia de este bloque, **la frase tiene apoyo**: el escalón de apertura es negativo, grande y fuera del ruido, y al incluirlo la elasticidad completa queda en el rango previo al multipago. Lo que decía el bloque 22 sigue valiendo en su alcance: cortar la muestra en nov-2024 no alcanzaba para demostrarlo, porque no medía el multipago y el valor dependía del corte. Qué se puede decir ahora: **la elasticidad del subte con el multipago controlado es de −0,14 a −0,18, y la estimación sin controlar (−0,22) la sobrestima en parte.**
+
+### Límites
+
+- El escalón absorbe todo lo que cambió en el subte desde esa fecha y no sea precio, salario ni calendario (obras, trabajo remoto, cambios de rutas), no solo el multipago. Que su tamaño coincida con la brecha con CEPA lo apoya, no lo prueba.
+- Un escalón supone adopción inmediata y constante; la adopción fue gradual (con descuentos bancarios y de billeteras) y el escalón de QR se agrega de forma ad hoc. Una medida directa de adopción (viajes pagados con tarjeta o QR, o la serie mensual de CEPA como cobertura) sería mejor y no está en el repositorio.
+- Los indicadores y el precio quedan correlacionados en 2025 (la tarifa real sube mes a mes mientras crece el multipago); el número de condición llega a 15,8 con control salarial y los dos escalones. Esas estimaciones son las menos firmes.
+- El tren con control salarial da un escalón positivo significativo sin explicación (ver P3).
+- Las observaciones interanuales consecutivas se superponen; el HAC de 8 rezagos (4 en la ventana) puede quedar chico. La ventana tiene 25 semanas.
+- Las fechas son de prensa. No se leyó un comunicado oficial de Emova ni del Gobierno de la Ciudad.
+
+### Resumen en palabras simples (qué es el escalón y para qué sirve)
+
+**Para qué sirve.** Solo para P-1 (cuánto reacciona la demanda al precio). Los modelos de pronóstico de P-2 no lo usan.
+
+**Por qué hace falta.** La cantidad de viajes registrada en SUBE mezcla dos cosas: cuánta gente viaja en subte y cuántos de esos viajes quedan registrados en SUBE. Hasta noviembre de 2024 eran lo mismo. Desde diciembre de 2024 parte de los viajes se paga con tarjeta o celular y deja de aparecer en SUBE, de modo que una caída de viajes registrados no es necesariamente gente que viaja menos. Si no se separan las dos cosas, la caída entera se le atribuye al precio y la elasticidad sale demasiado grande. Ejemplo ilustrativo (números inventados): si los viajes de SUBE caen 30% y 20 puntos son gente que pasó a pagar con tarjeta, solo la parte restante puede ser respuesta al precio.
+
+**Qué es.** Una variable que vale 0 hasta el 1-dic-2024 y 1 desde el 2-dic-2024, constante. Al modelo se le pide estimar cuánto se desplazó el nivel de viajes registrados desde esa fecha, descontando precio, salario, feriados y paros. Lo único que se estima es el coeficiente; los valores de la variable no se calculan.
+
+**De dónde sale la fecha.** No sale de los datos: es un supuesto nuestro, tomado de la prensa (el subte aceptó tarjetas contactless el 2-dic-2024). La adopción real fue gradual y el escalón la trata como inmediata y constante; por eso el efecto medido en la ventana de la apertura (−10%) es menor que el de la muestra completa (−21%).
+
+**Cómo leer "−0,24 en logaritmos".** El modelo trabaja con logaritmos naturales de la demanda; para pasar el coeficiente a porcentaje se calcula e^(−0,24) − 1 ≈ −21%. Con 1.000.000 de viajes registrados antes del multipago, quedarían unos 787.000. Con coeficientes chicos se lee casi directo como porcentaje: −0,02 es aproximadamente −2%. La elasticidad (−0,14 a −0,18) también está en logaritmos: −0,175 significa que un aumento de 10% de la tarifa se asocia con una caída de alrededor de 1,75% de la demanda.
+
+**Qué aporta.** (1) Una medida de cuánto bajó la demanda registrada por algo que no es precio (−21%, del orden de la brecha de 18% a 30% con CEPA). (2) Una elasticidad más limpia: de −0,224 a un rango de −0,14 a −0,18. Qué no aporta: no sabe que ese cambio es multipago; absorbe cualquier cambio del subte desde esa fecha que no sea precio, salario ni calendario.
